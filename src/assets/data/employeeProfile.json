@@ -1,0 +1,58 @@
+{
+  "employees": [
+    {
+      "id": "emp001",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "phone": "123-456-7890",
+      "role": "Manager",
+      "department": "Sales",
+      "address": "123 Main St, Springfield"
+    },
+    {
+      "id": "emp002",
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "phone": "234-567-8901",
+      "role": "Employee",
+      "department": "Marketing",
+      "address": "456 Elm St, Metropolis"
+    },
+    {
+      "id": "emp003",
+      "name": "Emily Johnson",
+      "email": "emily.johnson@example.com",
+      "phone": "345-678-9012",
+      "role": "Admin",
+      "department": "IT",
+      "address": "789 Oak St, Gotham"
+    },
+    {
+      "id": "emp004",
+      "name": "Michael Brown",
+      "email": "michael.brown@example.com",
+      "phone": "456-789-0123",
+      "role": "Employee",
+      "department": "Support",
+      "address": "321 Pine St, Star City"
+    },
+    {
+      "id": "emp005",
+      "name": "Sarah Wilson",
+      "email": "sarah.wilson@example.com",
+      "phone": "567-890-1234",
+      "role": "Manager",
+      "department": "Operations",
+      "address": "654 Maple St, Central City"
+    },
+    {
+      "id": "emp006",
+      "name": "David Lee",
+      "email": "david.lee@example.com",
+      "phone": "678-901-2345",
+      "role": "Employee",
+      "department": "Finance",
+      "address": "987 Cedar St, Coast City"
+    }
+  ]
+}

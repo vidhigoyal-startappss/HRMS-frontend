@@ -1,0 +1,102 @@
+[
+  {
+    "id": "E001",
+    "profile": "https://randomuser.me/api/portraits/men/1.jpg",
+    "name": "Rajesh Kumar",
+    "jobTitle": "Software Engineer",
+    "startDate": "2023-01-15",
+    "category": "Full-time",
+    "gender": "Male",
+    "department": "Engineering"
+  },
+  {
+    "id": "E002",
+    "profile": "https://randomuser.me/api/portraits/women/2.jpg",
+    "name": "Anjali Verma",
+    "jobTitle": "HR Executive",
+    "startDate": "2022-08-01",
+    "category": "Intern",
+    "gender": "Female",
+    "department": "Human Resources"
+  },
+  {
+    "id": "E003",
+    "profile": "https://randomuser.me/api/portraits/men/3.jpg",
+    "name": "Sahil Mehra",
+    "jobTitle": "UI/UX Designer",
+    "startDate": "2021-11-20",
+    "category": "Part-time",
+    "gender": "Male",
+    "department": "Design"
+  },
+  {
+    "id": "E004",
+    "profile": "https://randomuser.me/api/portraits/women/4.jpg",
+    "name": "Meena Joshi",
+    "jobTitle": "Marketing Manager",
+    "startDate": "2020-05-12",
+    "category": "Full-time",
+    "gender": "Female",
+    "department": "Marketing"
+  },
+  {
+    "id": "E005",
+    "profile": "https://randomuser.me/api/portraits/men/5.jpg",
+    "name": "Aman Sharma",
+    "jobTitle": "Data Analyst",
+    "startDate": "2022-03-18",
+    "category": "Intern",
+    "gender": "Male",
+    "department": "Data Science"
+  },
+  {
+    "id": "E006",
+    "profile": "https://randomuser.me/api/portraits/women/6.jpg",
+    "name": "Nikita Bansal",
+    "jobTitle": "Recruiter",
+    "startDate": "2021-06-30",
+    "category": "Part-time",
+    "gender": "Female",
+    "department": "Human Resources"
+  },
+  {
+    "id": "E007",
+    "profile": "https://randomuser.me/api/portraits/men/7.jpg",
+    "name": "Kunal Das",
+    "jobTitle": "DevOps Engineer",
+    "startDate": "2019-10-05",
+    "category": "Full-time",
+    "gender": "Male",
+    "department": "Engineering"
+  },
+  {
+    "id": "E008",
+    "profile": "https://randomuser.me/api/portraits/women/8.jpg",
+    "name": "Priya Rathi",
+    "jobTitle": "Content Writer",
+    "startDate": "2023-02-10",
+    "category": "Intern",
+    "gender": "Female",
+    "department": "Content"
+  },
+  {
+    "id": "E009",
+    "profile": "https://randomuser.me/api/portraits/men/9.jpg",
+    "name": "Harshit Jain",
+    "jobTitle": "Product Manager",
+    "startDate": "2020-12-21",
+    "category": "Full-time",
+    "gender": "Male",
+    "department": "Product"
+  },
+  {
+    "id": "E010",
+    "profile": "https://randomuser.me/api/portraits/women/10.jpg",
+    "name": "Tanya Kapoor",
+    "jobTitle": "Business Analyst",
+    "startDate": "2021-09-11",
+    "category": "Part-time",
+    "gender": "Female",
+    "department": "Business"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "label": "QuickAction",
+  "content": [
+    {
+      "UpdateProfile": "Update Profile",
+      "ViewPaySlip": "View PaySlip",
+      "PunchIn": "Punch In",
+      "ApplyLeave": "Apply For Leave",
+      "Events": "Upcoming Events",
+      "Calendar": "Holiday Calendar"
+    }
+  ]
+}
