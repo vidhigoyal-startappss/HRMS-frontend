@@ -3,7 +3,9 @@ import InputField from "../components/common/InputField";
 import Button from "../components/common/ButtonComp";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../hooks/hooks";
+import { toast } from 'react-toastify';
 import { login } from "../feature/User/userSlice";
+import axios from "axios";
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -22,39 +24,44 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  try {
-    const res = await fetch("/user.json");
-    const users = await res.json();
+  setErrorMsg("");
 
-    const user = users.find(
-      (u: any) => u.username === email && u.password === password
-    );
+  try {
+    const response = await axios.post("http://localhost:3001/api/login", {
+      email,
+      password,
+    });
+
+    const user = response.data.user;
 
     if (user) {
-      setErrorMsg("");
       localStorage.setItem("user", JSON.stringify(user));
       dispatch(login(user));
 
-      // ✅ REDIRECT BASED ON ROLE
-      if (["admin", "hr"].includes(user.role)) {
+      toast.success("Login successful!");
+
+      if (["admin", "superadmin", "hr"].includes(user.role.toLowerCase())) {
         navigate("/admin/dashboard");
       } else {
-        navigate("/dashboard");
+        navigate("/employee");
       }
     } else {
-      setErrorMsg("Invalid credentials");
+      setErrorMsg("User not found");
+      toast.error("User not found");
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    setErrorMsg("Something went wrong.");
+    const msg =
+      err.response?.data?.message || "Invalid credentials or server error.";
+    setErrorMsg(msg);
+    toast.error(msg);
   }
 };
 
 
   return (
     <>
-      {/* Logo fixed at top-left */}
-      <img src="/logo.webp" alt="Logo" className="logo" />
+      <img src="/logo.webp" alt="Logo" className="logo fixed top-4 left-4 w-20" />
 
       <div className="flex items-center justify-center min-h-screen p-4 bg-image">
         <div className="bg-white p-8 rounded-lg shadow-md w-96">

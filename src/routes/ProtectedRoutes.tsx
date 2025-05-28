@@ -1,4 +1,3 @@
-// src/components/PrivateRoute.tsx
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
@@ -13,8 +12,10 @@ const ProtectedRoutes = ({
 
   if (!user) return <Navigate to="/login" />;
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" />; // Optional page
+  const normalizedUserRole = user.role.trim().toLowerCase();
+
+  if (allowedRoles && !allowedRoles.some(role => role.toLowerCase() === normalizedUserRole)) {
+    return <Navigate to="/unauthorized" />;
   }
 
   return children;

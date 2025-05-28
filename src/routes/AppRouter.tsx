@@ -4,9 +4,9 @@ import {
   Route,
   Navigate,
   BrowserRouter,
-  Outlet,
 } from "react-router-dom";
 
+import SignUpPage from "../pages/SignUpPage";
 import Login from "../pages/LoginPage";
 import ProtectedRoutes from "../routes/ProtectedRoutes";
 import AdminLayout from "../components/layout/AdminLayout/AdminLayout";
@@ -21,13 +21,16 @@ import Reports from "../pages/Reports";
 import EmployeeManagement from "../pages/EmployeeManagement";
 import EmployeeDashboard from "../pages/EmployeeDashboard";
 import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/EmployeeForm";
+import Unauthorized from "../pages/Unauthorised"; // create this page
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Login Page */}
-        <Route path="/" element={<Login />} />
+        {/* Public Routes */}
+        <Route path="/" element={<SignUpPage />} />
+        <Route path="/login" element={<Login />} />
+        
 
         {/* Admin Routes */}
         <Route
@@ -40,14 +43,13 @@ const AppRouter = () => {
         >
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="employee-management" element={<EmployeeManagement />} />
-          <Route path="add-employee" element={<EmployeeForm></EmployeeForm>}></Route>
+          <Route path="add-employee" element={<EmployeeForm />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
           <Route path="payroll" element={<Payroll />} />
           <Route path="reports" element={<Reports />} />
-          
         </Route>
 
         {/* Employee Routes */}
@@ -66,9 +68,9 @@ const AppRouter = () => {
           <Route path="profile" element={<Profile />} />
         </Route>
 
-        {/* Catch all */}
+        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" />} />
-        
+        <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
     </BrowserRouter>
   );
