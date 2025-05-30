@@ -26,7 +26,7 @@ const SignUpPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      await axios.post("http://localhost:3001/api/signup", data);
+      await axios.post("http://localhost:3001/api/auth/signup", data);
       setMessage("Account created successfully. Please login.");
     }catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
