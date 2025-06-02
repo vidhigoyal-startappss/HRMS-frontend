@@ -1,64 +1,59 @@
-// components/forms/EducationDetailsForm.tsx
 import React from "react";
-import { useForm, SubmitHandler, useFormContext } from "react-hook-form";
-import InputField from "../../../common/InputField";
+import { useFormContext } from "react-hook-form";
 
 type FormValues = {
-  qualification: string;
-  institution: string;
-  yearOfPassing: number;
-  grade: string;
+  educationDetails: {
+    qualification: string;
+    institution: string;
+    yearOfPassing: number;
+    grade: string;
+  };
 };
 
-type Props = {
-  onSubmit: (data: FormValues) => void;
-  defaultValues?: FormValues;
-};
-
-const EducationDetailsForm: React.FC<Props> = () => {
+const EducationDetailsForm: React.FC = () => {
   const {
     register,
-    handleSubmit,
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<FormValues>();
+
+  const eduErrors = errors.educationDetails || {};
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+      {/* Qualification */}
       <div>
         <label className="block">Highest Qualification</label>
         <input
-          {...register("qualification", {
+          {...register("educationDetails.qualification", {
             required: "Qualification is required",
           })}
           className="w-full border px-3 py-2 rounded"
         />
-        {errors.qualification && (
-          <p className="text-red-500 text-sm">
-            {errors.qualification.message as String}
-          </p>
+        {eduErrors.qualification && (
+          <p className="text-red-500 text-sm">{eduErrors.qualification.message}</p>
         )}
       </div>
 
+      {/* Institution */}
       <div>
         <label className="block">University / College</label>
         <input
-          {...register("institution", {
+          {...register("educationDetails.institution", {
             required: "Institution name is required",
           })}
           className="w-full border px-3 py-2 rounded"
         />
-        {errors.institution && (
-          <p className="text-red-500 text-sm">
-            {errors.institution.message as String}
-          </p>
+        {eduErrors.institution && (
+          <p className="text-red-500 text-sm">{eduErrors.institution.message}</p>
         )}
       </div>
 
+      {/* Year of Passing */}
       <div>
         <label className="block">Year of Passing</label>
         <input
           type="number"
-          {...register("yearOfPassing", {
+          {...register("educationDetails.yearOfPassing", {
             required: "Year of passing is required",
             min: { value: 1900, message: "Invalid year" },
             max: {
@@ -68,25 +63,22 @@ const EducationDetailsForm: React.FC<Props> = () => {
           })}
           className="w-full border px-3 py-2 rounded"
         />
-        {errors.yearOfPassing && (
-          <p className="text-red-500 text-sm">
-            {errors.yearOfPassing.message as String}
-          </p>
+        {eduErrors.yearOfPassing && (
+          <p className="text-red-500 text-sm">{eduErrors.yearOfPassing.message}</p>
         )}
       </div>
 
+      {/* Grade */}
       <div>
         <label className="block">Grade / Percentage</label>
         <input
-          {...register("grade", {
+          {...register("educationDetails.grade", {
             required: "Grade or percentage is required",
           })}
           className="w-full border px-3 py-2 rounded"
         />
-        {errors.grade && (
-          <p className="text-red-500 text-sm">
-            {errors.grade.message as String}
-          </p>
+        {eduErrors.grade && (
+          <p className="text-red-500 text-sm">{eduErrors.grade.message}</p>
         )}
       </div>
     </div>

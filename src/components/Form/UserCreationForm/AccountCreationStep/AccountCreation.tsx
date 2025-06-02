@@ -1,18 +1,9 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 
-type FormValues = {
-  email: string;
-  password: string;
-  role: string;
-};
+type Props = {};
 
-type Props = {
-  onSubmit: (data: FormValues) => void;
-  defaultValues?: FormValues;
-};
-
-const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =>  {
+const UserAccountCreationForm: React.FC<Props> = () => {
   const {
     register,
     formState: { errors },
@@ -36,8 +27,10 @@ const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =
           })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        {errors.email && (
-          <p className="text-sm text-red-500 mt-1">{errors.email.message as string}</p>
+        {errors?.email && (
+          <p className="text-sm text-red-500 mt-1">
+            {errors.email.message as string}
+          </p>
         )}
       </div>
 
@@ -57,8 +50,10 @@ const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =
           })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        {errors.password && (
-          <p className="text-sm text-red-500 mt-1">{errors.password.message as string}</p>
+        {errors?.password && (
+          <p className="text-sm text-red-500 mt-1">
+            {errors.password.message as string}
+          </p>
         )}
       </div>
 
@@ -68,16 +63,20 @@ const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =
           Role
         </label>
         <select
-          {...register("role", { required: "Role is required" })}
+          {...register("role", {
+            required: "Role is required",
+          })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Role</option>
           <option value="admin">Admin</option>
-          <option value="manager">HR</option>
-          <option value="user">Employee</option>
+          <option value="hr">HR</option>
+          <option value="employee">Employee</option>
         </select>
-        {errors.role && (
-          <p className="text-sm text-red-500 mt-1">{errors.role.message as string}</p>
+        {errors?.role && (
+          <p className="text-sm text-red-500 mt-1">
+            {errors.role.message as string}
+          </p>
         )}
       </div>
     </div>
