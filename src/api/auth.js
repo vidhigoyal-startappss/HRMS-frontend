@@ -16,7 +16,7 @@ export const login = async (data) => {
 
 // Employee creation API
 export const employeeCreate = (data) => {
-  return axios.post("/employees/create", data, {
+  return API.post("/employees/create", data, {
     headers: {
       "Content-Type": "application/json",
     },

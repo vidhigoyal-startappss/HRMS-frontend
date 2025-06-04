@@ -24,7 +24,6 @@ const stepComponents = [
   BankDetailsForm,
 ];
 
-// Match this with the full DTO schema expected by backend
 type FormValues = {
   email: string;
   password: string;
@@ -40,10 +39,10 @@ type FormValues = {
     state: string;
     zipCode: string;
     country: string;
-    joiningDate?: string;
-    designation?: string;
-    department?: string;
-    employmentType?: string;
+    joiningDate: string;
+    designation: string;
+    department: string;
+    employmentType: string;
   };
   educationDetails: {
     qualification: string;
@@ -68,6 +67,9 @@ const EmployeeForm = () => {
   const methods = useForm<FormValues>({
     mode: "onTouched",
     defaultValues: {
+      email: "",
+      password: "",
+      role: "employee",
       accountCreation: {
         firstName: "",
         lastName: "",
@@ -91,11 +93,11 @@ const EmployeeForm = () => {
         grade: "",
       },
       bankDetails: {
+        accountHolderName: "",
         bankName: "",
         accountNumber: "",
         ifscCode: "",
         branchName: "",
-        accountHolderName: "",
         aadharNumber: "",
         panNumber: "",
       },
@@ -118,28 +120,26 @@ const EmployeeForm = () => {
   };
 
   const onSubmit = async (data: FormValues) => {
-  console.log("✅ Final Submission Data (raw):", data);
+    const payload = {
+      email: data.email,
+      password: data.password,
+      role: data.role,
+      employeeDetails: {
+        accountCreationDetails: data.accountCreation,
+        educationDetails: data.educationDetails,
+        bankDetails: data.bankDetails,
+      },
+    };
 
-  const payload = {
-    email: data.email,
-    password: data.password,
-    role: data.role,
-    accountCreationDetails: data.accountCreation,
-    educationDetails: data.educationDetails,
-    bankDetails: data.bankDetails,
+    try {
+      const response = await employeeCreate(payload);
+      alert("🎉 Employee created successfully!");
+      console.log("✅ Response:", response.data);
+    } catch (error: any) {
+      alert("❌ Error: " + (error.response?.data?.message || error.message));
+      console.error("Error creating employee:", error);
+    }
   };
-
-  console.log("📦 Payload to be sent:", payload);
-
-  try {
-    const response = await employeeCreate(payload);
-    alert("🎉 Employee data saved successfully!");
-    console.log("✅ Server Response:", response.data);
-  } catch (error: any) {
-    alert("❌ Error submitting form: " + error.message);
-    console.error("❌ Error details:", error);
-  }
-};
 
   return (
     <FormProvider {...methods}>
