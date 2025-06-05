@@ -1,18 +1,18 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 
-// Define FormValues matching backend DTO
+// Define FormValues matching backend DTO for Basic Details
 type FormValues = {
-  accountCreation: {
+  basicDetails: {
     firstName: string;
     lastName: string;
-    phone: string;
+    phoneNumber: string;
     dob: string;
     gender: string;
     address: string;
     city: string;
     state: string;
-    zipCode: string;
+    zipcode: string;
     country: string;
     joiningDate?: string;
     designation?: string;
@@ -21,13 +21,11 @@ type FormValues = {
   };
 };
 
-const AccountCreationForm: React.FC = () => {
+const BasicDetailsForm: React.FC = () => {
   const {
     register,
     formState: { errors },
   } = useFormContext<FormValues>();
-
-  const basicErrors = errors.accountCreation || {};
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-2">
@@ -35,11 +33,11 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">First Name</label>
         <input
-          {...register("accountCreation.firstName", { required: "First name is required" })}
+          {...register("basicDetails.firstName", { required: "First name is required" })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.firstName && (
-          <p className="text-red-500 text-sm">{basicErrors.firstName.message}</p>
+        {errors?.basicDetails?.firstName?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.firstName.message}</p>
         )}
       </div>
 
@@ -47,11 +45,11 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">Last Name</label>
         <input
-          {...register("accountCreation.lastName", { required: "Last name is required" })}
+          {...register("basicDetails.lastName", { required: "Last name is required" })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.lastName && (
-          <p className="text-red-500 text-sm">{basicErrors.lastName.message}</p>
+        {errors?.basicDetails?.lastName?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.lastName.message}</p>
         )}
       </div>
 
@@ -59,7 +57,7 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">Phone Number</label>
         <input
-          {...register("accountCreation.phone", {
+          {...register("basicDetails.phoneNumber", {
             required: "Phone number is required",
             pattern: {
               value: /^[0-9]{10}$/,
@@ -68,8 +66,8 @@ const AccountCreationForm: React.FC = () => {
           })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.phone && (
-          <p className="text-red-500 text-sm">{basicErrors.phone.message}</p>
+        {errors?.basicDetails?.phoneNumber?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.phoneNumber.message}</p>
         )}
       </div>
 
@@ -78,11 +76,11 @@ const AccountCreationForm: React.FC = () => {
         <label className="block">Date of Birth</label>
         <input
           type="date"
-          {...register("accountCreation.dob", { required: "Date of birth is required" })}
+          {...register("basicDetails.dob", { required: "Date of birth is required" })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.dob && (
-          <p className="text-red-500 text-sm">{basicErrors.dob.message}</p>
+        {errors?.basicDetails?.dob?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.dob.message}</p>
         )}
       </div>
 
@@ -90,7 +88,7 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">Gender</label>
         <select
-          {...register("accountCreation.gender", { required: "Gender is required" })}
+          {...register("basicDetails.gender", { required: "Gender is required" })}
           className="w-full border px-3 py-2 rounded"
         >
           <option value="">Select Gender</option>
@@ -98,8 +96,8 @@ const AccountCreationForm: React.FC = () => {
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
-        {basicErrors.gender && (
-          <p className="text-red-500 text-sm">{basicErrors.gender.message}</p>
+        {errors?.basicDetails?.gender?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.gender.message}</p>
         )}
       </div>
 
@@ -107,11 +105,11 @@ const AccountCreationForm: React.FC = () => {
       <div className="md:col-span-2">
         <label className="block">Address</label>
         <input
-          {...register("accountCreation.address", { required: "Address is required" })}
+          {...register("basicDetails.address", { required: "Address is required" })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.address && (
-          <p className="text-red-500 text-sm">{basicErrors.address.message}</p>
+        {errors?.basicDetails?.address?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.address.message}</p>
         )}
       </div>
 
@@ -119,11 +117,11 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">City</label>
         <input
-          {...register("accountCreation.city", { required: "City is required" })}
+          {...register("basicDetails.city", { required: "City is required" })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.city && (
-          <p className="text-red-500 text-sm">{basicErrors.city.message}</p>
+        {errors?.basicDetails?.city?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.city.message}</p>
         )}
       </div>
 
@@ -131,11 +129,11 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">State</label>
         <input
-          {...register("accountCreation.state", { required: "State is required" })}
+          {...register("basicDetails.state", { required: "State is required" })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.state && (
-          <p className="text-red-500 text-sm">{basicErrors.state.message}</p>
+        {errors?.basicDetails?.state?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.state.message}</p>
         )}
       </div>
 
@@ -143,7 +141,7 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">ZIP Code</label>
         <input
-          {...register("accountCreation.zipCode", {
+          {...register("basicDetails.zipcode", {
             required: "ZIP code is required",
             pattern: {
               value: /^\d{5,6}$/,
@@ -152,8 +150,8 @@ const AccountCreationForm: React.FC = () => {
           })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.zipCode && (
-          <p className="text-red-500 text-sm">{basicErrors.zipCode.message}</p>
+        {errors?.basicDetails?.zipcode?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.zipcode.message}</p>
         )}
       </div>
 
@@ -161,11 +159,11 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">Country</label>
         <input
-          {...register("accountCreation.country", { required: "Country is required" })}
+          {...register("basicDetails.country", { required: "Country is required" })}
           className="w-full border px-3 py-2 rounded"
         />
-        {basicErrors.country && (
-          <p className="text-red-500 text-sm">{basicErrors.country.message}</p>
+        {errors?.basicDetails?.country?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.country.message}</p>
         )}
       </div>
 
@@ -174,7 +172,7 @@ const AccountCreationForm: React.FC = () => {
         <label className="block">Joining Date</label>
         <input
           type="date"
-          {...register("accountCreation.joiningDate")}
+          {...register("basicDetails.joiningDate")}
           className="w-full border px-3 py-2 rounded"
         />
       </div>
@@ -183,7 +181,7 @@ const AccountCreationForm: React.FC = () => {
       <div>
         <label className="block">Designation</label>
         <input
-          {...register("accountCreation.designation")}
+          {...register("basicDetails.designation")}
           className="w-full border px-3 py-2 rounded"
         />
       </div>
@@ -191,7 +189,10 @@ const AccountCreationForm: React.FC = () => {
       {/* Department (Optional) */}
       <div>
         <label className="block">Department</label>
-        <select {...register("accountCreation.department")} className="w-full border px-3 py-2 rounded">
+        <select
+          {...register("basicDetails.department")}
+          className="w-full border px-3 py-2 rounded"
+        >
           <option value="">Select Department</option>
           <option value="engineering">Engineering</option>
           <option value="hr">HR</option>
@@ -202,7 +203,10 @@ const AccountCreationForm: React.FC = () => {
       {/* Employment Type (Optional) */}
       <div>
         <label className="block">Employment Type</label>
-        <select {...register("accountCreation.employmentType")} className="w-full border px-3 py-2 rounded">
+        <select
+          {...register("basicDetails.employmentType")}
+          className="w-full border px-3 py-2 rounded"
+        >
           <option value="">Select Type</option>
           <option value="full-time">Full-time</option>
           <option value="part-time">Part-time</option>
@@ -213,4 +217,4 @@ const AccountCreationForm: React.FC = () => {
   );
 };
 
-export default AccountCreationForm;
+export default BasicDetailsForm;

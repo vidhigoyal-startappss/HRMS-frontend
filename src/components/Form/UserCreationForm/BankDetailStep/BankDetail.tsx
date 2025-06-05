@@ -25,7 +25,7 @@ const BankDetailsForm: React.FC = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
       {/* Bank Name */}
       <div>
-        <label className="block">Bank Name</label>
+        <label className="block font-semibold">Bank Name</label>
         <input
           {...register("bankDetails.bankName", { required: "Bank name is required" })}
           className="w-full border px-3 py-2 rounded"
@@ -35,23 +35,23 @@ const BankDetailsForm: React.FC = () => {
 
       {/* Account Number */}
       <div>
-        <label className="block">Account Number</label>
+        <label className="block font-semibold">Account Number</label>
         <input
           {...register("bankDetails.accountNumber", {
             required: "Account number is required",
-            minLength: { value: 9, message: "Account number must be at least 9 digits" },
-            maxLength: { value: 18, message: "Account number must be at most 18 digits" },
-            pattern: { value: /^[0-9]+$/, message: "Account number must be numeric" },
+            validate: value =>
+              /^[0-9]{9,18}$/.test(value) || "Account number must be between 9 to 18 digits",
           })}
           className="w-full border px-3 py-2 rounded"
           inputMode="numeric"
+          maxLength={18}
         />
         {bankErrors.accountNumber && <p className="text-red-500 text-sm">{bankErrors.accountNumber.message}</p>}
       </div>
 
       {/* IFSC Code */}
       <div>
-        <label className="block">IFSC Code</label>
+        <label className="block font-semibold">IFSC Code</label>
         <input
           {...register("bankDetails.ifscCode", {
             required: "IFSC code is required",
@@ -63,7 +63,6 @@ const BankDetailsForm: React.FC = () => {
           className="w-full border px-3 py-2 rounded uppercase"
           maxLength={11}
           onInput={e => {
-            // Automatically uppercase IFSC input
             const input = e.target as HTMLInputElement;
             input.value = input.value.toUpperCase();
           }}
@@ -73,7 +72,7 @@ const BankDetailsForm: React.FC = () => {
 
       {/* Branch Name */}
       <div>
-        <label className="block">Branch Name</label>
+        <label className="block font-semibold">Branch Name</label>
         <input
           {...register("bankDetails.branchName", { required: "Branch name is required" })}
           className="w-full border px-3 py-2 rounded"
@@ -83,7 +82,7 @@ const BankDetailsForm: React.FC = () => {
 
       {/* Account Holder Name */}
       <div>
-        <label className="block">Account Holder Name</label>
+        <label className="block font-semibold">Account Holder Name</label>
         <input
           {...register("bankDetails.accountHolderName", { required: "Account holder name is required" })}
           className="w-full border px-3 py-2 rounded"
@@ -93,11 +92,14 @@ const BankDetailsForm: React.FC = () => {
 
       {/* Aadhar Number */}
       <div>
-        <label className="block">Aadhar Number</label>
+        <label className="block font-semibold">Aadhar Number</label>
         <input
           {...register("bankDetails.aadharNumber", {
             required: "Aadhar number is required",
-            pattern: { value: /^\d{12}$/, message: "Aadhar must be exactly 12 digits" },
+            pattern: {
+              value: /^\d{12}$/,
+              message: "Aadhar must be exactly 12 digits",
+            },
           })}
           className="w-full border px-3 py-2 rounded"
           inputMode="numeric"
@@ -108,7 +110,7 @@ const BankDetailsForm: React.FC = () => {
 
       {/* PAN Number */}
       <div>
-        <label className="block">PAN Number</label>
+        <label className="block font-semibold">PAN Number</label>
         <input
           {...register("bankDetails.panNumber", {
             required: "PAN number is required",
@@ -120,7 +122,6 @@ const BankDetailsForm: React.FC = () => {
           className="w-full border px-3 py-2 rounded uppercase"
           maxLength={10}
           onInput={e => {
-            // Automatically uppercase PAN input
             const input = e.target as HTMLInputElement;
             input.value = input.value.toUpperCase();
           }}

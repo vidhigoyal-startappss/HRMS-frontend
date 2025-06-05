@@ -7,9 +7,10 @@ import EducationDetailsForm from "../EducationDetails/EducationDetail";
 import BankDetailsForm from "../BankDetailStep/BankDetail";
 import Stepper from "../../../Stepper/Stepper";
 
-// API Call
+// API
 import { employeeCreate } from "../../../../api/auth";
 
+// Stepper labels
 const steps = [
   "Account Creation",
   "Basic Details",
@@ -17,6 +18,7 @@ const steps = [
   "Bank Details",
 ];
 
+// Components for each step
 const stepComponents = [
   UserAccountCreationForm,
   BasicDetailsForm,
@@ -24,39 +26,41 @@ const stepComponents = [
   BankDetailsForm,
 ];
 
-// Match this with the full DTO schema expected by backend
+// Form type — must match your backend DTO
 type FormValues = {
-  email: string;
-  password: string;
-  role: string;
-  accountCreation: {
+  account: {
+    email: string;
+    password: string;
+    role: "admin" | "hr" | "employee";
+  };
+  basicDetails: {
     firstName: string;
     lastName: string;
-    phone: string;
+    phoneNumber: string;
     dob: string;
     gender: string;
     address: string;
     city: string;
     state: string;
-    zipCode: string;
+    zipcode: string;
     country: string;
-    joiningDate?: string;
-    designation?: string;
-    department?: string;
-    employmentType?: string;
+    joiningDate: string;
+    designation: string;
+    department: string;
+    employmentType: string;
   };
   educationDetails: {
-    qualification: string;
-    institution: string;
+    highestQualification: string;
+    university: string;
     yearOfPassing: string;
     grade: string;
   };
   bankDetails: {
-    accountHolderName: string;
     bankName: string;
     accountNumber: string;
     ifscCode: string;
     branchName: string;
+    accountHolderName: string;
     aadharNumber: string;
     panNumber: string;
   };
@@ -64,82 +68,30 @@ type FormValues = {
 
 const EmployeeForm = () => {
   const [activeStep, setActiveStep] = useState(0);
-
-  const methods = useForm<FormValues>({
-    mode: "onTouched",
-    defaultValues: {
-      accountCreation: {
-        firstName: "",
-        lastName: "",
-        phone: "",
-        dob: "",
-        gender: "",
-        address: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        country: "",
-        joiningDate: "",
-        designation: "",
-        department: "",
-        employmentType: "",
-      },
-      educationDetails: {
-        qualification: "",
-        institution: "",
-        yearOfPassing: "",
-        grade: "",
-      },
-      bankDetails: {
-        bankName: "",
-        accountNumber: "",
-        ifscCode: "",
-        branchName: "",
-        accountHolderName: "",
-        aadharNumber: "",
-        panNumber: "",
-      },
-    },
-  });
+  const methods = useForm<FormValues>({ mode: "onTouched" });
 
   const CurrentStepComponent = stepComponents[activeStep];
 
   const handleNext = async () => {
     const isStepValid = await methods.trigger();
-    if (isStepValid) {
-      setActiveStep((prev) => prev + 1);
-    }
+    if (isStepValid) setActiveStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
-    if (activeStep > 0) {
-      setActiveStep((prev) => prev - 1);
-    }
+    if (activeStep > 0) setActiveStep((prev) => prev - 1);
   };
 
   const onSubmit = async (data: FormValues) => {
-  console.log("✅ Final Submission Data (raw):", data);
-
-  const payload = {
-    email: data.email,
-    password: data.password,
-    role: data.role,
-    accountCreationDetails: data.accountCreation,
-    educationDetails: data.educationDetails,
-    bankDetails: data.bankDetails,
+    console.log("Final Payload:", data);
+    try {
+      const res = await employeeCreate(data);
+      alert("🎉 Employee created successfully!");
+      console.log("Response:", res);
+    } catch (error: any) {
+      console.error("Submission Error:", error.response?.data || error.message);
+      alert("Failed to submit: " + (error.response?.data?.message || error.message));
+    }
   };
-
-  console.log("📦 Payload to be sent:", payload);
-
-  try {
-    const response = await employeeCreate(payload);
-    alert("🎉 Employee data saved successfully!");
-    console.log("✅ Server Response:", response.data);
-  } catch (error: any) {
-    alert("❌ Error submitting form: " + error.message);
-    console.error("❌ Error details:", error);
-  }
-};
 
   return (
     <FormProvider {...methods}>

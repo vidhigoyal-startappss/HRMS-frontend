@@ -1,11 +1,12 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 
+// Backend-aligned DTO type
 type FormValues = {
   educationDetails: {
-    qualification: string;
-    institution: string;
-    yearOfPassing: number;
+    highestQualification: string;
+    university: string;
+    yearOfPassing: string;
     grade: string;
   };
 };
@@ -19,46 +20,47 @@ const EducationDetailsForm: React.FC = () => {
   const eduErrors = errors.educationDetails || {};
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-      {/* Qualification */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+      {/* Highest Qualification */}
       <div>
-        <label className="block">Highest Qualification</label>
+        <label className="block font-medium">Highest Qualification</label>
         <input
-          {...register("educationDetails.qualification", {
-            required: "Qualification is required",
+          {...register("educationDetails.highestQualification", {
+            required: "Highest qualification is required",
           })}
           className="w-full border px-3 py-2 rounded"
         />
-        {eduErrors.qualification && (
-          <p className="text-red-500 text-sm">{eduErrors.qualification.message}</p>
+        {eduErrors.highestQualification && (
+          <p className="text-red-500 text-sm">
+            {eduErrors.highestQualification.message}
+          </p>
         )}
       </div>
 
-      {/* Institution */}
+      {/* University / College */}
       <div>
-        <label className="block">University / College</label>
+        <label className="block font-medium">University / College</label>
         <input
-          {...register("educationDetails.institution", {
-            required: "Institution name is required",
+          {...register("educationDetails.university", {
+            required: "University or college is required",
           })}
           className="w-full border px-3 py-2 rounded"
         />
-        {eduErrors.institution && (
-          <p className="text-red-500 text-sm">{eduErrors.institution.message}</p>
+        {eduErrors.university && (
+          <p className="text-red-500 text-sm">{eduErrors.university.message}</p>
         )}
       </div>
 
       {/* Year of Passing */}
       <div>
-        <label className="block">Year of Passing</label>
+        <label className="block font-medium">Year of Passing</label>
         <input
-          type="number"
+          type="text"
           {...register("educationDetails.yearOfPassing", {
             required: "Year of passing is required",
-            min: { value: 1900, message: "Invalid year" },
-            max: {
-              value: new Date().getFullYear(),
-              message: "Future year not allowed",
+            pattern: {
+              value: /^\d{4}$/,
+              message: "Enter a valid 4-digit year",
             },
           })}
           className="w-full border px-3 py-2 rounded"
@@ -68,9 +70,9 @@ const EducationDetailsForm: React.FC = () => {
         )}
       </div>
 
-      {/* Grade */}
+      {/* Grade / Percentage */}
       <div>
-        <label className="block">Grade / Percentage</label>
+        <label className="block font-medium">Grade / Percentage</label>
         <input
           {...register("educationDetails.grade", {
             required: "Grade or percentage is required",
