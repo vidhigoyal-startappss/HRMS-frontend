@@ -21,11 +21,15 @@ type FormValues = {
   };
 };
 
-const BasicDetailsForm: React.FC = () => {
+const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
   const {
     register,
     formState: { errors },
   } = useFormContext<FormValues>();
+
+  const inputClass = `w-full border px-3 py-2 rounded ${
+    readOnly ? "bg-gray-100 cursor-not-allowed" : ""
+  }`;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-2">
@@ -33,10 +37,13 @@ const BasicDetailsForm: React.FC = () => {
       <div>
         <label className="block">First Name</label>
         <input
-          {...register("basicDetails.firstName", { required: "First name is required" })}
-          className="w-full border px-3 py-2 rounded"
+          {...register("basicDetails.firstName", {
+            required: !readOnly ? "First name is required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.firstName?.message && (
+        {!readOnly && errors?.basicDetails?.firstName?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.firstName.message}</p>
         )}
       </div>
@@ -45,10 +52,13 @@ const BasicDetailsForm: React.FC = () => {
       <div>
         <label className="block">Last Name</label>
         <input
-          {...register("basicDetails.lastName", { required: "Last name is required" })}
-          className="w-full border px-3 py-2 rounded"
+          {...register("basicDetails.lastName", {
+            required: !readOnly ? "Last name is required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.lastName?.message && (
+        {!readOnly && errors?.basicDetails?.lastName?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.lastName.message}</p>
         )}
       </div>
@@ -58,15 +68,18 @@ const BasicDetailsForm: React.FC = () => {
         <label className="block">Phone Number</label>
         <input
           {...register("basicDetails.phoneNumber", {
-            required: "Phone number is required",
-            pattern: {
-              value: /^[0-9]{10}$/,
-              message: "Phone number must be 10 digits",
-            },
+            required: !readOnly ? "Phone number is required" : false,
+            pattern: !readOnly
+              ? {
+                  value: /^[0-9]{10}$/,
+                  message: "Phone number must be 10 digits",
+                }
+              : undefined,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.phoneNumber?.message && (
+        {!readOnly && errors?.basicDetails?.phoneNumber?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.phoneNumber.message}</p>
         )}
       </div>
@@ -76,10 +89,13 @@ const BasicDetailsForm: React.FC = () => {
         <label className="block">Date of Birth</label>
         <input
           type="date"
-          {...register("basicDetails.dob", { required: "Date of birth is required" })}
-          className="w-full border px-3 py-2 rounded"
+          {...register("basicDetails.dob", {
+            required: !readOnly ? "Date of birth is required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.dob?.message && (
+        {!readOnly && errors?.basicDetails?.dob?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.dob.message}</p>
         )}
       </div>
@@ -88,15 +104,18 @@ const BasicDetailsForm: React.FC = () => {
       <div>
         <label className="block">Gender</label>
         <select
-          {...register("basicDetails.gender", { required: "Gender is required" })}
-          className="w-full border px-3 py-2 rounded"
+          {...register("basicDetails.gender", {
+            required: !readOnly ? "Gender is required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
         >
           <option value="">Select Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
-        {errors?.basicDetails?.gender?.message && (
+        {!readOnly && errors?.basicDetails?.gender?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.gender.message}</p>
         )}
       </div>
@@ -105,10 +124,13 @@ const BasicDetailsForm: React.FC = () => {
       <div className="md:col-span-2">
         <label className="block">Address</label>
         <input
-          {...register("basicDetails.address", { required: "Address is required" })}
-          className="w-full border px-3 py-2 rounded"
+          {...register("basicDetails.address", {
+            required: !readOnly ? "Address is required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.address?.message && (
+        {!readOnly && errors?.basicDetails?.address?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.address.message}</p>
         )}
       </div>
@@ -117,10 +139,13 @@ const BasicDetailsForm: React.FC = () => {
       <div>
         <label className="block">City</label>
         <input
-          {...register("basicDetails.city", { required: "City is required" })}
-          className="w-full border px-3 py-2 rounded"
+          {...register("basicDetails.city", {
+            required: !readOnly ? "City is required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.city?.message && (
+        {!readOnly && errors?.basicDetails?.city?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.city.message}</p>
         )}
       </div>
@@ -129,10 +154,13 @@ const BasicDetailsForm: React.FC = () => {
       <div>
         <label className="block">State</label>
         <input
-          {...register("basicDetails.state", { required: "State is required" })}
-          className="w-full border px-3 py-2 rounded"
+          {...register("basicDetails.state", {
+            required: !readOnly ? "State is required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.state?.message && (
+        {!readOnly && errors?.basicDetails?.state?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.state.message}</p>
         )}
       </div>
@@ -142,15 +170,18 @@ const BasicDetailsForm: React.FC = () => {
         <label className="block">ZIP Code</label>
         <input
           {...register("basicDetails.zipcode", {
-            required: "ZIP code is required",
-            pattern: {
-              value: /^\d{5,6}$/,
-              message: "Invalid ZIP code",
-            },
+            required: !readOnly ? "ZIP code is required" : false,
+            pattern: !readOnly
+              ? {
+                  value: /^\d{5,6}$/,
+                  message: "Invalid ZIP code",
+                }
+              : undefined,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.zipcode?.message && (
+        {!readOnly && errors?.basicDetails?.zipcode?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.zipcode.message}</p>
         )}
       </div>
@@ -159,39 +190,45 @@ const BasicDetailsForm: React.FC = () => {
       <div>
         <label className="block">Country</label>
         <input
-          {...register("basicDetails.country", { required: "Country is required" })}
-          className="w-full border px-3 py-2 rounded"
+          {...register("basicDetails.country", {
+            required: !readOnly ? "Country is required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors?.basicDetails?.country?.message && (
+        {!readOnly && errors?.basicDetails?.country?.message && (
           <p className="text-red-500 text-sm">{errors.basicDetails.country.message}</p>
         )}
       </div>
 
-      {/* Joining Date (Optional) */}
+      {/* Joining Date */}
       <div>
         <label className="block">Joining Date</label>
         <input
           type="date"
           {...register("basicDetails.joiningDate")}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
       </div>
 
-      {/* Designation (Optional) */}
+      {/* Designation */}
       <div>
         <label className="block">Designation</label>
         <input
           {...register("basicDetails.designation")}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
       </div>
 
-      {/* Department (Optional) */}
+      {/* Department */}
       <div>
         <label className="block">Department</label>
         <select
           {...register("basicDetails.department")}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         >
           <option value="">Select Department</option>
           <option value="engineering">Engineering</option>
@@ -200,12 +237,13 @@ const BasicDetailsForm: React.FC = () => {
         </select>
       </div>
 
-      {/* Employment Type (Optional) */}
+      {/* Employment Type */}
       <div>
         <label className="block">Employment Type</label>
         <select
           {...register("basicDetails.employmentType")}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         >
           <option value="">Select Type</option>
           <option value="full-time">Full-time</option>

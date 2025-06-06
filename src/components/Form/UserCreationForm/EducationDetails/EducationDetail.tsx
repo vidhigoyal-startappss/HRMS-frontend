@@ -11,13 +11,17 @@ type FormValues = {
   };
 };
 
-const EducationDetailsForm: React.FC = () => {
+const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
   const {
     register,
     formState: { errors },
   } = useFormContext<FormValues>();
 
   const eduErrors = errors.educationDetails || {};
+
+  const inputClass = `w-full border px-3 py-2 rounded ${
+    readOnly ? "bg-gray-100 cursor-not-allowed" : ""
+  }`;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
@@ -26,11 +30,12 @@ const EducationDetailsForm: React.FC = () => {
         <label className="block font-medium">Highest Qualification</label>
         <input
           {...register("educationDetails.highestQualification", {
-            required: "Highest qualification is required",
+            required: !readOnly ? "Highest qualification is required" : false,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {eduErrors.highestQualification && (
+        {!readOnly && eduErrors.highestQualification && (
           <p className="text-red-500 text-sm">
             {eduErrors.highestQualification.message}
           </p>
@@ -42,11 +47,12 @@ const EducationDetailsForm: React.FC = () => {
         <label className="block font-medium">University / College</label>
         <input
           {...register("educationDetails.university", {
-            required: "University or college is required",
+            required: !readOnly ? "University or college is required" : false,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {eduErrors.university && (
+        {!readOnly && eduErrors.university && (
           <p className="text-red-500 text-sm">{eduErrors.university.message}</p>
         )}
       </div>
@@ -57,15 +63,18 @@ const EducationDetailsForm: React.FC = () => {
         <input
           type="text"
           {...register("educationDetails.yearOfPassing", {
-            required: "Year of passing is required",
-            pattern: {
-              value: /^\d{4}$/,
-              message: "Enter a valid 4-digit year",
-            },
+            required: !readOnly ? "Year of passing is required" : false,
+            pattern: !readOnly
+              ? {
+                  value: /^\d{4}$/,
+                  message: "Enter a valid 4-digit year",
+                }
+              : undefined,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {eduErrors.yearOfPassing && (
+        {!readOnly && eduErrors.yearOfPassing && (
           <p className="text-red-500 text-sm">{eduErrors.yearOfPassing.message}</p>
         )}
       </div>
@@ -75,11 +84,12 @@ const EducationDetailsForm: React.FC = () => {
         <label className="block font-medium">Grade / Percentage</label>
         <input
           {...register("educationDetails.grade", {
-            required: "Grade or percentage is required",
+            required: !readOnly ? "Grade or percentage is required" : false,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {eduErrors.grade && (
+        {!readOnly && eduErrors.grade && (
           <p className="text-red-500 text-sm">{eduErrors.grade.message}</p>
         )}
       </div>

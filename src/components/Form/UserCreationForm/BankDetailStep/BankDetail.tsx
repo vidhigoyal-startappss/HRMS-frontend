@@ -13,7 +13,7 @@ type FormValues = {
   };
 };
 
-const BankDetailsForm: React.FC = () => {
+const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
   const {
     register,
     formState: { errors },
@@ -29,8 +29,11 @@ const BankDetailsForm: React.FC = () => {
         <input
           {...register("bankDetails.bankName", { required: "Bank name is required" })}
           className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
         />
-        {bankErrors.bankName && <p className="text-red-500 text-sm">{bankErrors.bankName.message}</p>}
+        {bankErrors.bankName && (
+          <p className="text-red-500 text-sm">{bankErrors.bankName.message}</p>
+        )}
       </div>
 
       {/* Account Number */}
@@ -45,8 +48,11 @@ const BankDetailsForm: React.FC = () => {
           className="w-full border px-3 py-2 rounded"
           inputMode="numeric"
           maxLength={18}
+          disabled={readOnly}
         />
-        {bankErrors.accountNumber && <p className="text-red-500 text-sm">{bankErrors.accountNumber.message}</p>}
+        {bankErrors.accountNumber && (
+          <p className="text-red-500 text-sm">{bankErrors.accountNumber.message}</p>
+        )}
       </div>
 
       {/* IFSC Code */}
@@ -63,11 +69,15 @@ const BankDetailsForm: React.FC = () => {
           className="w-full border px-3 py-2 rounded uppercase"
           maxLength={11}
           onInput={e => {
+            if (readOnly) return;
             const input = e.target as HTMLInputElement;
             input.value = input.value.toUpperCase();
           }}
+          disabled={readOnly}
         />
-        {bankErrors.ifscCode && <p className="text-red-500 text-sm">{bankErrors.ifscCode.message}</p>}
+        {bankErrors.ifscCode && (
+          <p className="text-red-500 text-sm">{bankErrors.ifscCode.message}</p>
+        )}
       </div>
 
       {/* Branch Name */}
@@ -76,18 +86,26 @@ const BankDetailsForm: React.FC = () => {
         <input
           {...register("bankDetails.branchName", { required: "Branch name is required" })}
           className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
         />
-        {bankErrors.branchName && <p className="text-red-500 text-sm">{bankErrors.branchName.message}</p>}
+        {bankErrors.branchName && (
+          <p className="text-red-500 text-sm">{bankErrors.branchName.message}</p>
+        )}
       </div>
 
       {/* Account Holder Name */}
       <div>
         <label className="block font-semibold">Account Holder Name</label>
         <input
-          {...register("bankDetails.accountHolderName", { required: "Account holder name is required" })}
+          {...register("bankDetails.accountHolderName", {
+            required: "Account holder name is required",
+          })}
           className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
         />
-        {bankErrors.accountHolderName && <p className="text-red-500 text-sm">{bankErrors.accountHolderName.message}</p>}
+        {bankErrors.accountHolderName && (
+          <p className="text-red-500 text-sm">{bankErrors.accountHolderName.message}</p>
+        )}
       </div>
 
       {/* Aadhar Number */}
@@ -104,8 +122,11 @@ const BankDetailsForm: React.FC = () => {
           className="w-full border px-3 py-2 rounded"
           inputMode="numeric"
           maxLength={12}
+          disabled={readOnly}
         />
-        {bankErrors.aadharNumber && <p className="text-red-500 text-sm">{bankErrors.aadharNumber.message}</p>}
+        {bankErrors.aadharNumber && (
+          <p className="text-red-500 text-sm">{bankErrors.aadharNumber.message}</p>
+        )}
       </div>
 
       {/* PAN Number */}
@@ -122,11 +143,15 @@ const BankDetailsForm: React.FC = () => {
           className="w-full border px-3 py-2 rounded uppercase"
           maxLength={10}
           onInput={e => {
+            if (readOnly) return;
             const input = e.target as HTMLInputElement;
             input.value = input.value.toUpperCase();
           }}
+          disabled={readOnly}
         />
-        {bankErrors.panNumber && <p className="text-red-500 text-sm">{bankErrors.panNumber.message}</p>}
+        {bankErrors.panNumber && (
+          <p className="text-red-500 text-sm">{bankErrors.panNumber.message}</p>
+        )}
       </div>
     </div>
   );

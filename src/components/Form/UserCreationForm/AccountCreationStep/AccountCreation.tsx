@@ -10,7 +10,9 @@ type FormValues = {
   };
 };
 
-const UserAccountCreationForm: React.FC = () => {
+const UserAccountCreationForm: React.FC<{ readOnly?: boolean }> = ({
+  readOnly = false,
+}) => {
   const {
     register,
     formState: { errors },
@@ -35,11 +37,10 @@ const UserAccountCreationForm: React.FC = () => {
             },
           })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
         />
         {accountErrors.email && (
-          <p className="text-sm text-red-500 mt-1">
-            {accountErrors.email.message}
-          </p>
+          <p className="text-sm text-red-500 mt-1">{accountErrors.email.message}</p>
         )}
       </div>
 
@@ -58,6 +59,7 @@ const UserAccountCreationForm: React.FC = () => {
             },
           })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
         />
         {accountErrors.password && (
           <p className="text-sm text-red-500 mt-1">
@@ -79,6 +81,7 @@ const UserAccountCreationForm: React.FC = () => {
               "Role must be admin, hr, or employee",
           })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
         >
           <option value="">Select Role</option>
           <option value="admin">Admin</option>
@@ -86,9 +89,7 @@ const UserAccountCreationForm: React.FC = () => {
           <option value="employee">Employee</option>
         </select>
         {accountErrors.role && (
-          <p className="text-sm text-red-500 mt-1">
-            {accountErrors.role.message}
-          </p>
+          <p className="text-sm text-red-500 mt-1">{accountErrors.role.message}</p>
         )}
       </div>
     </div>

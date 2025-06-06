@@ -22,6 +22,7 @@ import EmployeeManagement from "../pages/EmployeeManagement";
 import EmployeeDashboard from "../pages/EmployeeDashboard";
 import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/EmployeeForm";
 import Unauthorized from "../pages/Unauthorised"; // create this page
+import ViewEmployee from "../pages/ViewEmployee";
 
 const AppRouter = () => {
   return (
@@ -50,6 +51,8 @@ const AppRouter = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="payroll" element={<Payroll />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="/admin/employee/:id" element={<ViewEmployee />} />
+
         </Route>
 
         {/* Employee Routes */}

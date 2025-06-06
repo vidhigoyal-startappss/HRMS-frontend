@@ -25,7 +25,8 @@ const AdminLayout: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.user);
-  const role = user?.role || "guest";
+  const role = user?.role?.toLowerCase() || "guest";
+
 
   const sidebarConfig: Record<string, { label: string; path: string; icon: React.ElementType }[]> = {
     superadmin: [
@@ -156,7 +157,8 @@ const AdminLayout: React.FC = () => {
   <h2 className="text-2xl font-extrabold mb-2 text-black">{pageTitle}</h2>
   <div className="bg-white rounded-xl shadow-md p-6 w-full min-h-[calc(100vh-150px)]">
   <div className="flex items-center justify-between mb-4">
-    <h1 className="text-xl font-bold">Welcome, Admin</h1>
+    <h1 className="text-xl font-bold">Welcome, {role.charAt(0).toUpperCase() + role.slice(1)}</h1>
+
     <div className="flex gap-4">
       <button className="filter"><Funnel size={"35px"} fill="#000"/></button>
       <button className="add-employee bg-green-600 p-2 font-extrabold text-white rounded-xl" onClick={()=> navigate("/admin/add-employee")}>Add Employee</button>

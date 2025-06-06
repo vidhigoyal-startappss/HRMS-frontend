@@ -67,6 +67,7 @@ type FormValues = {
 };
 
 const EmployeeForm = () => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const methods = useForm<FormValues>({ mode: "onTouched" });
 
@@ -85,7 +86,7 @@ const EmployeeForm = () => {
     console.log("Final Payload:", data);
     try {
       const res = await employeeCreate(data);
-      alert("🎉 Employee created successfully!");
+      setIsSubmitted(true);
       console.log("Response:", res);
     } catch (error: any) {
       console.error("Submission Error:", error.response?.data || error.message);
@@ -94,7 +95,33 @@ const EmployeeForm = () => {
   };
 
   return (
-    <FormProvider {...methods}>
+  <FormProvider {...methods}>
+    {isSubmitted ? (
+      <div className="flex flex-col items-center justify-center p-10 text-center mt-20 animate-fade-in">
+  <div className="text-green-600 text-4xl mb-4">✅</div>
+  <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+    Employee Created Successfully
+  </h2>
+  <p className="text-gray-600 mb-8">
+    Your new employee has been added. You can now manage them from the dashboard or add another.
+  </p>
+  <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+    <button
+      onClick={() => window.location.reload()}
+      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm w-full sm:w-auto"
+    >
+      ➕ Add Another
+    </button>
+    <button
+      onClick={() => (window.location.href = "/dashboard")}
+      className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition shadow-sm w-full sm:w-auto"
+    >
+      📊 Go to Dashboard
+    </button>
+  </div>
+</div>
+
+    ) : (
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
         className="mx-auto p-6 max-w-4xl bg-white shadow-lg rounded-xl"
@@ -134,8 +161,10 @@ const EmployeeForm = () => {
           )}
         </div>
       </form>
-    </FormProvider>
-  );
+    )}
+  </FormProvider>
+);
+
 };
 
 export default EmployeeForm;
