@@ -69,3 +69,13 @@ export const getEmployeeById = async (id) => {
     throw error;
   }
 };
+
+export const updateEmployee = async (id, data) => {
+  try {
+    const response = await API.patch(`/employee/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Update Employee Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
