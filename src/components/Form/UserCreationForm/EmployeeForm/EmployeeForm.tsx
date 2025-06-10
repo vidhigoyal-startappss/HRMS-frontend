@@ -7,6 +7,10 @@ import EducationDetailsForm from "../EducationDetails/EducationDetail";
 import BankDetailsForm from "../BankDetailStep/BankDetail";
 import Stepper from "../../../Stepper/Stepper";
 
+// API
+import { employeeCreate } from "../../../../api/auth";
+
+// Stepper labels
 const steps = [
   "Account Creation",
   "Basic Details",
@@ -14,6 +18,7 @@ const steps = [
   "Bank Details",
 ];
 
+// Components for each step
 const stepComponents = [
   UserAccountCreationForm,
   BasicDetailsForm,
@@ -21,61 +26,102 @@ const stepComponents = [
   BankDetailsForm,
 ];
 
-const EmployeeForm = () => {
-  const [activeStep, setActiveStep] = useState(0);
+// Form type — must match your backend DTO
+type FormValues = {
+  account: {
+    email: string;
+    password: string;
+    role: "admin" | "hr" | "employee";
+  };
+  basicDetails: {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    dob: string;
+    gender: string;
+    address: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+    joiningDate: string;
+    designation: string;
+    department: string;
+    employmentType: string;
+  };
+  educationDetails: {
+    highestQualification: string;
+    university: string;
+    yearOfPassing: string;
+    grade: string;
+  };
+  bankDetails: {
+    bankName: string;
+    accountNumber: string;
+    ifscCode: string;
+    branchName: string;
+    accountHolderName: string;
+    aadharNumber: string;
+    panNumber: string;
+  };
+};
 
-  const methods = useForm({
-    mode: "onTouched",
-    defaultValues: {
-      accountCreation: {},
-      basicDetails: {},
-      educationDetails: {},
-      bankDetails: {},
-    },
-  });
+const EmployeeForm = () => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const methods = useForm<FormValues>({ mode: "onTouched" });
 
   const CurrentStepComponent = stepComponents[activeStep];
 
   const handleNext = async () => {
     const isStepValid = await methods.trigger();
-
-    if (isStepValid) {
-      setActiveStep((prev) => prev + 1);
-    }
+    if (isStepValid) setActiveStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
-    if (activeStep > 0) {
-      setActiveStep((prev) => prev - 1);
+    if (activeStep > 0) setActiveStep((prev) => prev - 1);
+  };
+
+  const onSubmit = async (data: FormValues) => {
+    console.log("Final Payload:", data);
+    try {
+      const res = await employeeCreate(data);
+      setIsSubmitted(true);
+      console.log("Response:", res);
+    } catch (error: any) {
+      console.error("Submission Error:", error.response?.data || error.message);
+      alert("Failed to submit: " + (error.response?.data?.message || error.message));
     }
   };
 
-  const onSubmit = async (data) => {
-  console.log("✅ Final Submission Data:", data);
-
-  try {
-    const response = await fetch("/api/users/singup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to save user data");
-    }
-
-    const result = await response.json();
-    alert("Form submitted and saved successfully!");
-    console.log("Saved data response:", result);
-  } catch (error) {
-    alert("Error submitting form: " + error.message);
-  }
-};
-
   return (
-    <FormProvider {...methods}>
+  <FormProvider {...methods}>
+    {isSubmitted ? (
+      <div className="flex flex-col items-center justify-center p-10 text-center mt-20 animate-fade-in">
+  <div className="text-green-600 text-4xl mb-4">✅</div>
+  <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+    Employee Created Successfully
+  </h2>
+  <p className="text-gray-600 mb-8">
+    Your new employee has been added. You can now manage them from the dashboard or add another.
+  </p>
+  <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+    <button
+      onClick={() => window.location.reload()}
+      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm w-full sm:w-auto"
+    >
+      ➕ Add Another
+    </button>
+    <button
+      onClick={() => (window.location.href = "/dashboard")}
+      className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition shadow-sm w-full sm:w-auto"
+    >
+      📊 Go to Dashboard
+    </button>
+  </div>
+</div>
+
+    ) : (
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
         className="mx-auto p-6 max-w-4xl bg-white shadow-lg rounded-xl"
@@ -115,8 +161,10 @@ const EmployeeForm = () => {
           )}
         </div>
       </form>
-    </FormProvider>
-  );
+    )}
+  </FormProvider>
+);
+
 };
 
 export default EmployeeForm;

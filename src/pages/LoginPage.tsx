@@ -27,28 +27,31 @@ const Login: React.FC = () => {
   setErrorMsg("");
 
   try {
-    const response = await axios.post("http://localhost:3001/api/login", {
-      email,
-      password,
-    });
+    const response = await axios.post("http://localhost:3000/auth/login", {
+  email,
+  password,
+});
 
-    const user = response.data.user;
+const user = response.data.user;
+const token = response.data.token;
 
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-      dispatch(login(user));
+if (user && token) {
+  localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("token", token); 
+  dispatch(login(user));
 
-      toast.success("Login successful!");
+  toast.success("Login successful!");
 
-      if (["admin", "superadmin", "hr"].includes(user.role.toLowerCase())) {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/employee");
-      }
-    } else {
-      setErrorMsg("User not found");
-      toast.error("User not found");
-    }
+  if (["admin", "superadmin", "hr"].includes(user.role.toLowerCase())) {
+    navigate("/admin/dashboard");
+  } else {
+    navigate("/employee");
+  }
+} else {
+  setErrorMsg("User or token not found");
+  toast.error("Login failed");
+}
+
   } catch (err: any) {
     console.error(err);
     const msg =

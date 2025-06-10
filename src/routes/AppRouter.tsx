@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-  BrowserRouter,
-} from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 
 import SignUpPage from "../pages/SignUpPage";
 import Login from "../pages/LoginPage";
@@ -22,6 +17,8 @@ import EmployeeManagement from "../pages/EmployeeManagement";
 import EmployeeDashboard from "../pages/EmployeeDashboard";
 import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/EmployeeForm";
 import Unauthorized from "../pages/Unauthorised"; // create this page
+import ViewEmployee from "../pages/ViewEmployee";
+import UpdateEmployee from "../pages/UpdateEmployee";
 
 const AppRouter = () => {
   return (
@@ -30,7 +27,6 @@ const AppRouter = () => {
         {/* Public Routes */}
         <Route path="/" element={<SignUpPage />} />
         <Route path="/login" element={<Login />} />
-        
 
         {/* Admin Routes */}
         <Route
@@ -44,12 +40,20 @@ const AppRouter = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="employee-management" element={<EmployeeManagement />} />
           <Route path="add-employee" element={<EmployeeForm />} />
-          <Route path="attendance" element={<Attendance />} />
+          <Route
+            path="attendance"
+            element={
+              <Attendance
+              />
+            }
+          />
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
           <Route path="payroll" element={<Payroll />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="/admin/employee/:id" element={<ViewEmployee />} />
+          <Route path="/admin/employee/edit/:id" element={<UpdateEmployee />} />
         </Route>
 
         {/* Employee Routes */}
@@ -62,7 +66,14 @@ const AppRouter = () => {
           }
         >
           <Route index element={<EmployeeDashboard />} />
-          <Route path="attendance" element={<Attendance />} />
+          <Route
+            path="attendance"
+            element={
+              <Attendance
+              />
+            }
+          />
+
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />

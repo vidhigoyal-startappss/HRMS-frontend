@@ -1,12 +1,15 @@
 import { Users, CalendarDays, Briefcase, DollarSign } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 import userimg from "../assets/userimg.png";
+
 const roles = [
   "UI Designer at Zensar",
   "DevOps Intern at Google",
   "Data Analyst at Amazon",
   "Frontend Developer at Microsoft",
   "Backend Developer at Facebook",
-  "HR Intern at Infosys"
+  "HR Intern at Infosys",
 ];
 
 const dummyEmployees = [
@@ -34,9 +37,11 @@ const dummyPayrolls = [
 ];
 
 const AdminDashboard = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+  const role = user?.role || "guest";
+
   return (
     <div className="p-6 space-y-6">
-      {/* Top Stat Boxes */}
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-green-500 p-4 rounded-xl text-white flex items-center justify-between">
           <div>
@@ -45,7 +50,6 @@ const AdminDashboard = () => {
           </div>
           <Users size={40} />
         </div>
-
         <div className="bg-yellow-500 p-4 rounded-xl text-white flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">Leaves</h2>
@@ -53,7 +57,6 @@ const AdminDashboard = () => {
           </div>
           <CalendarDays size={40} />
         </div>
-
         <div className="bg-gray-800 p-4 rounded-xl text-white flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">Employees</h2>
@@ -61,7 +64,6 @@ const AdminDashboard = () => {
           </div>
           <Briefcase size={40} />
         </div>
-
         <div className="bg-blue-900 p-4 rounded-xl text-white flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">Payrolls</h2>
@@ -71,85 +73,98 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Grid Section */}
+      {/* Superadmin Specific Section */}
+      {role === "superadmin" && (
+        <div className="bg-white shadow-lg rounded-xl p-6 mt-4">
+          <h3 className="text-2xl font-bold text-black mb-4">Superadmin Panel</h3>
+          <p className="text-gray-700">
+            You have full control over the organization. Here you can manage system-level settings,
+            assign admin roles, review global reports, and monitor system health.
+          </p>
+          {/* Add any superadmin-level charts, controls or settings here */}
+        </div>
+      )}
+
       <div className="grid grid-cols-4 gap-4">
         {/* Applied Jobs */}
         <div className="bg-white shadow-lg rounded-xl p-4 mt-4">
           <h3 className="text-lg font-bold mb-2 text-black">Applied Jobs</h3>
           <div>
-      {roles.map((role, index) => (
-        <p
-          key={index}
-          className={`text-black p-2 rounded-lg ${
-            index % 2 === 0 ? "bg-blue-100" : ""
-          }`}
-        >
-          {role}
-        </p>
-      ))}
-    </div>
+            {roles.map((role, index) => (
+              <p
+                key={index}
+                className={`text-black p-2 rounded-lg ${index % 2 === 0 ? "bg-blue-100" : ""}`}
+              >
+                {role}
+              </p>
+            ))}
+          </div>
         </div>
 
         {/* Employees */}
-<div className="bg-white shadow-lg rounded-xl p-4 mt-4">
-  <h3 className="text-lg font-bold mb-2 text-black">Employees</h3>
-  <div className="space-y-3">
-    {dummyEmployees.map((emp, idx) => (
-      <div
-        key={idx}
-        className={`flex items-center gap-3 p-2 rounded-lg ${idx % 2 === 0 ? "bg-blue-100" : ""}`}
-      >
-        <img src={emp.img} alt={emp.name} className="w-10 h-10 rounded-full" />
-        <div>
-          <p className="text-black font-semibold">{emp.name}</p>
-          <p className="text-xs text-gray-600">{emp.role}</p>
+        <div className="bg-white shadow-lg rounded-xl p-4 mt-4">
+          <h3 className="text-lg font-bold mb-2 text-black">Employees</h3>
+          <div className="space-y-3">
+            {dummyEmployees.map((emp, idx) => (
+              <div
+                key={idx}
+                className={`flex items-center gap-3 p-2 rounded-lg ${
+                  idx % 2 === 0 ? "bg-blue-100" : ""
+                }`}
+              >
+                <img src={emp.img} alt={emp.name} className="w-10 h-10 rounded-full" />
+                <div>
+                  <p className="text-black font-semibold">{emp.name}</p>
+                  <p className="text-xs text-gray-600">{emp.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
-</div>
 
-{/* Candidates */}
-<div className="bg-white shadow-lg rounded-xl p-4 mt-4">
-  <h3 className="text-lg font-bold mb-2 text-black">Candidates</h3>
-  <div className="space-y-3">
-    {dummyCandidates.map((c, idx) => (
-      <div
-        key={idx}
-        className={`flex items-center gap-3 p-2 rounded-lg ${idx % 2 === 0 ? "bg-blue-100" : ""}`}
-      >
-        <img src={c.img} alt={c.name} className="w-10 h-10 rounded-full" />
-        <div>
-          <p className="text-black font-semibold">{c.name}</p>
-          <p className="text-xs text-gray-600">Applied for: {c.appliedFor}</p>
+        {/* Candidates */}
+        <div className="bg-white shadow-lg rounded-xl p-4 mt-4">
+          <h3 className="text-lg font-bold mb-2 text-black">Candidates</h3>
+          <div className="space-y-3">
+            {dummyCandidates.map((c, idx) => (
+              <div
+                key={idx}
+                className={`flex items-center gap-3 p-2 rounded-lg ${
+                  idx % 2 === 0 ? "bg-blue-100" : ""
+                }`}
+              >
+                <img src={c.img} alt={c.name} className="w-10 h-10 rounded-full" />
+                <div>
+                  <p className="text-black font-semibold">{c.name}</p>
+                  <p className="text-xs text-gray-600">Applied for: {c.appliedFor}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
-</div>
 
-{/* Payrolls */}
-<div className="bg-white shadow-lg rounded-xl p-4 mt-4">
-  <h3 className="text-lg font-bold mb-2 text-black">
-    {new Date().toLocaleString("default", { month: "long" })} Payrolls
-  </h3>
-  <div className="space-y-3">
-    {dummyPayrolls.map((p, idx) => (
-      <div
-        key={idx}
-        className={`flex items-center gap-3 p-2 rounded-lg ${idx % 2 === 0 ? "bg-blue-100" : ""}`}
-      >
-        <img src={p.img} alt={p.name} className="w-10 h-10 rounded-full" />
-        <div>
-          <p className="text-black font-semibold">{p.name}</p>
-          <p className="text-xs text-gray-600">Salary: {p.salary}</p>
+        {/* Payrolls */}
+        <div className="bg-white shadow-lg rounded-xl p-4 mt-4">
+          <h3 className="text-lg font-bold mb-2 text-black">
+            {new Date().toLocaleString("default", { month: "long" })} Payrolls
+          </h3>
+          <div className="space-y-3">
+            {dummyPayrolls.map((p, idx) => (
+              <div
+                key={idx}
+                className={`flex items-center gap-3 p-2 rounded-lg ${
+                  idx % 2 === 0 ? "bg-blue-100" : ""
+                }`}
+              >
+                <img src={p.img} alt={p.name} className="w-10 h-10 rounded-full" />
+                <div>
+                  <p className="text-black font-semibold">{p.name}</p>
+                  <p className="text-xs text-gray-600">Salary: {p.salary}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
-</div>
-
-
       </div>
     </div>
   );

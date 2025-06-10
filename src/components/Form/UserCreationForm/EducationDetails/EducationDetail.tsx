@@ -1,92 +1,96 @@
-// components/forms/EducationDetailsForm.tsx
 import React from "react";
-import { useForm, SubmitHandler, useFormContext } from "react-hook-form";
-import InputField from "../../../common/InputField";
+import { useFormContext } from "react-hook-form";
 
+// Backend-aligned DTO type
 type FormValues = {
-  qualification: string;
-  institution: string;
-  yearOfPassing: number;
-  grade: string;
+  educationDetails: {
+    highestQualification: string;
+    university: string;
+    yearOfPassing: string;
+    grade: string;
+  };
 };
 
-type Props = {
-  onSubmit: (data: FormValues) => void;
-  defaultValues?: FormValues;
-};
-
-const EducationDetailsForm: React.FC<Props> = () => {
+const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
   const {
     register,
-    handleSubmit,
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<FormValues>();
+
+  const eduErrors = errors.educationDetails || {};
+
+  const inputClass = `w-full border px-3 py-2 rounded ${
+    readOnly ? "bg-gray-100 cursor-not-allowed" : ""
+  }`;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+      {/* Highest Qualification */}
       <div>
-        <label className="block">Highest Qualification</label>
+        <label className="block font-medium">Highest Qualification</label>
         <input
-          {...register("qualification", {
-            required: "Qualification is required",
+          {...register("educationDetails.highestQualification", {
+            required: !readOnly ? "Highest qualification is required" : false,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors.qualification && (
+        {!readOnly && eduErrors.highestQualification && (
           <p className="text-red-500 text-sm">
-            {errors.qualification.message as String}
+            {eduErrors.highestQualification.message}
           </p>
         )}
       </div>
 
+      {/* University / College */}
       <div>
-        <label className="block">University / College</label>
+        <label className="block font-medium">University / College</label>
         <input
-          {...register("institution", {
-            required: "Institution name is required",
+          {...register("educationDetails.university", {
+            required: !readOnly ? "University or college is required" : false,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors.institution && (
-          <p className="text-red-500 text-sm">
-            {errors.institution.message as String}
-          </p>
+        {!readOnly && eduErrors.university && (
+          <p className="text-red-500 text-sm">{eduErrors.university.message}</p>
         )}
       </div>
 
+      {/* Year of Passing */}
       <div>
-        <label className="block">Year of Passing</label>
+        <label className="block font-medium">Year of Passing</label>
         <input
-          type="number"
-          {...register("yearOfPassing", {
-            required: "Year of passing is required",
-            min: { value: 1900, message: "Invalid year" },
-            max: {
-              value: new Date().getFullYear(),
-              message: "Future year not allowed",
-            },
+          type="text"
+          {...register("educationDetails.yearOfPassing", {
+            required: !readOnly ? "Year of passing is required" : false,
+            pattern: !readOnly
+              ? {
+                  value: /^\d{4}$/,
+                  message: "Enter a valid 4-digit year",
+                }
+              : undefined,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors.yearOfPassing && (
-          <p className="text-red-500 text-sm">
-            {errors.yearOfPassing.message as String}
-          </p>
+        {!readOnly && eduErrors.yearOfPassing && (
+          <p className="text-red-500 text-sm">{eduErrors.yearOfPassing.message}</p>
         )}
       </div>
 
+      {/* Grade / Percentage */}
       <div>
-        <label className="block">Grade / Percentage</label>
+        <label className="block font-medium">Grade / Percentage</label>
         <input
-          {...register("grade", {
-            required: "Grade or percentage is required",
+          {...register("educationDetails.grade", {
+            required: !readOnly ? "Grade or percentage is required" : false,
           })}
-          className="w-full border px-3 py-2 rounded"
+          disabled={readOnly}
+          className={inputClass}
         />
-        {errors.grade && (
-          <p className="text-red-500 text-sm">
-            {errors.grade.message as String}
-          </p>
+        {!readOnly && eduErrors.grade && (
+          <p className="text-red-500 text-sm">{eduErrors.grade.message}</p>
         )}
       </div>
     </div>

@@ -5,11 +5,10 @@ import * as yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// Validation schema
+// Validation schema (role removed)
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
-  role: yup.string().oneOf(["superAdmin", "hr", "employee"]).required("Role is required"),
 });
 
 const SignUpPage = () => {
@@ -26,9 +25,9 @@ const SignUpPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      await axios.post("http://localhost:3001/api/auth/signup", data);
+      await axios.post("http://localhost:3000/auth/signup", data); // adjust port if needed
       setMessage("Account created successfully. Please login.");
-    }catch (err) {
+    } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
     }
   };
@@ -43,7 +42,12 @@ const SignUpPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white bg-opacity-90 p-8 rounded-lg shadow-xl w-full max-w-md"
         >
-          <h2 className="text-3xl font-bold mb-6 text-center text-blue-700">Create an Account</h2>
+          <h2 className="text-3xl font-bold mb-4 text-center text-blue-700">Create SuperAdmin Account</h2>
+
+          {/* Note */}
+          <p className="text-sm text-gray-600 mb-4 text-center">
+            Only the first registered user will become <span className="text-blue-600 font-semibold">SuperAdmin</span>.
+          </p>
 
           {/* Email */}
           <div className="mb-4">
@@ -66,22 +70,6 @@ const SignUpPage = () => {
               className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>
-          </div>
-
-          {/* Role */}
-          <div className="mb-4">
-            <label className="block mb-1 text-sm font-semibold text-gray-700">Role</label>
-            <select
-              {...register("role")}
-              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">Select Role</option>
-              <option value="superAdmin">Super Admin</option>
-              <option value="hr">HR</option>
-              <option value="admin">Admin</option>
-              <option value="employee">Employee</option>
-            </select>
-            <p className="text-red-500 text-sm mt-1">{errors.role?.message}</p>
           </div>
 
           {/* Submit Button */}

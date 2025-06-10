@@ -1,22 +1,24 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 
+// Define nested FormValues type for this step
 type FormValues = {
-  email: string;
-  password: string;
-  role: string;
+  account: {
+    email: string;
+    password: string;
+    role: "admin" | "hr" | "employee";
+  };
 };
 
-type Props = {
-  onSubmit: (data: FormValues) => void;
-  defaultValues?: FormValues;
-};
-
-const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =>  {
+const UserAccountCreationForm: React.FC<{ readOnly?: boolean }> = ({
+  readOnly = false,
+}) => {
   const {
     register,
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<FormValues>();
+
+  const accountErrors = errors?.account || {};
 
   return (
     <div className="space-y-6">
@@ -27,17 +29,18 @@ const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =
         </label>
         <input
           type="email"
-          {...register("email", {
+          {...register("account.email", {
             required: "Email is required",
             pattern: {
-              value: /^\S+@\S+$/i,
+              value: /^\S+@\S+\.\S+$/,
               message: "Invalid email address",
             },
           })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
         />
-        {errors.email && (
-          <p className="text-sm text-red-500 mt-1">{errors.email.message as string}</p>
+        {accountErrors.email && (
+          <p className="text-sm text-red-500 mt-1">{accountErrors.email.message}</p>
         )}
       </div>
 
@@ -48,7 +51,7 @@ const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =
         </label>
         <input
           type="password"
-          {...register("password", {
+          {...register("account.password", {
             required: "Password is required",
             minLength: {
               value: 6,
@@ -56,9 +59,12 @@ const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =
             },
           })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
         />
-        {errors.password && (
-          <p className="text-sm text-red-500 mt-1">{errors.password.message as string}</p>
+        {accountErrors.password && (
+          <p className="text-sm text-red-500 mt-1">
+            {accountErrors.password.message}
+          </p>
         )}
       </div>
 
@@ -68,16 +74,22 @@ const UserAccountCreationForm: React.FC<Props> = ({ onSubmit, defaultValues }) =
           Role
         </label>
         <select
-          {...register("role", { required: "Role is required" })}
+          {...register("account.role", {
+            required: "Role is required",
+            validate: (value) =>
+              ["admin", "hr", "employee"].includes(value) ||
+              "Role must be admin, hr, or employee",
+          })}
           className="w-full border border-gray-300 px-4 py-2 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
         >
           <option value="">Select Role</option>
           <option value="admin">Admin</option>
-          <option value="manager">HR</option>
-          <option value="user">Employee</option>
+          <option value="hr">HR</option>
+          <option value="employee">Employee</option>
         </select>
-        {errors.role && (
-          <p className="text-sm text-red-500 mt-1">{errors.role.message as string}</p>
+        {accountErrors.role && (
+          <p className="text-sm text-red-500 mt-1">{accountErrors.role.message}</p>
         )}
       </div>
     </div>
