@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-  BrowserRouter,
-} from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 
 import SignUpPage from "../pages/SignUpPage";
 import Login from "../pages/LoginPage";
@@ -32,7 +27,6 @@ const AppRouter = () => {
         {/* Public Routes */}
         <Route path="/" element={<SignUpPage />} />
         <Route path="/login" element={<Login />} />
-        
 
         {/* Admin Routes */}
         <Route
@@ -46,7 +40,13 @@ const AppRouter = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="employee-management" element={<EmployeeManagement />} />
           <Route path="add-employee" element={<EmployeeForm />} />
-          <Route path="attendance" element={<Attendance />} />
+          <Route
+            path="attendance"
+            element={
+              <Attendance
+              />
+            }
+          />
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
@@ -54,8 +54,6 @@ const AppRouter = () => {
           <Route path="reports" element={<Reports />} />
           <Route path="/admin/employee/:id" element={<ViewEmployee />} />
           <Route path="/admin/employee/edit/:id" element={<UpdateEmployee />} />
-
-
         </Route>
 
         {/* Employee Routes */}
@@ -68,7 +66,14 @@ const AppRouter = () => {
           }
         >
           <Route index element={<EmployeeDashboard />} />
-          <Route path="attendance" element={<Attendance />} />
+          <Route
+            path="attendance"
+            element={
+              <Attendance
+              />
+            }
+          />
+
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />

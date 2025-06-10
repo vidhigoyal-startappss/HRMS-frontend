@@ -83,7 +83,7 @@ const EmployeeManagement = () => {
       </div>
 
       <table className="w-full text-sm text-left text-gray-700">
-        <thead className="bg-gray-200 text-gray-800 uppercase font-semibold text-sm">
+        <thead className="bg-blue-900 text-white uppercase font-semibold text-sm">
           <tr>
             {headers.map((header) => (
               <th key={header} className="px-4 py-3 whitespace-nowrap">

@@ -31,18 +31,60 @@ const ViewEmployee = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchEmployee = async () => {
-      try {
-        const employee = await getEmployeeById(id);
-        methods.reset(employee); // populate form
-      } catch (error) {
-        console.error("Failed to fetch employee:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEmployee();
-  }, [id]);
+  const fetchEmployee = async () => {
+    try {
+      const employee = await getEmployeeById(id);
+
+      // Clean the object to remove _id, __v, timestamps
+      const cleanedEmployee = {
+        account: {
+          email: employee.account.email,
+          role: employee.account.role,
+        },
+        basicDetails: {
+          firstName: employee.basicDetails.firstName,
+          lastName: employee.basicDetails.lastName,
+          gender: employee.basicDetails.gender,
+          phoneNumber: employee.basicDetails.phoneNumber,
+          dob: employee.basicDetails.dob,
+          address: employee.basicDetails.address,
+          city: employee.basicDetails.city,
+          state: employee.basicDetails.state,
+          zipcode: employee.basicDetails.zipcode,
+          country: employee.basicDetails.country,
+          joiningDate: employee.basicDetails.joiningDate,
+          designation: employee.basicDetails.designation,
+          department: employee.basicDetails.department,
+          employmentType: employee.basicDetails.employmentType,
+        },
+        educationDetails: {
+          highestQualification: employee.educationDetails.highestQualification,
+          university: employee.educationDetails.university,
+          yearOfPassing: employee.educationDetails.yearOfPassing,
+          grade: employee.educationDetails.grade,
+        },
+        bankDetails: {
+          accountHolderName: employee.bankDetails.accountHolderName,
+          accountNumber: employee.bankDetails.accountNumber,
+          ifscCode: employee.bankDetails.ifscCode,
+          bankName: employee.bankDetails.bankName,
+          branchName: employee.bankDetails.branchName,
+          panNumber: employee.bankDetails.panNumber,
+          aadharNumber: employee.bankDetails.aadharNumber,
+        },
+      };
+
+      methods.reset(cleanedEmployee); // ✅ clean data passed here
+    } catch (error) {
+      console.error("Failed to fetch employee:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchEmployee();
+}, [id]);
+
 
   if (loading) return <p className="text-center p-10">Loading...</p>;
 

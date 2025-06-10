@@ -154,10 +154,13 @@ const AdminLayout: React.FC = () => {
   </div>
 
   {/* Page Content Wrapper */}
-  <h2 className="text-2xl font-extrabold mb-2 text-black">{pageTitle}</h2>
+  
+  <h1 className="text-2xl font-extrabold mb-2">Welcome, {role.charAt(0).toUpperCase() + role.slice(1)}</h1>
   <div className="bg-white rounded-xl shadow-md p-6 w-full min-h-[calc(100vh-150px)]">
+    
   <div className="flex items-center justify-between mb-4">
-    <h1 className="text-xl font-bold">Welcome, {role.charAt(0).toUpperCase() + role.slice(1)}</h1>
+    <h2 className="text-xl font-bold mb-2 text-black">{pageTitle}</h2>
+    
 
     <div className="flex gap-4">
       <button className="filter"><Funnel size={"35px"} fill="#000"/></button>

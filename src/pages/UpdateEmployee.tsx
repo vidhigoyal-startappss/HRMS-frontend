@@ -8,6 +8,7 @@ import BasicDetailsForm from "../components/Form/UserCreationForm/BasicDetails/B
 import EducationDetailsForm from "../components/Form/UserCreationForm/EducationDetails/EducationDetail";
 import BankDetailsForm from "../components/Form/UserCreationForm/BankDetailStep/BankDetail";
 import Stepper from "../components/Stepper/Stepper";
+import { removeMongoMetaFields } from "../utils/cleanMongoFields";
 
 import { getEmployeeById, updateEmployee } from "../api/auth";
 
@@ -52,15 +53,17 @@ const UpdateEmployee = () => {
   };
 
   const onSubmit = async (data) => {
-    try {
-      await updateEmployee(id, data);
-      alert("Employee updated successfully!");
-      navigate("/admin/employee-management");
-    } catch (error) {
-      console.error("Update Error:", error);
-      alert("Failed to update employee");
-    }
-  };
+  try {
+    const cleanedData = removeMongoMetaFields(data); // 👈 CLEAN the form data
+
+    await updateEmployee(id, cleanedData);
+    alert("Employee updated successfully!");
+    navigate("/admin/employee-management");
+  } catch (error) {
+    console.error("Update Error:", error);
+    alert("Failed to update employee");
+  }
+};
 
   if (!isLoaded) return <div className="text-center p-10">Loading...</div>;
 

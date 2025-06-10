@@ -29,16 +29,21 @@ export const signup = async (data) => {
 export const login = async (data) => {
   try {
     const response = await API.post("/auth/login", data);
-    const token = response.data.token;
-    if (token) {
+    const { token, user } = response.data;
+
+    if (token && user) {
       localStorage.setItem("token", token);
+      localStorage.setItem("role", user.role);     // Save user role
+      localStorage.setItem("userId", user._id);     // Save user ID
     }
+
     return response.data;
   } catch (error) {
     console.error("Login Error:", error.response?.data || error.message);
     throw error;
   }
 };
+
 
 export const employeeCreate = async (data) => {
   try {
