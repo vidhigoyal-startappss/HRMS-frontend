@@ -5,10 +5,11 @@ import * as yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// Validation schema (role removed)
+// Validation schema with role
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  role: yup.string().oneOf(["Admin", "HR", "Manager"], "Invalid role").required("Role is required"),
 });
 
 const SignUpPage = () => {
@@ -24,9 +25,11 @@ const SignUpPage = () => {
   });
 
   const onSubmit = async (data) => {
+    console.log("User data:", data);
     try {
-      await axios.post("http://localhost:3000/auth/signup", data); // adjust port if needed
+      await axios.post("http://localhost:3000/api/users/register", data); // Make sure your backend accepts role now
       setMessage("Account created successfully. Please login.");
+      
     } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
     }
@@ -42,12 +45,16 @@ const SignUpPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white bg-opacity-90 p-8 rounded-lg shadow-xl w-full max-w-md"
         >
-          <h2 className="text-3xl font-bold mb-4 text-center text-blue-700">Create SuperAdmin Account</h2>
+          <h2 className="text-3xl font-bold mb-4 text-center text-blue-700">Create Account</h2>
 
           {/* Note */}
           <p className="text-sm text-gray-600 mb-4 text-center">
             Only the first registered user will become <span className="text-blue-600 font-semibold">SuperAdmin</span>.
           </p>
+
+          {/* Role Dropdown */}
+          
+
 
           {/* Email */}
           <div className="mb-4">
@@ -70,6 +77,21 @@ const SignUpPage = () => {
               className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-1 text-sm font-semibold text-gray-700">Select Role</label>
+            <select
+              {...register("role")}
+              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="">-- Select Role --</option>
+              <option value="Admin">Admin</option>
+              <option value="HR">HR</option>
+              <option value="Manager">Manager</option>
+              <option value="Employee">Employee</option>
+            </select>
+            <p className="text-red-500 text-sm mt-1">{errors.role?.message}</p>
           </div>
 
           {/* Submit Button */}

@@ -12,9 +12,9 @@ const ProtectedRoutes = ({
 
   if (!user) return <Navigate to="/login" />;
 
-  const normalizedUserRole = user.role.trim().toLowerCase();
+  const normalizedUserRole = user.role.trim();
 
-  if (allowedRoles && !allowedRoles.some(role => role.toLowerCase() === normalizedUserRole)) {
+  if (allowedRoles && !allowedRoles.some(role => role === normalizedUserRole)) {
     return <Navigate to="/unauthorized" />;
   }
 

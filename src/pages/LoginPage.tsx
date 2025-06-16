@@ -3,13 +3,14 @@ import InputField from "../components/common/InputField";
 import Button from "../components/common/ButtonComp";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../hooks/hooks";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { login } from "../feature/User/userSlice";
 import axios from "axios";
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -23,44 +24,53 @@ const Login: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setErrorMsg("");
+    e.preventDefault();
+    setErrorMsg("");
 
-  try {
-    const response = await axios.post("http://localhost:3000/auth/login", {
-  email,
-  password,
-});
+    try {
+      const response = await axios.post("http://localhost:3000/api/users/login", {
+        email,
+        password,
+      });
 
-const user = response.data.user;
-const token = response.data.token;
+      const userFromAPI = response.data.user;
+      const token = response.data.token;
 
-if (user && token) {
-  localStorage.setItem("user", JSON.stringify(user));
-  localStorage.setItem("token", token); 
-  dispatch(login(user));
+      if (userFromAPI && token) {
+        // Normalize user object with consistent keys
+        const user = {
+          id: userFromAPI.id || userFromAPI._id,
+          name: userFromAPI.name || userFromAPI.fullname || "",
+          email: userFromAPI.email,
+          role: userFromAPI.role,
+        };
 
-  toast.success("Login successful!");
+        // Save to localStorage
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", token);
 
-  if (["admin", "superadmin", "hr"].includes(user.role.toLowerCase())) {
-    navigate("/admin/dashboard");
-  } else {
-    navigate("/employee");
-  }
-} else {
-  setErrorMsg("User or token not found");
-  toast.error("Login failed");
-}
+        // Dispatch to Redux
+        dispatch(login(user));
 
-  } catch (err: any) {
-    console.error(err);
-    const msg =
-      err.response?.data?.message || "Invalid credentials or server error.";
-    setErrorMsg(msg);
-    toast.error(msg);
-  }
-};
+        toast.success("Login successful!");
 
+        if (["Admin", "Manager", "HR"].includes(user.role)) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/employee");
+        }
+      } else {
+        setErrorMsg("User or token not found");
+        toast.error("Login failed");
+      }
+    } catch (err: any) {
+      console.error(err);
+      const msg =
+        err.response?.data?.message || "Invalid credentials or server error.";
+      setErrorMsg(msg);
+      toast.error(msg);
+    }
+  };
 
   return (
     <>
@@ -78,12 +88,14 @@ if (user && token) {
               name="email"
               placeholder="Email"
               onChange={handleEmailChange}
+              value={email}
             />
             <InputField
               type="password"
               name="password"
               placeholder="Password"
               onChange={handlePasswordChange}
+              value={password}
             />
             <div>
               <p className="text-gray-500 pb-2 text-right text-sm cursor-pointer">

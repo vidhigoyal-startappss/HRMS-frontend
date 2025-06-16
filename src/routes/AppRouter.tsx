@@ -8,7 +8,6 @@ import AdminLayout from "../components/layout/AdminLayout/AdminLayout";
 import EmployeeLayout from "../components/layout/employeeLayout/employeeLayout";
 import AdminDashboard from "../pages/AdminDashBoard";
 import Attendance from "../pages/Attendance";
-import LeaveRequests from "../pages/LeaveManagement";
 import ApprovalHistory from "../pages/ApprovalHistory";
 import Profile from "../pages/ProfilePage";
 import Payroll from "../pages/Payroll";
@@ -16,9 +15,13 @@ import Reports from "../pages/Reports";
 import EmployeeManagement from "../pages/EmployeeManagement";
 import EmployeeDashboard from "../pages/EmployeeDashboard";
 import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/EmployeeForm";
-import Unauthorized from "../pages/Unauthorised"; // create this page
+import Unauthorized from "../pages/Unauthorised";
 import ViewEmployee from "../pages/ViewEmployee";
 import UpdateEmployee from "../pages/UpdateEmployee";
+import EmployeeMarkAttendance from "../components/Attendance/EmployeeMarkAttendance";
+import LeaveManagement from "../pages/LeaveManagement";
+// import HRAdminView from "../components/LeaveManagement/HRAdminView";
+// import EmployeeView from "../components/LeaveManagement/EmployeeView";
 
 const AppRouter = () => {
   return (
@@ -32,7 +35,7 @@ const AppRouter = () => {
         <Route
           path="/admin"
           element={
-            <ProtectedRoutes allowedRoles={["admin", "hr", "superadmin"]}>
+            <ProtectedRoutes allowedRoles={["admin", "hr", "manager"]}>
               <AdminLayout />
             </ProtectedRoutes>
           }
@@ -40,14 +43,8 @@ const AppRouter = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="employee-management" element={<EmployeeManagement />} />
           <Route path="add-employee" element={<EmployeeForm />} />
-          <Route
-            path="attendance"
-            element={
-              <Attendance
-              />
-            }
-          />
-          <Route path="leave-requests" element={<LeaveRequests />} />
+          <Route path="attendance" element={<Attendance />} />
+          {/* <Route path="leave-requests" element={<LeaveManagement />} /> */}
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
           <Route path="payroll" element={<Payroll />} />
@@ -66,15 +63,8 @@ const AppRouter = () => {
           }
         >
           <Route index element={<EmployeeDashboard />} />
-          <Route
-            path="attendance"
-            element={
-              <Attendance
-              />
-            }
-          />
-
-          <Route path="leave-requests" element={<LeaveRequests />} />
+          <Route path="attendance" element={<EmployeeMarkAttendance />} />
+          {/* <Route path="leave-requests" element={<LeaveManagement />} /> */}
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
         </Route>

@@ -22,3 +22,98 @@
   height: 150px;
   z-index: 50;
 }
+
+:root {
+  --primary-blue: #001f54;
+  --yellow: #fecf3d;
+  --white: #ffffff;
+  --light-gray: #f4f6f8;
+  --red: #e63946;
+  --green: #43b02a;
+  --navy: #1b2a41;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--light-gray);
+  margin: 0;
+  padding: 0;
+  color: var(--primary-blue);
+}
+
+.button {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.button-blue {
+  background-color: var(--navy);
+  color: var(--white);
+}
+.button-blue:hover {
+  background-color: var(--primary-blue);
+}
+
+.button-green {
+  background-color: var(--green);
+  color: var(--white);
+}
+.button-red {
+  background-color: var(--red);
+  color: var(--white);
+}
+.button-yellow {
+  background-color: var(--yellow);
+  color: var(--primary-blue);
+}
+
+.top-btn-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.banner {
+  background-color: var(--yellow);
+  padding: 20px;
+  border-radius: 15px;
+  color: var(--primary-blue);
+  font-weight: 700;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.two-col-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--white);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.table th, .table td {
+  padding: 14px 20px;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.top-action-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+}

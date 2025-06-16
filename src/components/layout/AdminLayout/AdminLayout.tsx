@@ -25,7 +25,7 @@ const AdminLayout: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.user);
-  const role = user?.role?.toLowerCase() || "guest";
+  const role = user?.role || "guest";
 
 
   const sidebarConfig: Record<string, { label: string; path: string; icon: React.ElementType }[]> = {
@@ -72,9 +72,15 @@ const AdminLayout: React.FC = () => {
   const linksToShow = sidebarConfig[role] || [];
 
   const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
-  };
+  // Clear Redux user state
+  dispatch(logout());
+
+  // Optional: clear token/localStorage if you're storing anything
+  localStorage.removeItem("token"); // if applicable
+
+  // Redirect to signup
+  navigate("/signup");
+};
 
   const [pageTitle, setPageTitle] = useState("Dashboard");
 

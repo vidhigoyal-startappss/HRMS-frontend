@@ -18,7 +18,7 @@ API.interceptors.request.use(
 
 export const signup = async (data) => {
   try {
-    const response = await API.post("/auth/signup", data);
+    const response = await API.post("/api/users/register", data);
     return response.data;
   } catch (error) {
     console.error("Signup Error:", error.response?.data || error.message);
@@ -27,10 +27,12 @@ export const signup = async (data) => {
 };
 
 export const login = async (data) => {
+  console.log("user",data)
   try {
-    const response = await API.post("/auth/login", data);
+    const response = await API.post("/api/users/login", data);
+    console.log(response)
     const { token, user } = response.data;
-
+    console.log("Login data",token,user)
     if (token && user) {
       localStorage.setItem("token", token);
       localStorage.setItem("role", user.role);     // Save user role
