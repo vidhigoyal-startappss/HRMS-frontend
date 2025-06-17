@@ -55,7 +55,7 @@ const Login: React.FC = () => {
 
         toast.success("Login successful!");
 
-        if (["Admin", "Manager", "HR"].includes(user.role)) {
+        if (["SuperAdmin", "Admin", "Manager", "HR"].includes(user.role)) {
           navigate("/admin/dashboard");
         } else {
           navigate("/employee");

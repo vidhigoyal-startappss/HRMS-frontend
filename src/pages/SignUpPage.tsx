@@ -1,144 +1,111 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-// Updated schema with role validation
-const schema = yup.object().shape({
-  email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
-  role: yup
-    .string()
-    .oneOf(["Admin", "HR", "Employee", "Manager"], "Invalid role")
-    .required("Role is required"),
-});
 
 const SignUpPage = () => {
   const [message, setMessage] = useState("");
+  const [isFirstUser, setIsFirstUser] = useState(false);
   const navigate = useNavigate();
+
+  const schema = yup.object().shape({
+    email: yup.string().email("Invalid email").required("Email is required"),
+    password: yup.string().min(6).required("Password is required"),
+    ...(isFirstUser
+      ? {} // skip role if first user
+      : {
+          role: yup
+            .string()
+            .oneOf(["Admin", "HR", "Employee", "Manager"], "Invalid role")
+            .required("Role is required"),
+        }),
+  });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
+  } = useForm({ resolver: yupResolver(schema) });
+
+  useEffect(() => {
+    const checkFirstUser = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:3000/api/users/first-user-check"
+        );
+        setIsFirstUser(res.data.isFirst);
+      } catch (err) {
+        console.error("Error checking first user", err);
+      }
+    };
+    checkFirstUser();
+  }, []);
 
   const onSubmit = async (data) => {
     try {
-      await axios.post("http://localhost:3000/api/users/register", data);
+      const formData = isFirstUser ? { ...data, role: "SuperAdmin" } : data;
+
+      await axios.post("http://localhost:3000/api/users/register", formData);
       setMessage("Account created successfully. Please login.");
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
     }
   };
 
   return (
-    <>
-      <img
-        src="/logo.webp"
-        alt="Logo"
-        className="fixed top-4 left-4 w-20 h-20"
-      />
-      <div
-        className="flex justify-center items-center min-h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/bg.jpg')" }}
+    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-white p-8 rounded shadow-md w-full max-w-md"
       >
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="bg-white bg-opacity-90 p-8 rounded-lg shadow-xl w-full max-w-md"
-        >
-          <h2 className="text-3xl font-bold mb-4 text-center text-blue-700">
-            Create Account
-          </h2>
+        <h2 className="text-2xl font-bold text-center mb-4">Create Account</h2>
 
-          <p className="text-sm text-gray-600 mb-4 text-center">
-            The first registered user can be{" "}
-            <span className="text-blue-600 font-semibold">SuperAdmin</span>.
-          </p>
+        <div className="mb-4">
+          <label>Email</label>
+          <input {...register("email")} className="w-full border p-2 rounded" />
+          <p className="text-red-500 text-sm">{errors.email?.message}</p>
+        </div>
 
-          {/* Email */}
+        <div className="mb-4">
+          <label>Password</label>
+          <input
+            type="password"
+            {...register("password")}
+            className="w-full border p-2 rounded"
+          />
+          <p className="text-red-500 text-sm">{errors.password?.message}</p>
+        </div>
+
+        {/* Show role dropdown ONLY if it's not first user */}
+        {!isFirstUser && (
           <div className="mb-4">
-            <label className="block mb-1 text-sm font-semibold text-gray-700">
-              Email
-            </label>
-            <input
-              {...register("email")}
-              placeholder="Email"
-              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            <p className="text-red-500 text-sm mt-1">{errors.email?.message}</p>
-          </div>
-
-          {/* Password */}
-          <div className="mb-4">
-            <label className="block mb-1 text-sm font-semibold text-gray-700">
-              Password
-            </label>
-            <input
-              type="password"
-              {...register("password")}
-              placeholder="Password"
-              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            <p className="text-red-500 text-sm mt-1">
-              {errors.password?.message}
-            </p>
-          </div>
-
-          {/* Role Dropdown */}
-          <div className="mb-4">
-            <label className="block mb-1 text-sm font-semibold text-gray-700">
-              Select Role
-            </label>
-            <select
-              {...register("role")}
-              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              defaultValue=""
-            >
-              <option value="" disabled>
-                -- Select Role --
-              </option>
+            <label>Role</label>
+            <select {...register("role")} className="w-full border p-2 rounded">
+              <option value="">-- Select Role --</option>
               <option value="Admin">Admin</option>
               <option value="HR">HR</option>
-              <option value="Employee">Employee</option>
               <option value="Manager">Manager</option>
+              <option value="Employee">Employee</option>
             </select>
-            <p className="text-red-500 text-sm mt-1">{errors.role?.message}</p>
+            <p className="text-red-500 text-sm">{errors.role?.message}</p>
           </div>
+        )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition"
-          >
-            Sign Up
-          </button>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+        >
+          Sign Up
+        </button>
 
-          {/* Login Redirect */}
-          <p className="mt-4 text-sm text-center text-gray-600">
-            Already have an account?{" "}
-            <span
-              className="text-blue-600 hover:underline cursor-pointer"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </span>
-          </p>
-
-          {/* Message */}
-          {message && (
-            <p className="mt-4 text-center text-sm text-green-600">{message}</p>
-          )}
-        </form>
-      </div>
-    </>
+        {message && (
+          <p className="text-green-600 mt-4 text-center">{message}</p>
+        )}
+      </form>
+    </div>
   );
 };
 
