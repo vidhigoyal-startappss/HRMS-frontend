@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { fetchEmployees } from "../api/auth"; // ✅ Adjust path if needed
+import { fetchEmployees } from "../api/auth";
 
 interface Employee {
   _id: string;
@@ -63,7 +63,9 @@ const EmployeeManagement = () => {
   };
 
   if (loading) {
-    return <div className="p-4 text-center text-gray-500">Loading employees...</div>;
+    return (
+      <div className="p-4 text-center text-gray-500">Loading employees...</div>
+    );
   }
 
   if (error) {

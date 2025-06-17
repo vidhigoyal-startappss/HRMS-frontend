@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useParams, useNavigate } from "react-router-dom";
 
-import UserAccountCreationForm from "../components/Form/UserCreationForm/AccountCreationStep/AccountCreation";
+// import UserAccountCreationForm from "../components/Form/UserCreationForm/AccountCreationStep/AccountCreation";
 import BasicDetailsForm from "../components/Form/UserCreationForm/BasicDetails/BasicDetail";
 import EducationDetailsForm from "../components/Form/UserCreationForm/EducationDetails/EducationDetail";
 import BankDetailsForm from "../components/Form/UserCreationForm/BankDetailStep/BankDetail";
@@ -12,9 +12,9 @@ import { removeMongoMetaFields } from "../utils/cleanMongoFields";
 
 import { getEmployeeById, updateEmployee } from "../api/auth";
 
-const steps = ["Account Creation", "Basic Details", "Educational Details", "Bank Details"];
+const steps = ["Basic Details", "Educational Details", "Bank Details"];
 const stepComponents = [
-  UserAccountCreationForm,
+  // UserAccountCreationForm,
   BasicDetailsForm,
   EducationDetailsForm,
   BankDetailsForm,
@@ -53,17 +53,17 @@ const UpdateEmployee = () => {
   };
 
   const onSubmit = async (data) => {
-  try {
-    const cleanedData = removeMongoMetaFields(data); // 👈 CLEAN the form data
+    try {
+      const cleanedData = removeMongoMetaFields(data); // 👈 CLEAN the form data
 
-    await updateEmployee(id, cleanedData);
-    alert("Employee updated successfully!");
-    navigate("/admin/employee-management");
-  } catch (error) {
-    console.error("Update Error:", error);
-    alert("Failed to update employee");
-  }
-};
+      await updateEmployee(id, cleanedData);
+      alert("Employee updated successfully!");
+      navigate("/admin/employee-management");
+    } catch (error) {
+      console.error("Update Error:", error);
+      alert("Failed to update employee");
+    }
+  };
 
   if (!isLoaded) return <div className="text-center p-10">Loading...</div>;
 

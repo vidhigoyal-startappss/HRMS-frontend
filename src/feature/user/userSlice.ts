@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type Role = "admin" | "employee" | "hr" | "superAdmin";
+export type Role = "Admin" | "Employee" | "HR" | "Manager";
 
 export interface UserState {
   id?: string;
@@ -8,7 +8,7 @@ export interface UserState {
   email: string;
   role: Role;
   token?: string;
-  profileImage?: string;  // Added profileImage
+  profileImage?: string;
 }
 
 interface UserSliceState {
@@ -16,7 +16,7 @@ interface UserSliceState {
 }
 
 const initialState: UserSliceState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem("user") || "null"),
 };
 
 const userSlice = createSlice({
@@ -28,6 +28,8 @@ const userSlice = createSlice({
     },
     logout(state) {
       state.user = null;
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
     },
     updateProfile(state, action: PayloadAction<Partial<UserState>>) {
       if (state.user) {

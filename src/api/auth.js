@@ -18,7 +18,7 @@ API.interceptors.request.use(
 
 export const signup = async (data) => {
   try {
-    const response = await API.post("/auth/signup", data);
+    const response = await API.post("/api/users/register", data);
     return response.data;
   } catch (error) {
     console.error("Signup Error:", error.response?.data || error.message);
@@ -28,14 +28,15 @@ export const signup = async (data) => {
 
 export const login = async (data) => {
   try {
-    const response = await API.post("/auth/login", data);
+    const response = await API.post("/api/users/login", data);
     const { token, user } = response.data;
 
     if (token && user) {
       localStorage.setItem("token", token);
-      localStorage.setItem("role", user.role);     // Save user role
-      localStorage.setItem("userId", user._id);     // Save user ID
+      localStorage.setItem("role", user.role); // Save user role
+      localStorage.setItem("userId", user._id); // Save user ID
     }
+    console.log(data);
 
     return response.data;
   } catch (error) {
@@ -44,13 +45,15 @@ export const login = async (data) => {
   }
 };
 
-
 export const employeeCreate = async (data) => {
   try {
     const response = await API.post("/employee/create", data);
     return response.data;
   } catch (error) {
-    console.error("Employee Create Error:", error.response?.data || error.message);
+    console.error(
+      "Employee Create Error:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -60,7 +63,10 @@ export const fetchEmployees = async () => {
     const response = await API.get("/employee");
     return response.data;
   } catch (error) {
-    console.error("Fetch Employees Error:", error.response?.data || error.message);
+    console.error(
+      "Fetch Employees Error:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -70,7 +76,10 @@ export const getEmployeeById = async (id) => {
     const res = await API.get(`/employee/${id}`);
     return res.data;
   } catch (error) {
-    console.error("Get Employee By ID Error:", error.response?.data || error.message);
+    console.error(
+      "Get Employee By ID Error:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -80,7 +89,10 @@ export const updateEmployee = async (id, data) => {
     const response = await API.patch(`/employee/${id}`, data);
     return response.data;
   } catch (error) {
-    console.error("Update Employee Error:", error.response?.data || error.message);
+    console.error(
+      "Update Employee Error:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

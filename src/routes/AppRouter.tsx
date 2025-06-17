@@ -32,21 +32,15 @@ const AppRouter = () => {
         <Route
           path="/admin"
           element={
-            <ProtectedRoutes allowedRoles={["admin", "hr", "superadmin"]}>
+            <ProtectedRoutes allowedRoles={["Admin", "HR", "Manager"]}>
               <AdminLayout />
             </ProtectedRoutes>
           }
         >
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="employee-management" element={<EmployeeManagement />} />
-          <Route path="add-employee" element={<EmployeeForm />} />
-          <Route
-            path="attendance"
-            element={
-              <Attendance
-              />
-            }
-          />
+          <Route path="add-employee" element={<SignUpPage />} />
+          <Route path="attendance" element={<Attendance />} />
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
@@ -60,19 +54,13 @@ const AppRouter = () => {
         <Route
           path="/employee"
           element={
-            <ProtectedRoutes allowedRoles={["employee"]}>
+            <ProtectedRoutes allowedRoles={["Employee"]}>
               <EmployeeLayout />
             </ProtectedRoutes>
           }
         >
           <Route index element={<EmployeeDashboard />} />
-          <Route
-            path="attendance"
-            element={
-              <Attendance
-              />
-            }
-          />
+          <Route path="attendance" element={<Attendance />} />
 
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
