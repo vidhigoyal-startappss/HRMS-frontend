@@ -58,7 +58,7 @@ const Login: React.FC = () => {
         if (["SuperAdmin", "Admin", "Manager", "HR"].includes(user.role)) {
           navigate("/admin/dashboard");
         } else {
-          navigate("/employee");
+          navigate("/employee/dashboard");
         }
       } else {
         setErrorMsg("Token not found in response");

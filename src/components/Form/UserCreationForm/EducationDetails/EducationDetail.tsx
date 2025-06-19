@@ -4,14 +4,16 @@ import { useFormContext } from "react-hook-form";
 // Backend-aligned DTO type
 type FormValues = {
   educationDetails: {
-    highestQualification: string;
-    university: string;
+    qualification: string;
+    institution: string;
     yearOfPassing: string;
     grade: string;
   };
 };
 
-const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
+const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
+  readOnly = false,
+}) => {
   const {
     register,
     formState: { errors },
@@ -29,15 +31,15 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = fal
       <div>
         <label className="block font-medium">Highest Qualification</label>
         <input
-          {...register("educationDetails.highestQualification", {
+          {...register("educationDetails.qualification", {
             required: !readOnly ? "Highest qualification is required" : false,
           })}
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && eduErrors.highestQualification && (
+        {!readOnly && eduErrors.qualification && (
           <p className="text-red-500 text-sm">
-            {eduErrors.highestQualification.message}
+            {eduErrors.qualification.message}
           </p>
         )}
       </div>
@@ -46,14 +48,16 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = fal
       <div>
         <label className="block font-medium">University / College</label>
         <input
-          {...register("educationDetails.university", {
+          {...register("educationDetails.institution", {
             required: !readOnly ? "University or college is required" : false,
           })}
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && eduErrors.university && (
-          <p className="text-red-500 text-sm">{eduErrors.university.message}</p>
+        {!readOnly && eduErrors.institution && (
+          <p className="text-red-500 text-sm">
+            {eduErrors.institution.message}
+          </p>
         )}
       </div>
 
@@ -75,7 +79,9 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = fal
           className={inputClass}
         />
         {!readOnly && eduErrors.yearOfPassing && (
-          <p className="text-red-500 text-sm">{eduErrors.yearOfPassing.message}</p>
+          <p className="text-red-500 text-sm">
+            {eduErrors.yearOfPassing.message}
+          </p>
         )}
       </div>
 

@@ -8,12 +8,14 @@ type FormValues = {
     ifscCode: string;
     branchName: string;
     accountHolderName: string;
-    aadharNumber: string;
+    adharNumber: string;
     panNumber: string;
   };
 };
 
-const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
+const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
+  readOnly = false,
+}) => {
   const {
     register,
     formState: { errors },
@@ -27,7 +29,9 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
       <div>
         <label className="block font-semibold">Bank Name</label>
         <input
-          {...register("bankDetails.bankName", { required: "Bank name is required" })}
+          {...register("bankDetails.bankName", {
+            required: "Bank name is required",
+          })}
           className="w-full border px-3 py-2 rounded"
           disabled={readOnly}
         />
@@ -42,8 +46,9 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
         <input
           {...register("bankDetails.accountNumber", {
             required: "Account number is required",
-            validate: value =>
-              /^[0-9]{9,18}$/.test(value) || "Account number must be between 9 to 18 digits",
+            validate: (value) =>
+              /^[0-9]{9,18}$/.test(value) ||
+              "Account number must be between 9 to 18 digits",
           })}
           className="w-full border px-3 py-2 rounded"
           inputMode="numeric"
@@ -51,7 +56,9 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
           disabled={readOnly}
         />
         {bankErrors.accountNumber && (
-          <p className="text-red-500 text-sm">{bankErrors.accountNumber.message}</p>
+          <p className="text-red-500 text-sm">
+            {bankErrors.accountNumber.message}
+          </p>
         )}
       </div>
 
@@ -68,7 +75,7 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
           })}
           className="w-full border px-3 py-2 rounded uppercase"
           maxLength={11}
-          onInput={e => {
+          onInput={(e) => {
             if (readOnly) return;
             const input = e.target as HTMLInputElement;
             input.value = input.value.toUpperCase();
@@ -84,12 +91,16 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
       <div>
         <label className="block font-semibold">Branch Name</label>
         <input
-          {...register("bankDetails.branchName", { required: "Branch name is required" })}
+          {...register("bankDetails.branchName", {
+            required: "Branch name is required",
+          })}
           className="w-full border px-3 py-2 rounded"
           disabled={readOnly}
         />
         {bankErrors.branchName && (
-          <p className="text-red-500 text-sm">{bankErrors.branchName.message}</p>
+          <p className="text-red-500 text-sm">
+            {bankErrors.branchName.message}
+          </p>
         )}
       </div>
 
@@ -104,7 +115,9 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
           disabled={readOnly}
         />
         {bankErrors.accountHolderName && (
-          <p className="text-red-500 text-sm">{bankErrors.accountHolderName.message}</p>
+          <p className="text-red-500 text-sm">
+            {bankErrors.accountHolderName.message}
+          </p>
         )}
       </div>
 
@@ -112,7 +125,7 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
       <div>
         <label className="block font-semibold">Aadhar Number</label>
         <input
-          {...register("bankDetails.aadharNumber", {
+          {...register("bankDetails.adharNumber", {
             required: "Aadhar number is required",
             pattern: {
               value: /^\d{12}$/,
@@ -124,8 +137,10 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
           maxLength={12}
           disabled={readOnly}
         />
-        {bankErrors.aadharNumber && (
-          <p className="text-red-500 text-sm">{bankErrors.aadharNumber.message}</p>
+        {bankErrors.adharNumber && (
+          <p className="text-red-500 text-sm">
+            {bankErrors.adharNumber.message}
+          </p>
         )}
       </div>
 
@@ -142,7 +157,7 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false })
           })}
           className="w-full border px-3 py-2 rounded uppercase"
           maxLength={10}
-          onInput={e => {
+          onInput={(e) => {
             if (readOnly) return;
             const input = e.target as HTMLInputElement;
             input.value = input.value.toUpperCase();

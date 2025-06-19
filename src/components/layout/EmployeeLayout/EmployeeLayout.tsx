@@ -30,19 +30,27 @@ const EmployeeLayout: React.FC = () => {
   const sidebarLinks = [
     { label: "Dashboard", path: "/employee/dashboard", icon: LayoutDashboard },
     { label: "Attendance", path: "/employee/attendance", icon: UserCheck },
-    { label: "Leave Requests", path: "/employee/leave-requests", icon: CalendarCheck },
-    { label: "Approval History", path: "/employee/approval-history", icon: Clock },
+    {
+      label: "Leave Requests",
+      path: "/employee/leave-requests",
+      icon: CalendarCheck,
+    },
+    {
+      label: "Approval History",
+      path: "/employee/approval-history",
+      icon: Clock,
+    },
     { label: "Profile", path: "/employee/profile", icon: User },
   ];
 
   // Find the currently active sidebar label based on current path
-  const activeFeature = sidebarLinks.find(link =>
-    location.pathname.startsWith(link.path)
-  )?.label || "";
+  const activeFeature =
+    sidebarLinks.find((link) => location.pathname.startsWith(link.path))
+      ?.label || "";
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/");
+    navigate("/login");
   };
 
   return (
@@ -117,7 +125,10 @@ const EmployeeLayout: React.FC = () => {
               placeholder="Search..."
               className="pl-10 pr-4 py-2 rounded-lg w-full bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
-            <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
+            <Search
+              className="absolute left-3 top-2.5 text-gray-500"
+              size={18}
+            />
           </div>
 
           {/* Right: Icons */}

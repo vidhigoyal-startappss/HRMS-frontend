@@ -63,10 +63,11 @@ const AppRouter = () => {
           element={
             <ProtectedRoutes allowedRoles={["Employee"]}>
               <EmployeeLayout />
+              {/* <EmployeeDashboard /> */}
             </ProtectedRoutes>
           }
         >
-          <Route index element={<EmployeeDashboard />} />
+          <Route index path="dashboard" element={<EmployeeDashboard />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />

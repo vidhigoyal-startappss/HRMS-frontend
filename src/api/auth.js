@@ -92,12 +92,12 @@ export const getEmployeeById = async (id) => {
 
 export const updateEmployee = async (id, data) => {
   try {
-    const response = await API.patch(`/employee/${id}`, data);
+    const response = await API.patch(`/api/users/employee/${id}`, data);
     return response.data;
   } catch (error) {
     console.error(
       "Update Employee Error:",
-      error.response?.data || error.message
+      error?.response?.data || error.message
     );
     throw error;
   }
