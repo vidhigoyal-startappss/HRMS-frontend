@@ -1,5 +1,6 @@
 import React from "react";
 import arrowImage from "../assets/arrow.png";
+import { useNavigate } from "react-router-dom";
 
 type EmployeeCardProps = {
   name: string;
@@ -12,6 +13,11 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
   role,
   imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUpiglNG5F4DdRpAG_jVCrqsQVX4P2d4jLzQ&s",
 }) => {
+  const navigate = useNavigate();
+  const handleEditClick = () => {
+    navigate(`/employee/profile/`);
+  };
+
   return (
     <div className="relative flex items-center justify-between bg-blue-900 p-4 rounded-lg shadow-md hover:shadow-lg transition">
       {/* Left side: profile image + name + role */}
@@ -28,21 +34,21 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
       </div>
 
       {/* Right side: Edit button */}
-      <button className="bg-yellow-500 px-5 py-2 rounded-sm cursor-pointer hover:bg-yellow-400">
+      <button
+        className="bg-yellow-500 px-5 py-2 rounded-sm cursor-pointer z-30 hover:bg-yellow-400"
+        onClick={handleEditClick}
+      >
         Edit Profile
       </button>
 
       {/* Arrow image positioned at top-right */}
       <img
-  src={arrowImage}
-  alt="arrow"
-  className="absolute top-1 right-0 w-[150px] h-[100px] rotate-0"
-/>
+        src={arrowImage}
+        alt="arrow"
+        className="absolute top-1 right-0 w-[150px] h-[100px] rotate-0 z-10"
+      />
     </div>
   );
 };
 
 export default EmployeeCard;
-
-
-

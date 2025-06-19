@@ -8,7 +8,8 @@ import BankDetailsForm from "../BankDetailStep/BankDetail";
 import Stepper from "../../../Stepper/Stepper";
 
 // API
-import { employeeCreate } from "../../../../api/auth";
+import { updateUserDetail } from "../../../../api/auth";
+import { useParams } from "react-router-dom";
 
 // Stepper labels
 const steps = ["Basic Details", "Educational Details", "Bank Details"];
@@ -31,13 +32,13 @@ type FormValues = {
   basicDetails: {
     firstName: string;
     lastName: string;
-    phoneNumber: string;
+    phone: string;
     dob: string;
     gender: string;
     address: string;
     city: string;
     state: string;
-    zipcode: string;
+    zipCode: string;
     country: string;
     joiningDate: string;
     designation: string;
@@ -45,7 +46,7 @@ type FormValues = {
     employmentType: string;
   };
   educationDetails: {
-    highestQualification: string;
+    qualification: string;
     university: string;
     yearOfPassing: string;
     grade: string;
@@ -56,12 +57,13 @@ type FormValues = {
     ifscCode: string;
     branchName: string;
     accountHolderName: string;
-    aadharNumber: string;
+    adharNumber: string;
     panNumber: string;
   };
 };
 
 const EmployeeForm = () => {
+  const userId = useParams<{ userId: string }>();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const methods = useForm<FormValues>({ mode: "onTouched" });
@@ -78,18 +80,24 @@ const EmployeeForm = () => {
   };
 
   const onSubmit = async (data: FormValues) => {
-    console.log("Final Payload:", data);
+    // console.log("Final Payload:", data);
     try {
-      const res = await employeeCreate(data);
+      // console.log(typeof userId);
+      const keys = Object.keys(userId);
+      const firstKey = keys[0];
+      const firstValue = userId[firstKey];
+      // console.log(firstValue);
+      const res = await updateUserDetail(firstValue, data);
       setIsSubmitted(true);
-      console.log("Response:", res);
+      // console.log("Response:", res);
     } catch (error: any) {
-      console.error("Submission Error:", error.response?.data || error.message);
+      // console.error("Submission Error:", error.response?.data || error.message);
       alert(
         "Failed to submit: " + (error.response?.data?.message || error.message)
       );
     }
   };
+  // console.log(userId);
 
   return (
     <FormProvider {...methods}>

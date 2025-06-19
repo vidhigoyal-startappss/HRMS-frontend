@@ -19,9 +19,7 @@ type TableProps = {
 
 const Table: React.FC<TableProps> = ({ headers, data }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const handleDeleteUser = () => {
-    console.log("user deleted");
-  };
+  const handleDeleteUser = () => {};
   const handleDeleteButton = () => {
     setModalOpen(true);
   };

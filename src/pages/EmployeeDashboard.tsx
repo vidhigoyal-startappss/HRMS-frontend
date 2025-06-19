@@ -2,11 +2,17 @@ import React from "react";
 import EmployeeCard from "../components/EmployeeCards";
 import QuickBtnData from "../assets/data/QuickActionsBtn.json";
 import Button from "../components/common/ButtonComp";
-import LeaveProgressBar, { LeaveType } from "../components/LeaveProgressBar/LeaveProgressBar";
+import LeaveProgressBar, {
+  LeaveType,
+} from "../components/LeaveProgressBar/LeaveProgressBar";
 import TaskBox from "../components/TaskBox/TaskBox";
 import AnnouncementBox from "../components/Announcement/Announcement";
 import BirthdayBox from "../components/BirthdayBox/BirthdayBox";
 import PayslipBreakdown from "../pages/PayslipBreakdown"; // <-- You need to create this
+import { getEmployeeById } from "../api/auth";
+import { useState, useEffect } from "react";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 const EmployeeDashboard = () => {
   const leaveStats: LeaveType[] = [
@@ -34,7 +40,8 @@ const EmployeeDashboard = () => {
     },
     {
       title: "System Downtime",
-      content: "The HR portal will be under maintenance on Sunday from 2am to 4am.",
+      content:
+        "The HR portal will be under maintenance on Sunday from 2am to 4am.",
     },
     {
       title: "Monthly Meetup",
@@ -47,7 +54,22 @@ const EmployeeDashboard = () => {
   };
 
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
+  const { user } = useSelector((state: RootState) => state.user);
+  const [employeeData, setEmployeeData] = useState<any>(null);
 
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        const data = await getEmployeeById(user.userId);
+        setEmployeeData(data);
+        console.log(data);
+      } catch (err) {
+        console.error("Error loading employee data:", err);
+      }
+    };
+
+    fetchEmployee();
+  }, [user]);
   return (
     <div className="w-full px-4 md:px-8 py-4">
       {/* Title */}
@@ -56,8 +78,8 @@ const EmployeeDashboard = () => {
       {/* Profile Card */}
       <EmployeeCard
         imageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUpiglNG5F4DdRpAG_jVCrqsQVX4P2d4jLzQ&s"
-        name="Ankit Sharma"
-        role="Frontend Developer"
+        name={employeeData?.firstName + employeeData?.lastName}
+        role={employeeData?.designation}
       />
 
       {/* Quick Actions */}

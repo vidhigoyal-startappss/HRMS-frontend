@@ -13,8 +13,6 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({
 }) => {
   const user = useSelector((state: any) => state.user.user);
 
-  console.log("ProtectedRoutes: user from Redux =>", user);
-
   if (!user) {
     // Not logged in, redirect to login page
     return <Navigate to="/login" replace />;

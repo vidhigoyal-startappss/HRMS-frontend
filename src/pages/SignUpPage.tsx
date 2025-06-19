@@ -47,16 +47,23 @@ const SignUpPage = () => {
     try {
       const formData = isFirstUser ? { ...data, role: "SuperAdmin" } : data;
 
-      await axios.post("http://localhost:3000/api/users/register", formData);
-      setMessage("Account created successfully. Please login.");
-      setTimeout(() => navigate("/login"), 1500);
+      const res = await axios.post(
+        "http://localhost:3000/api/users/register",
+        formData
+      );
+
+      const userId = res.data.userId;
+      setMessage("Account created successfully.");
+
+      // 👇 Add userId to the route path when navigating
+      setTimeout(() => navigate(`/admin/add-employee-details/${userId}`), 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
     }
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+    <div className="flex justify-center items-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white p-8 rounded shadow-md w-full max-w-md"

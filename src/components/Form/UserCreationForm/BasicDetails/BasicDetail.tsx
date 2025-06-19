@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-
-// Define FormValues matching backend DTO for Basic Details
+import { useParams } from "react-router-dom";
+import { getEmployeeById } from "../../../../api/auth";
 type FormValues = {
   basicDetails: {
     firstName: string;
     lastName: string;
-    phoneNumber: string;
+    phone: string;
     dob: string;
     gender: string;
     address: string;
     city: string;
     state: string;
-    zipcode: string;
+    zipCode: string;
     country: string;
     joiningDate?: string;
     designation?: string;
@@ -21,7 +21,9 @@ type FormValues = {
   };
 };
 
-const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
+const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
+  readOnly = false,
+}) => {
   const {
     register,
     formState: { errors },
@@ -30,7 +32,25 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
   const inputClass = `w-full border px-3 py-2 rounded ${
     readOnly ? "bg-gray-100 cursor-not-allowed" : ""
   }`;
+  // const { id } = useParams();
+  // const [employee, setEmployee] = useState({});
+  // useEffect(() => {
+  //   const fetchEmployee = async () => {
+  //     if (!id) return;
+  //     try {
+  //       const data = await getEmployeeById(id);
+  //       console.log("Fetched Employee Data:", data);
+  //       setEmployee(data);
+  //     } catch (err) {
+  //       console.error("Failed to load employee:", err);
+  //       alert("Failed to load employee data");
+  //     }
+  //   };
 
+  //   fetchEmployee();
+  // }, [id]);
+
+  // console.log(employee);
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-2">
       {/* First Name */}
@@ -42,9 +62,12 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           })}
           disabled={readOnly}
           className={inputClass}
+          // value={employee?.firstName}
         />
         {!readOnly && errors?.basicDetails?.firstName?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.firstName.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.firstName.message}
+          </p>
         )}
       </div>
 
@@ -59,7 +82,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           className={inputClass}
         />
         {!readOnly && errors?.basicDetails?.lastName?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.lastName.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.lastName.message}
+          </p>
         )}
       </div>
 
@@ -67,7 +92,7 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
       <div>
         <label className="block">Phone Number</label>
         <input
-          {...register("basicDetails.phoneNumber", {
+          {...register("basicDetails.phone", {
             required: !readOnly ? "Phone number is required" : false,
             pattern: !readOnly
               ? {
@@ -79,8 +104,10 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && errors?.basicDetails?.phoneNumber?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.phoneNumber.message}</p>
+        {!readOnly && errors?.basicDetails?.phone?.message && (
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.phone.message}
+          </p>
         )}
       </div>
 
@@ -96,7 +123,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           className={inputClass}
         />
         {!readOnly && errors?.basicDetails?.dob?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.dob.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.dob.message}
+          </p>
         )}
       </div>
 
@@ -116,7 +145,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           <option value="other">Other</option>
         </select>
         {!readOnly && errors?.basicDetails?.gender?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.gender.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.gender.message}
+          </p>
         )}
       </div>
 
@@ -131,7 +162,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           className={inputClass}
         />
         {!readOnly && errors?.basicDetails?.address?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.address.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.address.message}
+          </p>
         )}
       </div>
 
@@ -146,7 +179,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           className={inputClass}
         />
         {!readOnly && errors?.basicDetails?.city?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.city.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.city.message}
+          </p>
         )}
       </div>
 
@@ -161,7 +196,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           className={inputClass}
         />
         {!readOnly && errors?.basicDetails?.state?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.state.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.state.message}
+          </p>
         )}
       </div>
 
@@ -169,7 +206,7 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
       <div>
         <label className="block">ZIP Code</label>
         <input
-          {...register("basicDetails.zipcode", {
+          {...register("basicDetails.zipCode", {
             required: !readOnly ? "ZIP code is required" : false,
             pattern: !readOnly
               ? {
@@ -181,8 +218,10 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && errors?.basicDetails?.zipcode?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.zipcode.message}</p>
+        {!readOnly && errors?.basicDetails?.zipCode?.message && (
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.zipCode.message}
+          </p>
         )}
       </div>
 
@@ -197,7 +236,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           className={inputClass}
         />
         {!readOnly && errors?.basicDetails?.country?.message && (
-          <p className="text-red-500 text-sm">{errors.basicDetails.country.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.basicDetails.country.message}
+          </p>
         )}
       </div>
 

@@ -102,12 +102,12 @@ const EmployeeManagement = () => {
             >
               <td className="px-4 py-3">{emp._id}</td>
               <td className="px-4 py-3 font-medium">
-                {emp.basicDetails.firstName} {emp.basicDetails.lastName}
+                {emp.firstName} {emp?.lastName}
               </td>
-              <td className="px-4 py-3">{emp.basicDetails.designation}</td>
-              <td className="px-4 py-3">{emp.basicDetails.joiningDate}</td>
-              <td className="px-4 py-3">{emp.basicDetails.employmentType}</td>
-              <td className="px-4 py-3">{emp.basicDetails.gender}</td>
+              <td className="px-4 py-3">{emp.designation}</td>
+              <td className="px-4 py-3">{emp.joiningDate}</td>
+              <td className="px-4 py-3">{emp.employmentType}</td>
+              <td className="px-4 py-3">{emp.gender}</td>
               <td className="px-4 py-3 relative">
                 <button
                   onClick={() => toggleDropdown(index)}

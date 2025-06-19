@@ -97,7 +97,6 @@ export default function ProfileForm({ role }: ProfileFormProps) {
   const profileImage = watch("profileImage");
 
   const onSubmit: SubmitHandler<ProfileFormValues> = (data) => {
-    console.log("Form Data:", data);
     alert(
       role === "employee"
         ? "Profile updated successfully!"

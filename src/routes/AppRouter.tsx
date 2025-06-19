@@ -15,6 +15,7 @@ import Payroll from "../pages/Payroll";
 import Reports from "../pages/Reports";
 import EmployeeManagement from "../pages/EmployeeManagement";
 import EmployeeDashboard from "../pages/EmployeeDashboard";
+import Stepper from "../components/Stepper/Stepper";
 import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/EmployeeForm";
 import Unauthorized from "../pages/Unauthorised"; // create this page
 import ViewEmployee from "../pages/ViewEmployee";
@@ -42,6 +43,10 @@ const AppRouter = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="employee-management" element={<EmployeeManagement />} />
           <Route path="add-employee" element={<SignUpPage />} />
+          <Route
+            path="/admin/add-employee-details/:id"
+            element={<EmployeeForm />}
+          />
           <Route path="attendance" element={<Attendance />} />
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
@@ -63,7 +68,6 @@ const AppRouter = () => {
         >
           <Route index element={<EmployeeDashboard />} />
           <Route path="attendance" element={<Attendance />} />
-
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />

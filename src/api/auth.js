@@ -37,7 +37,6 @@ export const login = async (data) => {
       localStorage.setItem("role", user.role); // Save user role
       localStorage.setItem("userId", user._id); // Save user ID
     }
-    console.log(data);
 
     return response.data;
   } catch (error) {
@@ -45,14 +44,18 @@ export const login = async (data) => {
     throw error;
   }
 };
-
-export const employeeCreate = async (data) => {
+export const updateUserDetail = async (userId, data) => {
+  // userId = JSON.stringify(userId);
+  console.log(typeof userId);
   try {
-    const response = await API.post("/employee/create", data);
+    const response = await API.post(
+      `http://localhost:3000/api/users/complete-profile/${userId}`,
+      data
+    );
     return response.data;
   } catch (error) {
     console.error(
-      "Employee Create Error:",
+      "User Details Create Error:",
       error.response?.data || error.message
     );
     throw error;
@@ -61,7 +64,8 @@ export const employeeCreate = async (data) => {
 
 export const fetchEmployees = async () => {
   try {
-    const response = await API.get("/employee");
+    const response = await API.get("/api/users/employees");
+    console.log("<<<<employessdata", response.data);
     return response.data;
   } catch (error) {
     console.error(
@@ -74,7 +78,8 @@ export const fetchEmployees = async () => {
 
 export const getEmployeeById = async (id) => {
   try {
-    const res = await API.get(`/employee/${id}`);
+    const res = await API.get(`/api/users/employee/${id}`);
+    console.log(res?.data);
     return res.data;
   } catch (error) {
     console.error(

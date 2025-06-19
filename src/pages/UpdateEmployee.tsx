@@ -33,7 +33,9 @@ const UpdateEmployee = () => {
     const fetchData = async () => {
       try {
         const employee = await getEmployeeById(id);
-        methods.reset(employee);
+        if (!employee?.firstName || !employee?.phone) {
+          methods.reset(employee);
+        }
         setIsLoaded(true);
       } catch (error) {
         console.error("Failed to load employee:", error);
@@ -54,7 +56,7 @@ const UpdateEmployee = () => {
 
   const onSubmit = async (data) => {
     try {
-      const cleanedData = removeMongoMetaFields(data); // 👈 CLEAN the form data
+      const cleanedData = removeMongoMetaFields(data);
 
       await updateEmployee(id, cleanedData);
       alert("Employee updated successfully!");

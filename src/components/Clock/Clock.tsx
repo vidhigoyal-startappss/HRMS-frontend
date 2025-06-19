@@ -27,8 +27,6 @@ function Clock() {
     setLoginTime(null);
     setElapsedTime(0);
     setIsLoggedIn(false);
-    // You can also clear tokens, Redux state, etc here
-    console.log("User logged off!");
   };
 
   const formatTime = (milliseconds) => {
