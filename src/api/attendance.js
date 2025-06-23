@@ -1,12 +1,12 @@
 // src/api/attendance.js
 import axios from "axios";
 
-// Axios instance
+// ✅ Axios instance
 const API = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "http://localhost:3000/api",
 });
 
-// Add token from localStorage if available
+// ✅ Token Interceptor
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -18,37 +18,62 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Mark Attendance
-export const markAttendance = async (data) => {
+// ✅ 1. MARK ATTENDANCE
+export const markAttendance = async ({ status = "Present", date, time }) => {
   try {
-    const response = await API.post("/attendance/mark", data);
+    const response = await API.post("/attendance/mark", {
+      status,
+      date,
+      time,
+    });
     return response.data;
   } catch (error) {
-    console.error("Mark Attendance Error:", error.response?.data || error.message);
+    console.error("❌ Mark Attendance Error:", error.response?.data || error.message);
     throw error;
   }
 };
 
-// ✅ Get Attendance (Super Admin, HR, Employee)
+// ✅ 2. GET ALL ATTENDANCE (Admin/HR Only)
 export const getAllAttendance = async () => {
   try {
-    // Admin/super-admin does not require userId
-
     const response = await API.get("/attendance/all");
     return response.data;
   } catch (error) {
-    console.error("Get Attendance Error:", error.response?.data || error.message);
+    console.error("❌ Get All Attendance Error:", error.response?.data || error.message);
     throw error;
   }
 };
 
-// ✅ Update attendance by ID
+// ✅ 3. GET MY ATTENDANCE (Employee)
+export const getMyAttendance = async () => {
+  try {
+    const response = await API.get("/attendance/my");  // ✅ Only current user's data
+    return response.data;
+  } catch (error) {
+    console.error("❌ Get My Attendance Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+// ✅ 4. GET TODAY'S ATTENDANCE (Optional: For Dashboard Auto Check)
+export const getTodayAttendance = async () => {
+  try {
+    const response = await API.get("/attendance/today");
+    return response.data;
+  } catch (error) {
+    console.error("❌ Get Today's Attendance Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// ✅ 5. UPDATE ATTENDANCE BY ID (Admin/HR Only)
 export const updateAttendance = async (attendanceId, data) => {
   try {
     const response = await API.put(`/attendance/${attendanceId}`, data);
     return response.data;
   } catch (error) {
-    console.error("Update Attendance Error:", error.response?.data || error.message);
+    console.error("❌ Update Attendance Error:", error.response?.data || error.message);
     throw error;
   }
 };

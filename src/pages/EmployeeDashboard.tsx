@@ -78,24 +78,9 @@ const EmployeeDashboard = () => {
       {/* Profile Card */}
       <EmployeeCard
         imageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUpiglNG5F4DdRpAG_jVCrqsQVX4P2d4jLzQ&s"
-        name={employeeData?.firstName + employeeData?.lastName}
+        name={employeeData?.firstName + "  " + employeeData?.lastName}
         role={employeeData?.designation}
       />
-
-      {/* Quick Actions */}
-      {/* <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-2 text-blue-900">{QuickBtnData.label}</h2>
-        <div className="flex flex-wrap gap-3">
-          {Object.entries(QuickBtnData.content[0]).map(([key, label]) => (
-            <Button
-              key={key}
-              name={label}
-              cls="bg-white text-black cursor-pointer font-semibold py-2 px-6 rounded-3xl shadow hover:bg-gray-200 transition min-w-[140px]"
-            />
-          ))}
-        </div>
-      </div> */}
-
       {/* Leave + Payslip */}
       <div className="flex flex-col lg:flex-row gap-4 mt-6">
         <div className="w-full lg:w-1/2">

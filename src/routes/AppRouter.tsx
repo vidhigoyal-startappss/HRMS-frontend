@@ -20,6 +20,7 @@ import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/Emplo
 import Unauthorized from "../pages/Unauthorised"; // create this page
 import ViewEmployee from "../pages/ViewEmployee";
 import UpdateEmployee from "../pages/UpdateEmployee";
+import Calender from "../pages/CalenderView";
 
 const AppRouter = () => {
   return (
@@ -67,7 +68,7 @@ const AppRouter = () => {
           }
         >
           <Route index element={<EmployeeDashboard />} />
-          <Route path="attendance" element={<Attendance />} />
+          <Route path="attendance" element={<Calender/>} />
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />

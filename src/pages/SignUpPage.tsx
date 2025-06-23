@@ -3,7 +3,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const SignUpPage = () => {
   const [message, setMessage] = useState("");
@@ -12,9 +12,9 @@ const SignUpPage = () => {
 
   const schema = yup.object().shape({
     email: yup.string().email("Invalid email").required("Email is required"),
-    password: yup.string().min(6).required("Password is required"),
+    password: yup.string().min(6, "Minimum 6 characters").required("Password is required"),
     ...(isFirstUser
-      ? {} // skip role if first user
+      ? {}
       : {
           role: yup
             .string()
@@ -32,9 +32,7 @@ const SignUpPage = () => {
   useEffect(() => {
     const checkFirstUser = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:3000/api/users/first-user-check"
-        );
+        const res = await axios.get("http://localhost:3000/api/users/first-user-check");
         setIsFirstUser(res.data.isFirst);
       } catch (err) {
         console.error("Error checking first user", err);
@@ -47,15 +45,11 @@ const SignUpPage = () => {
     try {
       const formData = isFirstUser ? { ...data, role: "SuperAdmin" } : data;
 
-      const res = await axios.post(
-        "http://localhost:3000/api/users/register",
-        formData
-      );
+      const res = await axios.post("http://localhost:3000/api/users/register", formData);
 
       const userId = res.data.userId;
-      setMessage("Account created successfully.");
+      setMessage("🎉 Account created successfully!");
 
-      // 👇 Add userId to the route path when navigating
       setTimeout(() => navigate(`/admin/add-employee-details/${userId}`), 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
@@ -63,55 +57,72 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-8 rounded shadow-md w-full max-w-md"
-      >
-        <h2 className="text-2xl font-bold text-center mb-4">Create Account</h2>
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Create an Account</h2>
 
-        <div className="mb-4">
-          <label>Email</label>
-          <input {...register("email")} className="w-full border p-2 rounded" />
-          <p className="text-red-500 text-sm">{errors.email?.message}</p>
-        </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
 
-        <div className="mb-4">
-          <label>Password</label>
-          <input
-            type="password"
-            {...register("password")}
-            className="w-full border p-2 rounded"
-          />
-          <p className="text-red-500 text-sm">{errors.password?.message}</p>
-        </div>
-
-        {/* Show role dropdown ONLY if it's not first user */}
-        {!isFirstUser && (
           <div className="mb-4">
-            <label>Role</label>
-            <select {...register("role")} className="w-full border p-2 rounded">
-              <option value="">-- Select Role --</option>
-              <option value="Admin">Admin</option>
-              <option value="HR">HR</option>
-              <option value="Manager">Manager</option>
-              <option value="Employee">Employee</option>
-            </select>
-            <p className="text-red-500 text-sm">{errors.role?.message}</p>
+            <label className="block text-gray-700 font-medium mb-1">Email</label>
+            <input
+              {...register("email")}
+              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your email"
+            />
+            <p className="text-red-500 text-sm mt-1">{errors.email?.message}</p>
           </div>
-        )}
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-        >
-          Sign Up
-        </button>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-1">Password</label>
+            <input
+              type="password"
+              {...register("password")}
+              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your password"
+            />
+            <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>
+          </div>
 
-        {message && (
-          <p className="text-green-600 mt-4 text-center">{message}</p>
-        )}
-      </form>
+          {!isFirstUser && (
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-1">Role</label>
+              <select
+                {...register("role")}
+                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">-- Select Role --</option>
+                <option value="Admin">Admin</option>
+                <option value="HR">HR</option>
+                <option value="Manager">Manager</option>
+                <option value="Employee">Employee</option>
+              </select>
+              <p className="text-red-500 text-sm mt-1">{errors.role?.message}</p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            Sign Up
+          </button>
+
+          {message && (
+            <p className="text-green-600 text-center mt-4 font-medium">{message}</p>
+          )}
+        </form>
+
+        <p className="text-center mt-6 text-gray-600">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-blue-600 font-semibold hover:underline"
+          >
+            Login here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

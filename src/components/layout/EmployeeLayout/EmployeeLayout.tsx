@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -15,18 +15,41 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../feature/user/userSlice";
 import { RootState } from "../../../store/store";
 import profileImage from "../../../assets/user-alt.svg";
+import { getEmployeeById } from "../../../api/auth"; // ✅ Replace with correct path
 
 const EmployeeLayout: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-
   const user = useSelector((state: RootState) => state.user.user);
 
-  const name = user?.name || "Employee";
-  const role = user?.role || "employee";
+  const [employeeData, setEmployeeData] = useState<any>(null);
 
-  // Sidebar links array
+  useEffect(() => {
+  const fetchEmployee = async () => {
+    if (user?.userId) {
+      try {
+        const data = await getEmployeeById(user.userId);
+        setEmployeeData(data?.employee || data); // adjust if API wraps response
+        console.log("Fetched Employee:", data);
+      } catch (err) {
+        console.error("Error loading employee data:", err);
+      }
+    }
+  };
+
+  fetchEmployee();
+}, [user]);
+
+
+
+  const fullName =
+  employeeData?.firstName && employeeData?.lastName
+    ? `${employeeData.firstName} ${employeeData.lastName}`
+    : "Employee";
+
+  const role = user?.role || "Employee";
+
   const sidebarLinks = [
     { label: "Dashboard", path: "/employee/dashboard", icon: LayoutDashboard },
     { label: "Attendance", path: "/employee/attendance", icon: UserCheck },
@@ -35,10 +58,8 @@ const EmployeeLayout: React.FC = () => {
     { label: "Profile", path: "/employee/profile", icon: User },
   ];
 
-  // Find the currently active sidebar label based on current path
-  const activeFeature = sidebarLinks.find(link =>
-    location.pathname.startsWith(link.path)
-  )?.label || "";
+  const activeFeature =
+    sidebarLinks.find((link) => location.pathname.startsWith(link.path))?.label || "";
 
   const handleLogout = () => {
     dispatch(logout());
@@ -66,7 +87,7 @@ const EmployeeLayout: React.FC = () => {
             className="w-14 h-14 rounded-full object-cover border-2 border-yellow-500"
           />
           <div>
-            <p className="text-lg font-semibold capitalize">{name}</p>
+            <p className="text-lg font-semibold capitalize">{fullName}</p>
             <p className="text-sm text-gray-300 capitalize">{role}</p>
           </div>
         </div>
@@ -105,12 +126,12 @@ const EmployeeLayout: React.FC = () => {
       <main className="flex-1 flex flex-col overflow-auto p-4 md:p-6 bg-gray-100">
         {/* Topbar */}
         <div className="flex justify-between items-center mb-4">
-          {/* Left: Active Feature Name */}
+          {/* Left: Active Feature */}
           <div className="text-xl font-semibold text-gray-800 capitalize mr-6 min-w-[150px]">
             {activeFeature || "Welcome"}
           </div>
 
-          {/* Middle: Search */}
+          {/* Search Bar */}
           <div className="relative w-full max-w-md">
             <input
               type="text"
@@ -120,7 +141,7 @@ const EmployeeLayout: React.FC = () => {
             <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
           </div>
 
-          {/* Right: Icons */}
+          {/* Icons */}
           <div className="flex items-center gap-4 ml-4">
             <button className="relative p-2 rounded-full bg-white hover:bg-gray-200">
               <Bell size={20} className="text-gray-700" />
@@ -132,7 +153,7 @@ const EmployeeLayout: React.FC = () => {
           </div>
         </div>
 
-        {/* Content */}
+        {/* Dynamic Page Content */}
         <div className="bg-white rounded-xl shadow p-6 w-full h-auto">
           <Outlet />
         </div>
