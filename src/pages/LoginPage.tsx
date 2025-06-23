@@ -47,6 +47,7 @@ const Login: React.FC = () => {
           email: payload.email,
           role: payload.role,
           employeeId: payload.employeeId,
+          name: payload.name,
           customPermissions: payload.customPermissions,
         };
 
@@ -58,7 +59,7 @@ const Login: React.FC = () => {
         if (["SuperAdmin", "Admin", "Manager", "HR"].includes(user.role)) {
           navigate("/admin/dashboard");
         } else {
-          navigate("/employee/dashboard");
+          navigate("/employee");
         }
       } else {
         setErrorMsg("Token not found in response");

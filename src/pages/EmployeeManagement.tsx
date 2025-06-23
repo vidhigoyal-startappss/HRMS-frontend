@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { fetchEmployees } from "../api/auth";
-
+import Loader from "../components/Loader/Loader";
+import { Funnel } from "lucide-react";
 interface Employee {
   _id: string;
   account: {
@@ -64,7 +65,9 @@ const EmployeeManagement = () => {
 
   if (loading) {
     return (
-      <div className="p-4 text-center text-gray-500">Loading employees...</div>
+      <div className="p-4 text-center text-gray-500">
+        <Loader />
+      </div>
     );
   }
 
@@ -75,13 +78,17 @@ const EmployeeManagement = () => {
   return (
     <div className="overflow-x-auto rounded-lg shadow-md p-4 bg-white">
       <div className="flex justify-end mb-4">
-        {/* Uncomment if adding employees from frontend */}
-        {/* <button
-          onClick={() => navigate("/admin/add-employee")}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Add Employee
-        </button> */}
+        <div className="flex gap-4">
+          <button className="filter">
+            <Funnel size={"35px"} fill="#000" />
+          </button>
+          <button
+            className="add-employee bg-green-600 p-2 font-extrabold text-white rounded-xl"
+            onClick={() => navigate("/admin/add-employee")}
+          >
+            Create User
+          </button>
+        </div>
       </div>
 
       <table className="w-full text-sm text-left text-gray-700">

@@ -28,12 +28,12 @@ const validationSchema = Yup.object({
     ifscCode: Yup.string().required(),
     branchName: Yup.string().required(),
     accountHolderName: Yup.string().required(),
-    aadharNumber: Yup.string().required(),
+    adharNumber: Yup.string().required(),
     panNumber: Yup.string().required(),
   }),
   educationDetails: Yup.object({
-    highestQualification: Yup.string().required(),
-    university: Yup.string().required(),
+    qualification: Yup.string().required(),
+    institution: Yup.string().required(),
     yearOfPassing: Yup.number().required(),
     grade: Yup.string().required(),
   }),
@@ -128,7 +128,7 @@ const UserUpdateProfile: React.FC = () => {
         />
         <input
           placeholder="Aadhar Number"
-          {...register("bankDetails.aadharNumber")}
+          {...register("bankDetails.adharNumber")}
         />
         <input
           placeholder="PAN Number"
@@ -140,11 +140,11 @@ const UserUpdateProfile: React.FC = () => {
       <div className="grid grid-cols-2 gap-4">
         <input
           placeholder="Highest Qualification"
-          {...register("educationDetails.highestQualification")}
+          {...register("educationDetails.qualification")}
         />
         <input
           placeholder="University"
-          {...register("educationDetails.university")}
+          {...register("educationDetails.institution")}
         />
         <input
           placeholder="Year of Passing"

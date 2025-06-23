@@ -288,7 +288,7 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         >
           <option value="">Select Type</option>
           <option value="full-time">Full-time</option>
-          <option value="part-time">Part-time</option>
+          <option value="intern">Intern</option>
           <option value="contract">Contract</option>
         </select>
       </div>

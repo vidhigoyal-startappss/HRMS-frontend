@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
-
+import LeaveRequestForm from "../components/Form/LeaveForm/LeaveForm";
 import SignUpPage from "../pages/SignUpPage";
 import Login from "../pages/LoginPage";
 import ProtectedRoutes from "../routes/ProtectedRoutes";
@@ -15,20 +15,21 @@ import Payroll from "../pages/Payroll";
 import Reports from "../pages/Reports";
 import EmployeeManagement from "../pages/EmployeeManagement";
 import EmployeeDashboard from "../pages/EmployeeDashboard";
-import Stepper from "../components/Stepper/Stepper";
+// import Stepper from "../components/Stepper/Stepper";
 import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/EmployeeForm";
 import Unauthorized from "../pages/Unauthorised"; // create this page
 import ViewEmployee from "../pages/ViewEmployee";
 import UpdateEmployee from "../pages/UpdateEmployee";
 import Calender from "../pages/CalenderView";
+import EmployeeLeaveDashboard from "../pages/Leaves";
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<SignUpPage />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/" element={<Login />} />
 
         {/* Admin Routes */}
         <Route
@@ -70,7 +71,9 @@ const AppRouter = () => {
         >
           <Route index element={<EmployeeDashboard />} />
           <Route path="attendance" element={<Calender/>} />
-          <Route path="leave-requests" element={<LeaveRequests />} />
+          <Route path="leaves" element={<EmployeeLeaveDashboard />} />
+          <Route path="request-leave" element={<LeaveRequestForm />} />
+
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
         </Route>
