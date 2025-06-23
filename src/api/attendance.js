@@ -19,12 +19,15 @@ API.interceptors.request.use(
 );
 
 // ✅ 1. MARK ATTENDANCE
-export const markAttendance = async ({ status = "Present", date, time }) => {
+export const markAttendance = async ({ status = "Present", date, time, latitude, longitude }) => {
   try {
+    console.log("📍 Sending Location:", latitude, longitude); // ✅ Add this
     const response = await API.post("/attendance/mark", {
       status,
       date,
       time,
+      latitude,
+      longitude,
     });
     return response.data;
   } catch (error) {
@@ -32,6 +35,8 @@ export const markAttendance = async ({ status = "Present", date, time }) => {
     throw error;
   }
 };
+
+// 93, Heera Bagh, Scheme No 78 - III, near Dewas Naka, Bapu Gandhi Nagar, Indore, Madhya Pradesh 452010
 
 // ✅ 2. GET ALL ATTENDANCE (Admin/HR Only)
 export const getAllAttendance = async () => {

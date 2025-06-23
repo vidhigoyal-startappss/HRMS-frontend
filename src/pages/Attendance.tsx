@@ -209,14 +209,11 @@ const Attendance = () => {
             </button>
             <h2 className="text-lg font-semibold mb-4">Click a date to mark your attendance</h2>
             <CalendarView
-              attendanceData={attendanceData}
-              onDateClick={handleDateClick}
-              key={attendanceData.length} // 👈 This will force re-render when new attendance is added
-  tileClassName={getTileClass}
-  tileContent={getTileContent}
-  onClickDay={handleClickDay}
+  attendanceData={attendanceData}
+  onDateClick={handleDateClick}
+  key={attendanceData.length}
   className="w-full"
-            />
+/>
             {calendarLoading && (
               <p className="text-sm text-gray-500 mt-2">Marking attendance...</p>
             )}

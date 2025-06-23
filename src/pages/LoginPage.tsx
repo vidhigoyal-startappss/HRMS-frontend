@@ -37,32 +37,36 @@ const Login: React.FC = () => {
 
       const token = response.data.accessToken;
 
-      if (token) {
-        localStorage.setItem("token", token);
+      if (!token) {
+        throw new Error("Token not found in response.");
+      }
 
-        // Decode token to extract user data (or fetch profile separately)
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const user = {
-          userId: payload.userId,
-          email: payload.email,
-          role: payload.role,
-          employeeId: payload.employeeId,
-          customPermissions: payload.customPermissions,
-        };
+      localStorage.setItem("token", token);
 
-        localStorage.setItem("user", JSON.stringify(user));
-        dispatch(login(user));
+      const payload = JSON.parse(atob(token.split(".")[1]));
 
-        toast.success("Login successful!");
+      const user = {
+        userId: payload.userId,
+        email: payload.email,
+        role: payload.role,
+        employeeId: payload.employeeId,
+        customPermissions: payload.customPermissions,
+      };
 
-        if (["SuperAdmin", "Admin", "Manager", "HR"].includes(user.role)) {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/employee/dashboard");
-        }
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch(login(user));
+
+      toast.success("Login successful!");
+
+      const role = user.role?.toLowerCase();
+      console.log("User Role", user.role)
+
+      if (["superadmin", "admin", "manager", "hr"].includes(role)) {
+        navigate("/admin/dashboard");
+      } else if (role === "employee") {
+        navigate("/employee");
       } else {
-        setErrorMsg("Token not found in response");
-        toast.error("Login failed");
+        toast.error("Unknown role. Cannot redirect.");
       }
     } catch (err: any) {
       console.error(err);
@@ -92,12 +96,14 @@ const Login: React.FC = () => {
               type="email"
               name="email"
               placeholder="Email"
+              value={email}
               onChange={handleEmailChange}
             />
             <InputField
               type="password"
               name="password"
               placeholder="Password"
+              value={password}
               onChange={handlePasswordChange}
             />
             <div>

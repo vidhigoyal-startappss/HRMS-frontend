@@ -1,16 +1,16 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
-import { RootState } from "../store"; // import correct RootState
+import { Navigate, Outlet } from "react-router-dom";
+import { RootState } from "../store/store";
 
 interface ProtectedRoutesProps {
-  children: JSX.Element;
   allowedRoles?: string[];
+  children?: React.ReactNode; // optional, in case someone uses <ProtectedRoutes><Component /></ProtectedRoutes>
 }
 
 const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({
-  children,
   allowedRoles,
+  children,
 }) => {
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -19,12 +19,12 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({
   }
 
   const userRole = user.role;
+  console.log("Current Role:", user.role);
 
   if (allowedRoles && !allowedRoles.includes(userRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
-
-  return children;
+  return <>{children || <Outlet />}</>;
 };
 
 export default ProtectedRoutes;

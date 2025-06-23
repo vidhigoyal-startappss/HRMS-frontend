@@ -3,7 +3,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
-import { markAttendance, getAllAttendance, getMyAttendance } from "../api/attendance";
+import { markAttendance, getMyAttendance } from "../api/attendance";
 
 const statusColors = {
   Present: "bg-green-500",
@@ -18,33 +18,33 @@ const CalendarView = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-  fetchAttendanceData();
-}, []);
+    fetchAttendanceData();
 
-const fetchAttendanceData = async () => {
-  try {
-    const data = await getMyAttendance();  // 👈 Only current user's data
-    setAttendanceData(data);
-  } catch (error) {
-    console.error("Failed to load attendance data", error);
-  }
-};
+    if (!navigator.geolocation) {
+      alert("⚠️ Your browser does not support location access.");
+    }
+  }, []);
+
+  const fetchAttendanceData = async () => {
+    try {
+      const data = await getMyAttendance(); // ✅ Only current user's data
+      setAttendanceData(data);
+    } catch (error) {
+      console.error("❌ Failed to load attendance data", error);
+    }
+  };
 
   const getStatusForDate = (date) => {
-  const today = dayjs(date).format("YYYY-MM-DD");
-  const entry = attendanceData.find(e => dayjs(e.date).format("YYYY-MM-DD") === today);
-  return entry?.status || null;
-};
-
+    const today = dayjs(date).format("YYYY-MM-DD");
+    const entry = attendanceData.find((e) => dayjs(e.date).format("YYYY-MM-DD") === today);
+    return entry?.status || null;
+  };
 
   const getTileClass = ({ date, view }) => {
-  if (view !== "month") return "";
-  const status = getStatusForDate(date);
-  return status
-    ? `${statusColors[status]} text-white font-bold rounded-full`
-    : "";
-};
-
+    if (view !== "month") return "";
+    const status = getStatusForDate(date);
+    return status ? `${statusColors[status]} text-white font-bold rounded-full` : "";
+  };
 
   const getTileContent = ({ date, view }) => {
     if (view !== "month") return null;
@@ -57,18 +57,17 @@ const fetchAttendanceData = async () => {
 
     return (
       <div className="mt-1 text-[10px] text-gray-700 space-y-1">
-    {entries.map((entry, idx) => (
-  <div key={idx} className="bg-white rounded px-1 py-0.5 shadow text-[10px]">
-    <span className="block">{entry.status}</span>
-    {entry.time && (
-      <span className="text-[9px] text-gray-500">
-        {dayjs(entry.time, "HH:mm:ss").format("hh:mm A")}
-      </span>
-    )}
-  </div>
-))}
-
-  </div>
+        {entries.map((entry, idx) => (
+          <div key={idx} className="bg-white rounded px-1 py-0.5 shadow text-[10px]">
+            <span className="block">{entry.status}</span>
+            {entry.time && (
+              <span className="text-[9px] text-gray-500">
+                {dayjs(entry.time, "HH:mm:ss").format("hh:mm A")}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
     );
   };
 
@@ -79,14 +78,32 @@ const fetchAttendanceData = async () => {
   const handleMarkAttendance = async () => {
     if (!selectedDate || !status) return;
     setLoading(true);
+
     try {
-      await markAttendance({ date: dayjs(selectedDate).format("YYYY-MM-DD"), status });
-      await fetchAttendanceData(); 
-      setSelectedDate(null);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          await markAttendance({
+            date: dayjs(selectedDate).format("YYYY-MM-DD"),
+            status,
+            latitude,
+            longitude,
+          });
+
+          await fetchAttendanceData();
+          setSelectedDate(null);
+          setLoading(false);
+        },
+        (error) => {
+          console.error("❌ Location Error:", error);
+          alert("⚠️ Location access is required to mark attendance.");
+          setLoading(false);
+        }
+      );
     } catch (error) {
-      console.error("Error marking attendance", error);
+      console.error("❌ Error marking attendance", error);
       alert("Failed to mark attendance");
-    } finally {
       setLoading(false);
     }
   };
