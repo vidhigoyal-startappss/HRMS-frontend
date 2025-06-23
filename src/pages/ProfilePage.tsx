@@ -1,70 +1,65 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import axios from "axios";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
-
-const validationSchema = Yup.object({
-  basicDetails: Yup.object({
-    firstName: Yup.string().required(),
-    lastName: Yup.string().required(),
-    phone: Yup.string().required(),
-    dob: Yup.string().required(),
-    gender: Yup.string().required(),
-    address: Yup.string().required(),
-    city: Yup.string().required(),
-    state: Yup.string().required(),
-    zipCode: Yup.string().required(),
-    country: Yup.string().required(),
-    joiningDate: Yup.string().required(),
-    designation: Yup.string().required(),
-    department: Yup.string().required(),
-    employmentType: Yup.string().required(),
-  }),
-  bankDetails: Yup.object({
-    bankName: Yup.string().required(),
-    accountNumber: Yup.string().required(),
-    ifscCode: Yup.string().required(),
-    branchName: Yup.string().required(),
-    accountHolderName: Yup.string().required(),
-    aadharNumber: Yup.string().required(),
-    panNumber: Yup.string().required(),
-  }),
-  educationDetails: Yup.object({
-    highestQualification: Yup.string().required(),
-    university: Yup.string().required(),
-    yearOfPassing: Yup.number().required(),
-    grade: Yup.string().required(),
-  }),
-});
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
+import { updateEmployee } from "../api/auth";
 
 const Profile: React.FC = () => {
-  const userId = useParams<{ userId: string }>();
-  // const userId = "REPLACE_WITH_USER_ID"; // replace with actual user ID
   const [isEditing, setIsEditing] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting },
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-  });
+  const [profile, setProfile] = useState<any>({});
+  const { user } = useSelector((state: RootState) => state.user);
+  const userId = user?.userId;
 
   useEffect(() => {
-    // Fetch user data from the API
-    axios.get(`http://localhost:3000/api/users/${userId}`).then((res) => {
-      // Reset form with fetched data to populate the fields with existing values
-      reset(res.data);
-    });
-  }, [reset, userId]);
+    axios
+      .get(`http://localhost:3000/api/users/employee/${userId}`)
+      .then((res) => setProfile(res.data))
+      .catch((err) => toast.error("Failed to load profile"));
+  }, [userId]);
 
-  const onSubmit = async (data: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfile((prev: any) => ({ ...prev, [name]: value }));
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const structuredPayload = {
+      basicDetails: {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        phone: profile.phone,
+        dob: profile.dob,
+        gender: profile.gender,
+        address: profile.address,
+        city: profile.city,
+        state: profile.state,
+        zipCode: profile.zipCode,
+        country: profile.country,
+        joiningDate: profile.joiningDate,
+        designation: profile.designation,
+        department: profile.department,
+        employmentType: profile.employmentType,
+      },
+      bankDetails: {
+        bankName: profile.bankName,
+        accountNumber: profile.accountNumber,
+        ifscCode: profile.ifscCode,
+        branchName: profile.branchName,
+        accountHolderName: profile.accountHolderName,
+        adharNumber: profile.adharNumber,
+        panNumber: profile.panNumber,
+      },
+      educationDetails: {
+        qualification: profile.qualification,
+        institution: profile.institution,
+        yearOfPassing: profile.yearOfPassing,
+        grade: profile.grade,
+      },
+    };
     try {
-      await axios.put(`http://localhost:3000/api/users/${userId}`, data);
+      await updateEmployee(userId, structuredPayload);
       toast.success("Profile updated successfully");
       setIsEditing(false);
     } catch (error) {
@@ -77,8 +72,10 @@ const Profile: React.FC = () => {
     <div>
       <label className="block font-medium mb-1">{label}</label>
       <input
-        {...register(name)}
+        name={name}
         type={type}
+        value={profile[name] || ""}
+        onChange={handleInputChange}
         disabled={!isEditing}
         className={`w-full px-3 py-2 border rounded ${
           !isEditing ? "bg-gray-100" : "bg-white"
@@ -86,7 +83,7 @@ const Profile: React.FC = () => {
       />
     </div>
   );
-  console.log(userId);
+
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white shadow rounded-xl relative">
       <div className="flex justify-between items-center mb-6">
@@ -100,25 +97,25 @@ const Profile: React.FC = () => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={onSubmit} className="space-y-8">
         {/* Basic Details */}
         <div>
           <h3 className="text-xl font-semibold mb-4">Basic Details</h3>
           <div className="grid grid-cols-3 gap-6">
-            {renderField("First Name", "basicDetails.firstName")}
-            {renderField("Last Name", "basicDetails.lastName")}
-            {renderField("Phone", "basicDetails.phone")}
-            {renderField("Date of Birth", "basicDetails.dob", "date")}
-            {renderField("Gender", "basicDetails.gender")}
-            {renderField("Address", "basicDetails.address")}
-            {renderField("City", "basicDetails.city")}
-            {renderField("State", "basicDetails.state")}
-            {renderField("Zip Code", "basicDetails.zipCode")}
-            {renderField("Country", "basicDetails.country")}
-            {renderField("Joining Date", "basicDetails.joiningDate", "date")}
-            {renderField("Designation", "basicDetails.designation")}
-            {renderField("Department", "basicDetails.department")}
-            {renderField("Employment Type", "basicDetails.employmentType")}
+            {renderField("First Name", "firstName")}
+            {renderField("Last Name", "lastName")}
+            {renderField("Phone", "phone")}
+            {renderField("Date of Birth", "dob")}
+            {renderField("Gender", "gender")}
+            {renderField("Address", "address")}
+            {renderField("City", "city")}
+            {renderField("State", "state")}
+            {renderField("Zip Code", "zipCode")}
+            {renderField("Country", "country")}
+            {renderField("Joining Date", "joiningDate")}
+            {renderField("Designation", "designation")}
+            {renderField("Department", "department")}
+            {renderField("Employment Type", "employmentType")}
           </div>
         </div>
 
@@ -126,16 +123,13 @@ const Profile: React.FC = () => {
         <div>
           <h3 className="text-xl font-semibold mb-4">Bank Details</h3>
           <div className="grid grid-cols-3 gap-6">
-            {renderField("Bank Name", "bankDetails.bankName")}
-            {renderField("Account Number", "bankDetails.accountNumber")}
-            {renderField("IFSC Code", "bankDetails.ifscCode")}
-            {renderField("Branch Name", "bankDetails.branchName")}
-            {renderField(
-              "Account Holder Name",
-              "bankDetails.accountHolderName"
-            )}
-            {renderField("Aadhar Number", "bankDetails.aadharNumber")}
-            {renderField("PAN Number", "bankDetails.panNumber")}
+            {renderField("Bank Name", "bankName")}
+            {renderField("Account Number", "accountNumber")}
+            {renderField("IFSC Code", "ifscCode")}
+            {renderField("Branch Name", "branchName")}
+            {renderField("Account Holder Name", "accountHolderName")}
+            {renderField("Aadhar Number", "adharNumber")}
+            {renderField("PAN Number", "panNumber")}
           </div>
         </div>
 
@@ -143,17 +137,10 @@ const Profile: React.FC = () => {
         <div>
           <h3 className="text-xl font-semibold mb-4">Education Details</h3>
           <div className="grid grid-cols-3 gap-6">
-            {renderField(
-              "Highest Qualification",
-              "educationDetails.highestQualification"
-            )}
-            {renderField("University", "educationDetails.university")}
-            {renderField(
-              "Year of Passing",
-              "educationDetails.yearOfPassing",
-              "number"
-            )}
-            {renderField("Grade", "educationDetails.grade")}
+            {renderField("Highest Qualification", "qualification")}
+            {renderField("University", "institution")}
+            {renderField("Year of Passing", "yearOfPassing", "number")}
+            {renderField("Grade", "grade")}
           </div>
         </div>
 
@@ -161,10 +148,9 @@ const Profile: React.FC = () => {
           <div className="text-right">
             <button
               type="submit"
-              disabled={isSubmitting}
               className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
             >
-              {isSubmitting ? "Updating..." : "Update Profile"}
+              Update Profile
             </button>
           </div>
         )}
