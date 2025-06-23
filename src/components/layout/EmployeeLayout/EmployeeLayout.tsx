@@ -54,8 +54,8 @@ const EmployeeLayout: React.FC = () => {
     { label: "Dashboard", path: "/employee", icon: LayoutDashboard },
     { label: "Attendance", path: "/employee/attendance", icon: UserCheck },
     {
-      label: "Leave Requests",
-      path: "/employee/leave-requests",
+      label: "Leaves",
+      path: "/employee/leaves",
       icon: CalendarCheck,
     },
     {

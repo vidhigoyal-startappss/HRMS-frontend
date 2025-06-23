@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -26,6 +26,15 @@ const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.user);
   const role = user?.role?.toLowerCase() || "guest";
+  const location = useLocation();
+  useEffect(() => {
+    const current = linksToShow.find((link) =>
+      location.pathname.startsWith(link.path)
+    );
+    if (current) {
+      setPageTitle(current.label);
+    }
+  }, [location.pathname]);
 
   const sidebarConfig: Record<
     string,
@@ -152,7 +161,7 @@ const AdminLayout: React.FC = () => {
             <NavLink
               key={label}
               to={path}
-              onClick={() => setPageTitle(label)} // 👈 This is the main line
+              onClick={() => setPageTitle(label)}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 ${
                   isActive
@@ -210,18 +219,6 @@ const AdminLayout: React.FC = () => {
         <div className="bg-white rounded-xl shadow-md p-6 w-full min-h-[calc(100vh-150px)]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold mb-2 text-black">{pageTitle}</h2>
-
-            <div className="flex gap-4">
-              <button className="filter">
-                <Funnel size={"35px"} fill="#000" />
-              </button>
-              <button
-                className="add-employee bg-green-600 p-2 font-extrabold text-white rounded-xl"
-                onClick={() => navigate("/admin/add-employee")}
-              >
-                Create User
-              </button>
-            </div>
           </div>
           <Outlet />
         </div>

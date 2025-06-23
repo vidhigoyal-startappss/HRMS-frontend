@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import Stepper from "../components/Stepper/Stepper";
-
-// import UserAccountCreationForm from "../components/Form/UserCreationForm/AccountCreationStep/AccountCreation";
 import BasicDetailsForm from "../components/Form/UserCreationForm/BasicDetails/BasicDetail";
 import EducationDetailsForm from "../components/Form/UserCreationForm/EducationDetails/EducationDetail";
 import BankDetailsForm from "../components/Form/UserCreationForm/BankDetailStep/BankDetail";
 
-import { getEmployeeById } from "../api/auth"; // ✅ create this API
+import { getEmployeeById } from "../api/auth";
 
 const steps = [
   // "Account Creation",

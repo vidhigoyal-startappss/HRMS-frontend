@@ -1,15 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MoreVertical } from "lucide-react";
-
-interface LeaveEntry {
-  employeeName: string;
-  numberOfDays: number;
-  startDate: string;
-  endDate: string;
-  leaveType: string;
-  reason: string;
-  status: "Approved" | "Rejected" | "Pending";
-}
+import { getLeaves } from "../api/leave";
+import { LeaveEntry, User } from "../api/leave";
+import { updateStatus as updateLeaveStatusAPI } from "../api/leave";
 
 const leaveHeaders: string[] = [
   "Employee Name",
@@ -20,36 +13,6 @@ const leaveHeaders: string[] = [
   "Reason",
   "Status",
   "Actions",
-];
-
-const initialLeaveData: LeaveEntry[] = [
-  {
-    employeeName: "John Doe",
-    numberOfDays: 3,
-    startDate: "2025-06-10",
-    endDate: "2025-06-12",
-    leaveType: "Sick Leave",
-    reason: "High fever and cold",
-    status: "Approved",
-  },
-  {
-    employeeName: "Priya Sharma",
-    numberOfDays: 2,
-    startDate: "2025-06-15",
-    endDate: "2025-06-16",
-    leaveType: "Casual Leave",
-    reason: "Family function",
-    status: "Pending",
-  },
-  {
-    employeeName: "Amit Verma",
-    numberOfDays: 1,
-    startDate: "2025-06-11",
-    endDate: "2025-06-11",
-    leaveType: "Sick Leave",
-    reason: "Migraine headache",
-    status: "Pending",
-  },
 ];
 
 const getStatusStyle = (status: LeaveEntry["status"]) => {
@@ -66,19 +29,52 @@ const getStatusStyle = (status: LeaveEntry["status"]) => {
 };
 
 const LeaveManagement: React.FC = () => {
-  const [leaveData, setLeaveData] = useState<LeaveEntry[]>(initialLeaveData);
+  const [leaves, setLeaves] = useState<LeaveEntry[]>([]);
   const [dropdownIndex, setDropdownIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchLeaves = async () => {
+      const data = await getLeaves();
+      setLeaves(data);
+    };
+    fetchLeaves();
+  }, []);
 
   const toggleDropdown = (index: number) => {
     setDropdownIndex(dropdownIndex === index ? null : index);
   };
 
-  const updateStatus = (index: number, newStatus: LeaveEntry["status"]) => {
-    const updated = [...leaveData];
-    updated[index].status = newStatus;
-    setLeaveData(updated);
-    setDropdownIndex(null);
+  const updateStatus = async (
+    index: number,
+    newStatus: LeaveEntry["status"]
+  ) => {
+    const leaveId = leaves[index]?._id;
+    console.log(leaveId);
+    try {
+      const updatedLeave = await updateLeaveStatusAPI(leaveId, newStatus);
+      const updated = [...leaves];
+      updated[index] = { ...updated[index], status: updatedLeave.status };
+      setLeaves(updated);
+      setDropdownIndex(null);
+    } catch (error) {
+      console.error("Failed to update leave status:", error);
+      alert("Failed to update leave status. Please try again.");
+    }
   };
+  const calculateNoOfDays = (
+    startDate: string,
+    endDate: string,
+    dayType: string
+  ): number => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffInTime = end.getTime() - start.getTime();
+    const days = Math.floor(diffInTime / (1000 * 3600 * 24)) + 1;
+
+    return dayType?.toLowerCase() === "halfday" ? 0.5 : days;
+  };
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString("en-IN");
 
   return (
     <div className="overflow-x-auto rounded-lg shadow-md p-4 bg-white">
@@ -95,15 +91,23 @@ const LeaveManagement: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {leaveData.map((leave, index) => (
+          {leaves.map((leave, index) => (
             <tr
               key={index}
               className={index % 2 === 0 ? "bg-white" : "bg-blue-50"}
             >
-              <td className="px-4 py-3">{leave.employeeName}</td>
-              <td className="px-4 py-3">{leave.numberOfDays}</td>
-              <td className="px-4 py-3">{leave.startDate}</td>
-              <td className="px-4 py-3">{leave.endDate}</td>
+              <td className="px-4 py-3">
+                {leave.userId.firstName + " " + leave.userId.lastName}
+              </td>
+              <td className="px-4 py-3">
+                {calculateNoOfDays(
+                  leave.startDate,
+                  leave.endDate,
+                  leave.dayType
+                )}
+              </td>
+              <td className="px-4 py-3">{formatDate(leave.startDate)}</td>
+              <td className="px-4 py-3">{formatDate(leave.endDate)}</td>
               <td className="px-4 py-3">{leave.leaveType}</td>
               <td className="px-4 py-3">{leave.reason}</td>
               <td className={`px-4 py-3 ${getStatusStyle(leave.status)}`}>

@@ -87,7 +87,7 @@ const Profile: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white shadow rounded-xl relative">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">User Profile</h2>
+        <h2 className="text-2xl font-bold">Profile</h2>
         <button
           type="button"
           onClick={() => setIsEditing((prev) => !prev)}

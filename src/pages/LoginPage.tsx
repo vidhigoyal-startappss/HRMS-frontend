@@ -43,28 +43,26 @@ const Login: React.FC = () => {
 
       localStorage.setItem("token", token);
 
-      const payload = JSON.parse(atob(token.split(".")[1]));
-
-      const user = {
-        userId: payload.userId,
-        email: payload.email,
-        role: payload.role,
-        employeeId: payload.employeeId,
-        customPermissions: payload.customPermissions,
-      };
+        // Decode token to extract user data (or fetch profile separately)
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const user = {
+          userId: payload.userId,
+          email: payload.email,
+          role: payload.role,
+          employeeId: payload.employeeId,
+          customPermissions: payload.customPermissions,
+        };
 
       localStorage.setItem("user", JSON.stringify(user));
       dispatch(login(user));
 
       toast.success("Login successful!");
 
-      const role = user.role?.toLowerCase();
-      console.log("User Role", user.role)
-
-      if (["superadmin", "admin", "manager", "hr"].includes(role)) {
-        navigate("/admin/dashboard");
-      } else if (role === "employee") {
-        navigate("/employee");
+        if (["SuperAdmin", "Admin", "Manager", "HR"].includes(user.role)) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/employee/dashboard");
+        }
       } else {
         toast.error("Unknown role. Cannot redirect.");
       }
