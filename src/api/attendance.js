@@ -1,13 +1,11 @@
 // src/api/attendance.js
 import axios from "axios";
 
-// ✅ Axios instance
 // Axios
 const API = axios.create({
   baseURL: "http://localhost:3000/api",
 });
 
-// ✅ Token Interceptor
 // Token Interceptor
 API.interceptors.request.use(
   (config) => {
@@ -21,22 +19,16 @@ API.interceptors.request.use(
 );
 
 // ✅ 1. MARK ATTENDANCE
-export const markAttendance = async ({ status = "Present", date, time, latitude, longitude }) => {
 export const markAttendance = async ({ status = "Present", date, time }) => {
   try {
-    console.log("📍 Sending Location:", latitude, longitude); // ✅ Add this
    
     const response = await API.post("/attendance/mark", {
       status,
       date,
-      time,
-      latitude,
-      longitude,
       time
     });
     return response.data;
   } catch (error) {
-    console.error("❌ Mark Attendance Error:", error.response?.data || error.message);
     console.error("Mark Attendance Error:", error.response?.data || error.message);
     throw error;
   }
@@ -50,7 +42,6 @@ export const getAllAttendance = async () => {
     const response = await API.get("/attendance/all");
     return response.data;
   } catch (error) {
-    console.error("❌ Get All Attendance Error:", error.response?.data || error.message);
     console.error("Get All Attendance Error:", error.response?.data || error.message);
     throw error;
   }
@@ -62,14 +53,12 @@ export const getMyAttendance = async () => {
     const response = await API.get("/attendance/my");  // ✅ Only current user's data
     return response.data;
   } catch (error) {
-    console.error("❌ Get My Attendance Error:", error.response?.data || error.message);
     console.error("Get My Attendance Error:", error.response?.data || error.message);
     throw error;
   }
 };
 
 
-// ✅ 4. GET TODAY'S ATTENDANCE (Optional: For Dashboard Auto Check)
 // ✅ 5. UPDATE ATTENDANCE BY ID (Admin/HR Only)
 export const updateAttendance = async (attendanceId, data) => {
   try {
@@ -87,22 +76,17 @@ export const getTodayAttendance = async () => {
     const response = await API.get("/attendance/today");
     return response.data;
   } catch (error) {
-    console.error("❌ Get Today's Attendance Error:", error.response?.data || error.message);
     console.error("Get Today's Attendance Error:", error.response?.data || error.message);
     throw error;
   }
 };
 
-// ✅ 5. UPDATE ATTENDANCE BY ID (Admin/HR Only)
-export const updateAttendance = async (attendanceId, data) => {
 // ✅ Fetch history of attendance (last 7 days)
 export const getAttendanceHistory = async () => {
   try {
-    const response = await API.put(`/attendance/${attendanceId}`, data);
     const response = await API.get("/attendance/history");
     return response.data;
   } catch (error) {
-    console.error("❌ Update Attendance Error:", error.response?.data || error.message);
     console.error("Get Attendance History Error:", error.response?.data || error.message);
     throw error;
   }
