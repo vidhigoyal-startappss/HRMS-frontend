@@ -26,6 +26,9 @@
 =======
     "react-hook-form": "^7.55.0",
     "react-hot-toast": "^2.5.2",
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.5.0",
