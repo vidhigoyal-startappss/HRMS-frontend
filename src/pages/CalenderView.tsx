@@ -13,30 +13,30 @@ const statusColors = {
 
 const CalendarView = ({ onClose }) => {
   const [attendanceData, setAttendanceData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(dayjs().toDate());
   const [status, setStatus] = useState("Present");
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     fetchAttendanceData();
-
-    if (!navigator.geolocation) {
-      alert("⚠️ Your browser does not support location access.");
-    }
   }, []);
 
   const fetchAttendanceData = async () => {
     try {
-      const data = await getMyAttendance(); // ✅ Only current user's data
+      const data = await getMyAttendance();
       setAttendanceData(data);
     } catch (error) {
-      console.error("❌ Failed to load attendance data", error);
+      showToast("❌ Failed to load attendance data");
+      console.error(error);
     }
   };
 
   const getStatusForDate = (date) => {
-    const today = dayjs(date).format("YYYY-MM-DD");
-    const entry = attendanceData.find((e) => dayjs(e.date).format("YYYY-MM-DD") === today);
+    const formattedDate = dayjs(date).format("YYYY-MM-DD");
+    const entry = attendanceData.find(
+      (e) => dayjs(e.date).format("YYYY-MM-DD") === formattedDate
+    );
     return entry?.status || null;
   };
 
@@ -72,54 +72,69 @@ const CalendarView = ({ onClose }) => {
   };
 
   const handleClickDay = (date) => {
+    const today = dayjs().startOf("day");
+    const clicked = dayjs(date).startOf("day");
+
+    if (!clicked.isSame(today)) {
+      showToast("⚠️ You can only mark attendance for today!");
+      return;
+    }
+
     setSelectedDate(date);
   };
 
   const handleMarkAttendance = async () => {
-    if (!selectedDate || !status) return;
+    const today = dayjs().format("YYYY-MM-DD");
+
+    const alreadyMarked = attendanceData.find(
+      (entry) => dayjs(entry.date).format("YYYY-MM-DD") === today
+    );
+
+    if (alreadyMarked) {
+      showToast("❌ Attendance already marked for today.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
+      const res = await markAttendance({
+        date: today,
+        status,
+      });
 
-          await markAttendance({
-            date: dayjs(selectedDate).format("YYYY-MM-DD"),
-            status,
-            latitude,
-            longitude,
-          });
-
-          await fetchAttendanceData();
-          setSelectedDate(null);
-          setLoading(false);
-        },
-        (error) => {
-          console.error("❌ Location Error:", error);
-          alert("⚠️ Location access is required to mark attendance.");
-          setLoading(false);
-        }
-      );
+      showToast("✅ Attendance marked successfully!");
+      await fetchAttendanceData();
+      setSelectedDate(null);
     } catch (error) {
       console.error("❌ Error marking attendance", error);
-      alert("Failed to mark attendance");
+      showToast("❌ Failed to mark attendance.");
+    } finally {
       setLoading(false);
     }
   };
 
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
   return (
-    <div className="w-full max-w-3xl mx-auto p-4 bg-white rounded-xl">
+    <div className="w-full max-w-3xl mx-auto p-4 bg-white rounded-xl relative">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">📅 Mark Attendance</h2>
 
       <Calendar
         tileClassName={getTileClass}
         tileContent={getTileContent}
         onClickDay={handleClickDay}
+        tileDisabled={({ date }) => {
+          const day = dayjs(date).day();
+          return day === 0 || day === 6;
+        }}
         className="w-full"
       />
 
-      {selectedDate && (
+      {selectedDate && dayjs(selectedDate).isSame(dayjs(), "day") && (
         <div className="mt-4 p-4 border rounded-lg bg-gray-50">
           <h3 className="text-md font-medium text-gray-700 mb-2">
             Marking for: {dayjs(selectedDate).format("DD MMM YYYY")}
@@ -137,7 +152,7 @@ const CalendarView = ({ onClose }) => {
             <button
               onClick={handleMarkAttendance}
               disabled={loading}
-              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
             >
               {loading ? "Saving..." : "Save"}
             </button>
@@ -146,8 +161,14 @@ const CalendarView = ({ onClose }) => {
       )}
 
       <p className="text-sm text-gray-500 mt-3 text-center">
-        Click on a date to mark or update attendance.
+        You can only mark today's attendance, and only once.
       </p>
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 bg-black text-white px-4 py-2 rounded shadow-lg z-50">
+          {toast}
+        </div>
+      )}
     </div>
   );
 };

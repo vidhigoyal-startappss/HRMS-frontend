@@ -1,6 +1,12 @@
+// src/components/Attendance.jsx
 import React, { useState, useEffect } from "react";
 import CalendarView from "./CalenderView";
-import { markAttendance, getAllAttendance, updateAttendance } from "../api/attendance";
+import {
+  markAttendance,
+  updateAttendance,
+  getTodayAttendance,
+  getAttendanceHistory,
+} from "../api/attendance";
 import dayjs from "dayjs";
 
 const statusColor = {
@@ -14,48 +20,63 @@ const Attendance = () => {
   const [dateFilter, setDateFilter] = useState("");
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [editId, setEditId] = useState(null);
   const [editDate, setEditDate] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
   const [calendarLoading, setCalendarLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetchAttendance();
   }, []);
 
   const fetchAttendance = async () => {
-    setLoading(true);
-    setError("");
     try {
-      const data = await getAllAttendance();
-      setAttendanceData(data);
+      const todayData = await getTodayAttendance();
+      if (todayData.length > 0) {
+        setAttendanceData(todayData);
+        setMessage("Showing today's attendance");
+      } else {
+        const historyData = await getAttendanceHistory();
+        setAttendanceData(historyData);
+        setMessage("No attendance marked today. Showing recent history.");
+      }
     } catch (error) {
-      console.error("Failed to fetch attendance", error);
-      setError("Failed to fetch attendance data.");
-    } finally {
-      setLoading(false);
+      console.error("Error fetching attendance", error);
+      setMessage("Unable to fetch attendance data.");
     }
   };
 
   const handleDateClick = async (date) => {
     setCalendarLoading(true);
+    const day = dayjs(date).day();
+    if (day === 0 || day === 6) {
+      alert("❌ Cannot mark attendance on weekends.");
+      setCalendarLoading(false);
+      return;
+    }
+
     try {
       const formattedDate = dayjs(date).format("YYYY-MM-DD");
-      await markAttendance({ date: formattedDate });
+      await markAttendance({ date: formattedDate, status: "Present" });
       await fetchAttendance();
       setShowCalendar(false);
     } catch (error) {
-      alert("Failed to mark attendance");
+      console.error("❌ Failed to mark attendance:", error);
+      alert("Error marking attendance.");
     } finally {
       setCalendarLoading(false);
     }
   };
 
   const filtered = attendanceData.filter((entry) => {
-    const entryDate = entry.date.includes("T") ? entry.date.split("T")[0] : entry.date;
+    const entryDate = entry.date.includes("T")
+      ? entry.date.split("T")[0]
+      : entry.date;
     const fullName = `${entry.userId?.firstName ?? ""} ${entry.userId?.lastName ?? ""}`.toLowerCase();
+    console.log("full name", fullName);
+
     return (
       fullName.includes(search.toLowerCase()) &&
       (!dateFilter || entryDate === dateFilter)
@@ -76,14 +97,11 @@ const Attendance = () => {
 
   const saveEdit = async () => {
     try {
-      await updateAttendance(editId, {
-        date: editDate,
-        status: editStatus,
-      });
+      await updateAttendance(editId, { date: editDate, status: editStatus });
       cancelEdit();
       fetchAttendance();
     } catch (error) {
-      console.error("Failed to update attendance", error);
+      console.error("❌ Update failed:", error);
       alert("Error updating attendance. Please try again.");
     }
   };
@@ -100,7 +118,6 @@ const Attendance = () => {
         </button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <input
           type="text"
@@ -117,10 +134,11 @@ const Attendance = () => {
         />
       </div>
 
-      {/* Table */}
+      {message && <div className="text-blue-700 text-sm mb-3 font-medium">{message}</div>}
+
       <div className="bg-white rounded-xl shadow-lg overflow-x-auto">
         <table className="w-full table-auto text-sm text-left text-gray-700">
-          <thead className="bg-blue-900 text-white text-sm">
+          <thead className="bg-blue-900 text-white">
             <tr>
               <th className="py-3 px-4 uppercase">#</th>
               <th className="py-3 px-4 uppercase">Name</th>
@@ -131,17 +149,27 @@ const Attendance = () => {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="text-center py-6">Loading...</td></tr>
+              <tr>
+                <td colSpan={5} className="text-center py-6">Loading...</td>
+              </tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={5} className="text-center py-6 text-gray-500">No matching records found.</td></tr>
+              <tr>
+                <td colSpan={5} className="text-center py-6 text-gray-500">
+                  No matching records found.
+                </td>
+              </tr>
             ) : (
-              filtered.map((entry, index) => (
+              filtered.map((entry, idx) => (
                 <tr
                   key={entry._id}
-                  className={`${index % 2 === 0 ? "bg-white" : "bg-blue-50"} hover:bg-indigo-50 transition-all border-b border-gray-200`}
+                  className={`${
+                    idx % 2 === 0 ? "bg-white" : "bg-blue-50"
+                  } hover:bg-indigo-50 transition-all border-b border-gray-200`}
                 >
-                  <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4 capitalize">{entry.userId?.firstName} {entry.userId?.lastName}</td>
+                  <td className="py-3 px-4">{idx + 1}</td>
+                  <td className="py-3 px-4 capitalize">
+                    {entry.userId?.firstName} {entry.userId?.lastName}
+                  </td>
                   <td className="py-3 px-4">
                     {editId === entry._id ? (
                       <input
@@ -174,20 +202,11 @@ const Attendance = () => {
                   <td className="py-3 px-4 space-x-2">
                     {editId === entry._id ? (
                       <>
-                        <button
-                          onClick={saveEdit}
-                          className="bg-green-600 text-white px-3 py-1 rounded"
-                        >Save</button>
-                        <button
-                          onClick={cancelEdit}
-                          className="bg-gray-300 text-gray-700 px-3 py-1 rounded"
-                        >Cancel</button>
+                        <button onClick={saveEdit} className="bg-green-600 text-white px-3 py-1 rounded">Save</button>
+                        <button onClick={cancelEdit} className="bg-gray-300 text-gray-700 px-3 py-1 rounded">Cancel</button>
                       </>
                     ) : (
-                      <button
-                        onClick={() => startEdit(entry)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded"
-                      >Edit</button>
+                      <button onClick={() => startEdit(entry)} className="bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
                     )}
                   </td>
                 </tr>
@@ -197,23 +216,18 @@ const Attendance = () => {
         </table>
       </div>
 
-      {/* Calendar Modal */}
       {showCalendar && (
         <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-xl shadow-xl relative">
-            <button
-              onClick={() => setShowCalendar(false)}
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
-            >
-              ✕
-            </button>
-            <h2 className="text-lg font-semibold mb-4">Click a date to mark your attendance</h2>
+            <h2 className="text-lg font-semibold mb-4">
+              Click a date to mark your attendance
+            </h2>
             <CalendarView
-  attendanceData={attendanceData}
-  onDateClick={handleDateClick}
-  key={attendanceData.length}
-  className="w-full"
-/>
+              attendanceData={attendanceData}
+              onDateClick={handleDateClick}
+              key={attendanceData.length}
+              className="w-full"
+            />
             {calendarLoading && (
               <p className="text-sm text-gray-500 mt-2">Marking attendance...</p>
             )}
