@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { LeaveRequestSchema } from "./LeaveRequestForm";
 import { applyLeave } from "../../../api/leave";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-// Interface for leave request form data
 interface LeaveRequest {
   leaveType: "sick" | "casual";
   dayType: "fullday" | "halfday";
@@ -12,64 +14,33 @@ interface LeaveRequest {
   reason: string;
 }
 
-interface LeaveRequestFormProps {
-  onSubmit?: (data: LeaveRequest) => void;
-}
+const LeaveRequestForm: React.FC = () => {
+  const navigate = useNavigate();
 
-const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState<LeaveRequest>({
-    leaveType: "sick",
-    dayType: "fullday",
-    startDate: "",
-    endDate: "",
-    reason: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<LeaveRequest>({
+    resolver: yupResolver(LeaveRequestSchema),
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const navigate = useNavigate();
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { startDate, endDate, reason } = formData;
-
-    if (!startDate || !endDate || !reason) {
-      toast.error("All fields are required");
-      return;
-    }
-
+  const onSubmit = async (data: LeaveRequest) => {
     try {
-      await applyLeave(formData);
-
+      await applyLeave(data);
       toast.success("Leave request submitted successfully!");
-      setFormData({
-        leaveType: "sick",
-        dayType: "fullday",
-        startDate: "",
-        endDate: "",
-        reason: "",
-      });
+      reset();
       navigate("/employee/leaves");
     } catch (error: any) {
       console.error("Leave submission error:", error);
-      toast.error(
-        error?.response?.data?.message || "Failed to submit leave request"
-      );
+      toast.error(error?.response?.data?.message || "Submission failed");
     }
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md space-y-6"
     >
       <h2 className="text-2xl font-bold mb-4">Leave Request Form</h2>
@@ -78,27 +49,29 @@ const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSubmit }) => {
         <div>
           <label className="block mb-1 font-medium">Leave Type</label>
           <select
-            name="leaveType"
-            value={formData.leaveType}
-            onChange={handleChange}
+            {...register("leaveType")}
             className="w-full border px-3 py-2 rounded"
           >
             <option value="sick">Sick Leave</option>
             <option value="casual">Casual Leave</option>
           </select>
+          {errors.leaveType && (
+            <p className="text-red-500 text-sm">{errors.leaveType.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block mb-1 font-medium">Day Type</label>
           <select
-            name="dayType"
-            value={formData.dayType}
-            onChange={handleChange}
+            {...register("dayType")}
             className="w-full border px-3 py-2 rounded"
           >
             <option value="fullday">Full Day</option>
             <option value="halfday">Half Day</option>
           </select>
+          {errors.dayType && (
+            <p className="text-red-500 text-sm">{errors.dayType.message}</p>
+          )}
         </div>
       </div>
 
@@ -107,34 +80,37 @@ const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSubmit }) => {
           <label className="block mb-1 font-medium">Start Date</label>
           <input
             type="date"
-            name="startDate"
-            value={formData.startDate}
-            onChange={handleChange}
+            {...register("startDate")}
             className="w-full border px-3 py-2 rounded"
           />
+          {errors.startDate && (
+            <p className="text-red-500 text-sm">{errors.startDate.message}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1 font-medium">End Date</label>
           <input
             type="date"
-            name="endDate"
-            value={formData.endDate}
-            onChange={handleChange}
+            {...register("endDate")}
             className="w-full border px-3 py-2 rounded"
           />
+          {errors.endDate && (
+            <p className="text-red-500 text-sm">{errors.endDate.message}</p>
+          )}
         </div>
       </div>
 
       <div>
         <label className="block mb-1 font-medium">Reason</label>
         <textarea
-          name="reason"
-          value={formData.reason}
-          onChange={handleChange}
+          {...register("reason")}
           rows={4}
           className="w-full border px-3 py-2 rounded"
           placeholder="Reason for leave..."
         />
+        {errors.reason && (
+          <p className="text-red-500 text-sm">{errors.reason.message}</p>
+        )}
       </div>
 
       <div className="text-right">

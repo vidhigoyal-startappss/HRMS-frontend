@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
+import { EyeIcon,EyeClosedIcon } from "lucide-react";
 import { getLeaves } from "../api/leave";
-
+import LeaveDetailsModal from "../components/Modal/LeaveDetailsModal";
 interface LeaveRecord {
   startDate: string;
   endDate: string;
@@ -40,8 +41,19 @@ const EmployeeLeaveDashboard: React.FC = () => {
     }
     return dayDiff;
   };
+  const [selectedLeave, setSelectedLeave] = useState<any>(null);
+const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  console.log(leaves);
+const openModal = (leave: LeaveRecord) => {
+  setSelectedLeave(leave);
+  setIsModalOpen(true);
+};
+
+const closeModal = () => {
+  setSelectedLeave(null);
+  setIsModalOpen(false);
+};
+
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <h1 className="text-3xl font-bold mb-4">Leave Dashboard</h1>
@@ -89,6 +101,8 @@ const EmployeeLeaveDashboard: React.FC = () => {
               <th className="px-4 py-2">Day Type</th>
               <th className="px-4 py-2">Reason</th>
               <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">View Details</th>
+
             </tr>
           </thead>
           <tbody>
@@ -101,11 +115,7 @@ const EmployeeLeaveDashboard: React.FC = () => {
                   {new Date(leave.endDate).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-2">
-                  {calculateLeaveDays(
-                    leave.startDate,
-                    leave.endDate,
-                    leave.dayType
-                  )}
+                  {leave.noOfDays}
                 </td>
                 <td className="px-4 py-2">{leave.leaveType}</td>
                 <td className="px-4 py-2">{leave.dayType}</td>
@@ -123,6 +133,7 @@ const EmployeeLeaveDashboard: React.FC = () => {
                     {leave.status}
                   </span>
                 </td>
+                <td className="px-4 py-2 cursor-pointer" onClick={()=>openModal(leave)}><EyeIcon size={20}/></td>
               </tr>
             ))}
             {leaves.length === 0 && (
@@ -134,6 +145,15 @@ const EmployeeLeaveDashboard: React.FC = () => {
             )}
           </tbody>
         </table>
+      </div>
+      <div>
+      </div>
+      <div>
+      <LeaveDetailsModal
+  isOpen={isModalOpen}
+  onClose={closeModal}
+  leave={selectedLeave}
+/>
       </div>
       <Outlet />
     </div>

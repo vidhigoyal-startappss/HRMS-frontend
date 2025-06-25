@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MoreVertical } from "lucide-react";
 import { getLeaves } from "../api/leave";
-import { LeaveEntry, User } from "../api/leave";
+import { LeaveEntry } from "../api/leave";
 import { updateStatus as updateLeaveStatusAPI } from "../api/leave";
 
 const leaveHeaders: string[] = [
@@ -49,7 +49,7 @@ const LeaveManagement: React.FC = () => {
     newStatus: LeaveEntry["status"]
   ) => {
     const leaveId = leaves[index]?._id;
-    console.log(leaveId);
+    console.log(leaveId)
     try {
       const updatedLeave = await updateLeaveStatusAPI(leaveId, newStatus);
       const updated = [...leaves];
@@ -60,18 +60,6 @@ const LeaveManagement: React.FC = () => {
       console.error("Failed to update leave status:", error);
       alert("Failed to update leave status. Please try again.");
     }
-  };
-  const calculateNoOfDays = (
-    startDate: string,
-    endDate: string,
-    dayType: string
-  ): number => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffInTime = end.getTime() - start.getTime();
-    const days = Math.floor(diffInTime / (1000 * 3600 * 24)) + 1;
-
-    return dayType?.toLowerCase() === "halfday" ? 0.5 : days;
   };
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("en-IN");
@@ -100,11 +88,7 @@ const LeaveManagement: React.FC = () => {
                 {leave.userId.firstName + " " + leave.userId.lastName}
               </td>
               <td className="px-4 py-3">
-                {calculateNoOfDays(
-                  leave.startDate,
-                  leave.endDate,
-                  leave.dayType
-                )}
+               {leave?.noOfDays}
               </td>
               <td className="px-4 py-3">{formatDate(leave.startDate)}</td>
               <td className="px-4 py-3">{formatDate(leave.endDate)}</td>
