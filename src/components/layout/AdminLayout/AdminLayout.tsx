@@ -152,7 +152,7 @@ const AdminLayout: React.FC = () => {
             className="w-14 h-14 rounded-full object-cover border-2 border-yellow-500"
           />
           <div className="flex flex-col">
-            <span className="text-lg font-semibold capitalize">{name}</span>
+            <span className="text-lg font-semibold capitalize">{user?.name}</span>
             <span className="text-sm text-gray-300 capitalize">{role}</span>
           </div>
         </div>

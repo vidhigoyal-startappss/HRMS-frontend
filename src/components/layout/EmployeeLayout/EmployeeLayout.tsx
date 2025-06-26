@@ -15,8 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../feature/user/userSlice";
 import { RootState } from "../../../store/store";
 import profileImage from "../../../assets/user-alt.svg";
-import { getEmployeeById } from "../../../api/auth"; // ✅ Replace with correct path
-
+import { getProfileImage } from "../../../api/auth";
+import { getEmployeeById } from "../../../api/auth";
 const EmployeeLayout: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,6 +24,7 @@ const EmployeeLayout: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const [employeeData, setEmployeeData] = useState<any>(null);
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   useEffect(() => {
   const fetchEmployee = async () => {
@@ -41,6 +42,21 @@ const EmployeeLayout: React.FC = () => {
   fetchEmployee();
 }, [user]);
 
+useEffect(() => {
+  const getProfile = async () => {
+    if (user?.userId) {
+      try {
+        const data = await getProfileImage(user.userId);
+        setImageUrl(data); 
+        console.log("Fetched Employee profile image:", data);
+      } catch (err) {
+        console.error("Error loading employee data:", err);
+      }
+    }
+  };
+
+  getProfile();
+}, [user]);
 
 
   const fullName =
@@ -75,6 +91,7 @@ const EmployeeLayout: React.FC = () => {
     dispatch(logout());
     navigate("/login");
   };
+  console.log(imageUrl)
 
   return (
     <div className="flex h-screen bg-[#f4f6fa]">
@@ -92,7 +109,7 @@ const EmployeeLayout: React.FC = () => {
         {/* Profile Info */}
         <div className="flex items-center gap-4 p-3 bg-[#1e293b] rounded-xl mb-6 shadow">
           <img
-            src={user?.profileImage || profileImage}
+            src={imageUrl || profileImage}
             alt="Profile"
             className="w-14 h-14 rounded-full object-cover border-2 border-yellow-500"
           />

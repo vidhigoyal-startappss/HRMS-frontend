@@ -119,6 +119,23 @@ export default function ProfileForm({ role }: ProfileFormProps) {
     }
   };
 
+  useEffect(() => {
+    const getProfile = async () => {
+      if (user?.userId) {
+        try {
+          const data = await getProfileImage(user.userId);
+          setImageUrl(data); 
+          console.log("Fetched Employee profile image:", data);
+        } catch (err) {
+          console.error("Error loading employee data:", err);
+        }
+      }
+    };
+  
+    getProfile();
+  }, [user]);
+  
+
   return (
     <div className="max-w-7xl mx-auto p-6 flex flex-col md:flex-row gap-6">
       {/* Profile Card */}

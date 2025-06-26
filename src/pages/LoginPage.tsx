@@ -6,43 +6,38 @@ import { useAppDispatch } from "../hooks/hooks";
 import { toast } from "react-toastify";
 import { login } from "../feature/User/userSlice";
 import axios from "axios";
+import { useForm ,RegisterOptions, FieldError } from "react-hook-form";
+interface LoginFormInputs {
+  email: string;
+  password: string;
+}
+
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<LoginFormInputs>({
+    mode: "onChange", // Instant validation
+  });
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: { email: string; password: string }) => {
     setErrorMsg("");
-
     try {
       const response = await axios.post(
         "http://localhost:3000/api/users/login",
-        {
-          email,
-          password,
-        }
+        data
       );
 
       const token = response.data.accessToken;
-
-      if (!token) {
-        throw new Error("Token not found in response.");
-      }
+      if (!token) throw new Error("Token not found in response.");
 
       localStorage.setItem("token", token);
-
       const payload = JSON.parse(atob(token.split(".")[1]));
 
       const user = {
@@ -51,16 +46,14 @@ const Login: React.FC = () => {
         role: payload.role,
         employeeId: payload.employeeId,
         customPermissions: payload.customPermissions,
+        name: payload.name,
       };
 
       localStorage.setItem("user", JSON.stringify(user));
       dispatch(login(user));
-
       toast.success("Login successful!");
 
       const role = user.role?.toLowerCase();
-      console.log("User Role", user.role)
-
       if (["superadmin", "admin", "manager", "hr"].includes(role)) {
         navigate("/admin/dashboard");
       } else if (role === "employee") {
@@ -69,7 +62,6 @@ const Login: React.FC = () => {
         toast.error("Unknown role. Cannot redirect.");
       }
     } catch (err: any) {
-      console.error(err);
       const msg =
         err.response?.data?.message || "Invalid credentials or server error.";
       setErrorMsg(msg);
@@ -84,36 +76,65 @@ const Login: React.FC = () => {
         alt="Logo"
         className="logo fixed top-4 left-4 w-20"
       />
-
       <div className="flex items-center justify-center min-h-screen p-4 bg-image">
         <div className="bg-white p-8 rounded-lg shadow-md w-96">
           <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-          {errorMsg && (
-            <p className="text-red-500 mb-4 text-center">{errorMsg}</p>
-          )}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <InputField
               type="email"
               name="email"
               placeholder="Email"
-              value={email}
-              onChange={handleEmailChange}
+              register={register}
+              validation={{
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+\.\S+$/,
+                  message: "Invalid email format",
+                },
+                minLength: {
+                  value: 6,
+                  message: "Email must be at least 6 characters",
+                },
+                maxLength: {
+                  value: 32,
+                  message: "Email cannot exceed 32 characters",
+                },
+              }}
+              error={errors.email}
             />
+
             <InputField
               type="password"
               name="password"
               placeholder="Password"
-              value={password}
-              onChange={handlePasswordChange}
+              register={register}
+              validation={{
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+                maxLength: {
+                  value: 32,
+                  message: "Password cannot exceed 32 characters",
+                },
+              }}
+              error={errors.password}
             />
+
             <div>
               <p className="text-gray-500 pb-2 text-right text-sm cursor-pointer">
                 Forgot password?
               </p>
             </div>
+
+            {errorMsg && (
+              <p className="text-red-500 mb-4 text-center">{errorMsg}</p>
+            )}
+
             <Button
               name="Login"
-              cls="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded-md transition"
+              cls="bg-blue-600 hover:bg-blue-900 text-white w-full py-2 cursor-pointer rounded-md transition"
             />
           </form>
         </div>

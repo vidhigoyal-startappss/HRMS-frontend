@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { getEmployeeById } from "../../../../api/auth";
+import API from "../../../../api/auth";
 type FormValues = {
   basicDetails: {
     firstName: string;
@@ -18,6 +19,7 @@ type FormValues = {
     designation?: string;
     department?: string;
     employmentType?: string;
+    profileImage?:string;
   };
 };
 
@@ -31,26 +33,37 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
 
   const inputClass = `w-full border px-3 py-2 rounded ${
     readOnly ? "bg-gray-100 cursor-not-allowed" : ""
-  }`;
-  // const { id } = useParams();
-  // const [employee, setEmployee] = useState({});
-  // useEffect(() => {
-  //   const fetchEmployee = async () => {
-  //     if (!id) return;
-  //     try {
-  //       const data = await getEmployeeById(id);
-  //       console.log("Fetched Employee Data:", data);
-  //       setEmployee(data);
-  //     } catch (err) {
-  //       console.error("Failed to load employee:", err);
-  //       alert("Failed to load employee data");
-  //     }
-  //   };
+}`;
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+const { id } = useParams(); // current employee ID from route
 
-  //   fetchEmployee();
-  // }, [id]);
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file) {
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  }
+};
 
-  // console.log(employee);
+const handleUpload = async () => {
+  if (!selectedFile || !id) return alert("No file or user ID found");
+  const formData = new FormData();
+  formData.append("file", selectedFile);
+
+  try {
+  await API.post(`/api/users/upload-profile/${id}`,formData,{
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+    alert("Profile image uploaded successfully!");
+  } catch (err) {
+    console.error(err);
+    alert("Upload failed.");
+  }
+};
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-2">
       {/* First Name */}
@@ -292,6 +305,34 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
           <option value="contract">Contract</option>
         </select>
       </div>
+
+      {/* profile upload */}
+      {!readOnly && (
+  <div>
+    <label className="block mb-1">Upload Profile Image</label>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleFileChange}
+      className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:border file:rounded file:border-gray-300 file:text-sm file:bg-white hover:file:bg-gray-100"
+    />
+    {previewUrl && (
+      <img
+        src={previewUrl}
+        alt="Profile Preview"
+        className="mt-2 w-28 h-28 object-cover rounded-full border"
+      />
+    )}
+    <button
+      type="button"
+      onClick={handleUpload}
+      className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded"
+    >
+      Upload
+    </button>
+  </div>
+)}
+
     </div>
   );
 };

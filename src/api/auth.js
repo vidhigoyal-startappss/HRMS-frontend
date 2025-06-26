@@ -101,5 +101,15 @@ export const updateEmployee = async (id, data) => {
     throw error;
   }
 };
+export const getProfileImage = async (userId) => {
+  try {
+    const response = await API.get(`http://localhost:3000/api/users/profile-image/${userId}`);
+    return response.data.imageUrl;
+  } catch (error) {
+    console.error("Failed to fetch profile image", error);
+    return null;
+  }
+};
+
 
 export default API;

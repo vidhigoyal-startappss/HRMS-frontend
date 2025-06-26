@@ -1,7 +1,10 @@
 import React from "react";
 import arrowImage from "../assets/arrow.png";
 import { useNavigate } from "react-router-dom";
-
+import { useState,useEffect } from "react";
+import { getProfileImage } from "../api/auth";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 type EmployeeCardProps = {
   name: string;
   role: string;
@@ -17,13 +20,31 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
   const handleEditClick = () => {
     navigate(`/employee/profile/`);
   };
+  const [imageURL,setImageURL ] = useState<string>('')
+  const user = useSelector((state: RootState) => state.user.user)
+  useEffect(() => {
+    const getProfile = async () => {
+      if (user?.userId) {
+        try {
+          const data = await getProfileImage(user.userId);
+          setImageURL(data); 
+          console.log("Fetched Employee profile image:", data);
+        } catch (err) {
+          console.error("Error loading employee data:", err);
+        }
+      }
+    };
+  
+    getProfile();
+  }, [user]);
+  
 
   return (
     <div className="relative flex items-center justify-between bg-blue-900 p-4 rounded-lg shadow-md hover:shadow-lg transition">
       {/* Left side: profile image + name + role */}
       <div className="flex items-center gap-4">
         <img
-          src={imageUrl}
+          src={imageURL || imageUrl}
           alt={name}
           className="w-24 h-24 rounded-full border-4 border-gray-200"
         />
