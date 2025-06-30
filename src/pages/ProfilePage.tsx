@@ -70,7 +70,7 @@ const Profile: React.FC = () => {
 
   const renderField = (label: string, name: string, type = "text") => (
     <div>
-      <label className="block font-medium mb-1">{label}</label>
+      <label className="block mb-1 text-l font-bold text-black">{label}</label>
       <input
         name={name}
         type={type}
@@ -85,77 +85,80 @@ const Profile: React.FC = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white shadow rounded-xl relative">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Profile</h2>
+    <div className="max-w-6xl mx-auto px-8 py-10 bg-white rounded-2xl">
+  {/* Header */}
+  <div className="flex justify-between items-center mb-10 border-b pb-4">
+    <h2 className="text-3xl font-semibold text-gray-800">Employee Profile</h2>
+    <button
+      type="button"
+      onClick={() => setIsEditing((prev) => !prev)}
+      className="text-sm font-medium text-blue-600 border border-blue-600 px-4 py-2 rounded-md transition hover:bg-blue-50"
+    >
+      {isEditing ? "Cancel Edit" : "Edit Profile"}
+    </button>
+  </div>
+
+  <form onSubmit={onSubmit} className="space-y-12">
+    {/* Basic Information */}
+    <section>
+      <h3 className="text-xl font-extrabold text-black mb-6">Basic Details</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {renderField("First Name", "firstName")}
+        {renderField("Last Name", "lastName")}
+        {renderField("Phone", "phone")}
+        {renderField("Date of Birth", "dob")}
+        {renderField("Gender", "gender")}
+        {renderField("Address", "address")}
+        {renderField("City", "city")}
+        {renderField("State", "state")}
+        {renderField("Zip Code", "zipCode")}
+        {renderField("Country", "country")}
+        {renderField("Joining Date", "joiningDate")}
+        {renderField("Designation", "designation")}
+        {renderField("Department", "department")}
+        {renderField("Employment Type", "employmentType")}
+      </div>
+    </section>
+
+    {/* Bank Details */}
+    <section>
+      <h3 className="text-xl font-extrabold text-black mb-6">Bank Details</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {renderField("Bank Name", "bankName")}
+        {renderField("Account Number", "accountNumber")}
+        {renderField("IFSC Code", "ifscCode")}
+        {renderField("Branch Name", "branchName")}
+        {renderField("Account Holder Name", "accountHolderName")}
+        {renderField("Aadhar Number", "adharNumber")}
+        {renderField("PAN Number", "panNumber")}
+      </div>
+    </section>
+
+    {/* Education Details */}
+    <section>
+      <h3 className="text-xl font-extrabold text-black mb-6">Educational Details</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {renderField("Highest Qualification", "qualification")}
+        {renderField("University/Institution", "institution")}
+        {renderField("Year of Passing", "yearOfPassing", "number")}
+        {renderField("Grade/CGPA", "grade")}
+      </div>
+    </section>
+
+    {/* Submit Button */}
+    {isEditing && (
+      <div className="text-right pt-4">
         <button
-          type="button"
-          onClick={() => setIsEditing((prev) => !prev)}
-          className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded hover:bg-blue-50"
+          type="submit"
+          className="bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-md transition hover:bg-blue-700"
         >
-          {isEditing ? "Cancel" : "Edit"}
+          Save Changes
         </button>
       </div>
+    )}
+  </form>
+</div>
 
-      <form onSubmit={onSubmit} className="space-y-8">
-        {/* Basic Details */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Basic Details</h3>
-          <div className="grid grid-cols-3 gap-6">
-            {renderField("First Name", "firstName")}
-            {renderField("Last Name", "lastName")}
-            {renderField("Phone", "phone")}
-            {renderField("Date of Birth", "dob")}
-            {renderField("Gender", "gender")}
-            {renderField("Address", "address")}
-            {renderField("City", "city")}
-            {renderField("State", "state")}
-            {renderField("Zip Code", "zipCode")}
-            {renderField("Country", "country")}
-            {renderField("Joining Date", "joiningDate")}
-            {renderField("Designation", "designation")}
-            {renderField("Department", "department")}
-            {renderField("Employment Type", "employmentType")}
-          </div>
-        </div>
-
-        {/* Bank Details */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Bank Details</h3>
-          <div className="grid grid-cols-3 gap-6">
-            {renderField("Bank Name", "bankName")}
-            {renderField("Account Number", "accountNumber")}
-            {renderField("IFSC Code", "ifscCode")}
-            {renderField("Branch Name", "branchName")}
-            {renderField("Account Holder Name", "accountHolderName")}
-            {renderField("Aadhar Number", "adharNumber")}
-            {renderField("PAN Number", "panNumber")}
-          </div>
-        </div>
-
-        {/* Education Details */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Education Details</h3>
-          <div className="grid grid-cols-3 gap-6">
-            {renderField("Highest Qualification", "qualification")}
-            {renderField("University", "institution")}
-            {renderField("Year of Passing", "yearOfPassing", "number")}
-            {renderField("Grade", "grade")}
-          </div>
-        </div>
-
-        {isEditing && (
-          <div className="text-right">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-            >
-              Update Profile
-            </button>
-          </div>
-        )}
-      </form>
-    </div>
   );
 };
 

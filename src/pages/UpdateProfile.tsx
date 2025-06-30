@@ -58,14 +58,21 @@ const UserUpdateProfile: React.FC = () => {
   }, [reset, userId]);
 
   const onSubmit = async (data: any) => {
-    try {
-      await axios.put(`http://localhost:3000/api/users/${userId}`, data);
-      toast.success("Profile updated successfully");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update profile");
-    }
-  };
+  try {
+    const flattenedData = {
+      ...data.basicDetails,
+      ...data.bankDetails,
+      ...data.educationDetails,
+    };
+
+    await axios.put(`http://localhost:3000/api/users/${userId}`, flattenedData);
+    toast.success("Profile updated successfully");
+  } catch (error) {
+    console.error("Update Employee Error:", error);
+    toast.error("Failed to update profile");
+  }
+};
+
 
   return (
     <form

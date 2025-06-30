@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
-import { Users, CalendarDays, Briefcase, DollarSign, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Users,
+  CalendarDays,
+  Briefcase,
+  DollarSign,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import userimg from "../assets/userimg.png";
+import axios from "axios";
 
 import { getTodayAttendance } from "../api/attendance";
 import { fetchEmployees } from "../api/auth";
@@ -27,6 +35,11 @@ interface Attendance {
   leaves: number;
 }
 
+interface Festival {
+  name: string;
+  date: string;
+}
+
 const AdminDashboard = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const role = user?.role || "guest";
@@ -34,6 +47,7 @@ const AdminDashboard = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [payrolls, setPayrolls] = useState<Payroll[]>([]);
   const [attendance, setAttendance] = useState<Attendance | null>(null);
+  const [festival, setFestival] = useState<Festival | null>(null);
   const [showAllEmployees, setShowAllEmployees] = useState(false);
 
   useEffect(() => {
@@ -43,12 +57,11 @@ const AdminDashboard = () => {
         const formattedEmployees = empData.map((emp: any) => ({
           firstName: emp.firstName ?? "",
           lastName: emp.lastName ?? "",
-          role: emp.role ?? "Employee", // Default fallback
+          role: emp.role ?? "Employee",
           profileImg: emp.profileImg || userimg,
         }));
         setEmployees(formattedEmployees);
 
-        // Sample Payrolls
         setPayrolls([{ name: "Sonia Patel", salary: "₹50,000", img: userimg }]);
 
         const today = await getTodayAttendance();
@@ -63,7 +76,19 @@ const AdminDashboard = () => {
       }
     };
 
+    const fetchFestival = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/calendar/festivals");
+        if (response.data.length > 0) {
+          setFestival(response.data[0]); // upcoming one
+        }
+      } catch (error) {
+        console.error("Festival Load Error:", error);
+      }
+    };
+
     fetchData();
+    fetchFestival();
   }, []);
 
   const visibleEmployees = showAllEmployees ? employees : employees.slice(0, 5);
@@ -109,7 +134,9 @@ const AdminDashboard = () => {
       {role === "superadmin" && (
         <div className="bg-white shadow-lg rounded-xl p-6">
           <h3 className="text-2xl font-bold mb-4 text-black">Superadmin Panel</h3>
-          <p className="text-gray-700">You have full control over users, roles, system settings, and analytics.</p>
+          <p className="text-gray-700">
+            You have full control over users, roles, system settings, and analytics.
+          </p>
         </div>
       )}
 
@@ -140,7 +167,6 @@ const AdminDashboard = () => {
               );
             })}
 
-            {/* See More / See Less Button */}
             {employees.length > 5 && (
               <button
                 onClick={() => setShowAllEmployees(!showAllEmployees)}
@@ -161,41 +187,50 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Highlights Section (Birthdays, Festivals, Quote) */}
-<div className="mt-4">
-  <h3 className="text-lg font-bold mb-4 text-black">Highlights</h3>
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    {/* Birthday Card */}
-    <div className="bg-pink-100 p-4 rounded-xl shadow flex items-start gap-3">
-      <span className="text-3xl">🎂</span>
-      <div>
-        <h4 className="font-bold text-pink-800">Birthday Today</h4>
-        <p className="text-gray-700">Meenal Joshi (UI Developer)</p>
+      {/* Highlights Section */}
+      <div className="mt-4">
+        <h3 className="text-lg font-bold mb-4 text-black">Highlights</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Birthday */}
+          <div className="bg-pink-100 p-4 rounded-xl shadow flex items-start gap-3">
+            <span className="text-3xl">🎂</span>
+            <div>
+              <h4 className="font-bold text-pink-800">Birthday Today</h4>
+              <p className="text-gray-700">Meenal Joshi (UI Developer)</p>
+            </div>
+          </div>
+
+          {/* Festival */}
+          <div className="bg-yellow-100 p-4 rounded-xl shadow flex items-start gap-3">
+            <span className="text-3xl">🎉</span>
+            <div>
+              <h4 className="font-bold text-yellow-800">Upcoming Festival</h4>
+              {festival ? (
+                <p className="text-gray-700">
+                  {festival.name} -{" "}
+                  {new Date(festival.date).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "long",
+                  })}
+                </p>
+              ) : (
+                <p className="text-gray-700">Loading...</p>
+              )}
+            </div>
+          </div>
+
+          {/* Quote */}
+          <div className="bg-blue-100 p-4 rounded-xl shadow flex items-start gap-3">
+            <span className="text-3xl">🌟</span>
+            <div>
+              <h4 className="font-bold text-blue-800">Quote of the Day</h4>
+              <p className="text-gray-700">“Great things never come from comfort zones.”</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    {/* Festival Card */}
-    <div className="bg-yellow-100 p-4 rounded-xl shadow flex items-start gap-3">
-      <span className="text-3xl">🎉</span>
-      <div>
-        <h4 className="font-bold text-yellow-800">Upcoming Festival</h4>
-        <p className="text-gray-700">Rath Yatra - 7th July</p>
-      </div>
-    </div>
-
-    {/* Motivational Quote Card (Optional) */}
-    <div className="bg-blue-100 p-4 rounded-xl shadow flex items-start gap-3">
-      <span className="text-3xl">🌟</span>
-      <div>
-        <h4 className="font-bold text-blue-800">Quote of the Day</h4>
-        <p className="text-gray-700">“Great things never come from comfort zones.”</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-      {/* Payroll Section */}
+      {/* Payroll */}
       {(role === "HR" || role === "admin" || role === "superadmin") && (
         <div className="bg-white shadow-lg rounded-xl p-4 mt-4 col-span-2">
           <h3 className="text-lg font-bold mb-2 text-black">
