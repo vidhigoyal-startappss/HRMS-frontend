@@ -17,6 +17,7 @@
     "dayjs": "^1.11.13",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.488.0",
+    "rc-calendar": "^9.15.11",
     "react": "^19.0.0",
     "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",

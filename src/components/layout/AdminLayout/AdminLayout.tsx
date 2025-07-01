@@ -152,7 +152,9 @@ const AdminLayout: React.FC = () => {
             className="w-14 h-14 rounded-full object-cover border-2 border-yellow-500"
           />
           <div className="flex flex-col">
-            <span className="text-lg font-semibold capitalize">{user?.name}</span>
+            <span className="text-lg font-semibold capitalize">
+              {user?.name}
+            </span>
             <span className="text-sm text-gray-300 capitalize">{role}</span>
           </div>
         </div>
@@ -161,6 +163,7 @@ const AdminLayout: React.FC = () => {
             <NavLink
               key={label}
               to={path}
+              end={label === "Dashboard"} // 👈 Only for dashboard, disable partial matching
               onClick={() => setPageTitle(label)}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 ${
