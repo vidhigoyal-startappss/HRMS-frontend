@@ -71,74 +71,76 @@ const Login: React.FC = () => {
 
   return (
     <>
-      <img
-        src="/logo.webp"
-        alt="Logo"
-        className="logo fixed top-4 left-4 w-20"
-      />
       <div className="flex items-center justify-center min-h-screen p-4 bg-image">
-        <div className="bg-white p-8 rounded-lg shadow-md w-96">
-          <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <InputField
-              type="email"
-              name="email"
-              placeholder="Email"
-              register={register}
-              validation={{
-                required: "Email is required",
-                pattern: {
-                  value: /^\S+@\S+\.\S+$/,
-                  message: "Invalid email format",
-                },
-                minLength: {
-                  value: 6,
-                  message: "Email must be at least 6 characters",
-                },
-                maxLength: {
-                  value: 32,
-                  message: "Email cannot exceed 32 characters",
-                },
-              }}
-              error={errors.email}
-            />
+  <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <h2 className="text-3xl font-bold mb-6 text-center text-blue-700">Login</h2>
 
-            <InputField
-              type="password"
-              name="password"
-              placeholder="Password"
-              register={register}
-              validation={{
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-                maxLength: {
-                  value: 32,
-                  message: "Password cannot exceed 32 characters",
-                },
-              }}
-              error={errors.password}
-            />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Email Field */}
+      <InputField
+        type="email"
+        name="email"
+        placeholder="Email"
+        register={register}
+        validation={{
+          required: "Email is required",
+          pattern: {
+            value: /^\S+@\S+\.\S+$/,
+            message: "Invalid email format",
+          },
+          minLength: {
+            value: 6,
+            message: "Email must be at least 6 characters",
+          },
+          maxLength: {
+            value: 32,
+            message: "Email cannot exceed 32 characters",
+          },
+        }}
+        error={errors.email}
+      />
 
-            <div>
-              <p className="text-gray-500 pb-2 text-right text-sm cursor-pointer">
-                Forgot password?
-              </p>
-            </div>
+      {/* Password Field */}
+      <InputField
+        type="password"
+        name="password"
+        placeholder="Password"
+        register={register}
+        validation={{
+          required: "Password is required",
+          minLength: {
+            value: 6,
+            message: "Password must be at least 6 characters",
+          },
+          maxLength: {
+            value: 32,
+            message: "Password cannot exceed 32 characters",
+          },
+        }}
+        error={errors.password}
+      />
 
-            {errorMsg && (
-              <p className="text-red-500 mb-4 text-center">{errorMsg}</p>
-            )}
-
-            <Button
-              name="Login"
-              cls="bg-blue-600 hover:bg-blue-900 text-white w-full py-2 cursor-pointer rounded-md transition"
-            />
-          </form>
-        </div>
+      {/* Forgot Password Link */}
+      <div className="text-right text-sm">
+        <p className="text-gray-500 hover:underline cursor-pointer">
+          Forgot password?
+        </p>
       </div>
+
+      {/* Error Message */}
+      {errorMsg && (
+        <p className="text-red-500 text-center font-medium">{errorMsg}</p>
+      )}
+
+      {/* Login Button */}
+      <Button
+        name="Login"
+        cls="bg-blue-600 hover:bg-blue-900 text-white w-full py-2 rounded-md transition"
+      />
+    </form>
+  </div>
+</div>
+
     </>
   );
 };

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import Calendar from "rc-calendar";
+import "rc-calendar/assets/index.css"; // Correct CSS for rc-calendar
 import dayjs from "dayjs";
-import "dayjs/locale/en";
 import { markAttendance, getMyAttendance } from "../api/attendance";
+
 
 const statusColors = {
   Present: "bg-green-500",
@@ -27,7 +27,7 @@ const CalendarView = ({ onClose }) => {
       const data = await getMyAttendance();
       setAttendanceData(data);
     } catch (error) {
-      showToast("❌ Failed to load attendance data");
+      showToast("Failed to load attendance data");
       console.error(error);
     }
   };
@@ -91,7 +91,7 @@ const CalendarView = ({ onClose }) => {
     );
 
     if (alreadyMarked) {
-      showToast("❌ Attendance already marked for today.");
+      showToast("Attendance already marked for today.");
       return;
     }
 
@@ -107,8 +107,8 @@ const CalendarView = ({ onClose }) => {
       await fetchAttendanceData();
       setSelectedDate(null);
     } catch (error) {
-      console.error("❌ Error marking attendance", error);
-      showToast("❌ Failed to mark attendance.");
+      console.error("Error marking attendance", error);
+      showToast("Failed to mark attendance.");
     } finally {
       setLoading(false);
     }
