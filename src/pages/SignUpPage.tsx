@@ -5,10 +5,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api/auth";
+import { Loader } from "../components/Loader/Loader";
 
 const SignUpPage = () => {
-  const [message, setMessage] = useState("");
-  const [isFirstUser, setIsFirstUser] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [isFirstUser, setIsFirstUser] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const schema = yup.object().shape({
@@ -43,17 +45,20 @@ const SignUpPage = () => {
   }, []);
 
   const onSubmit = async (data) => {
+    setIsLoading(true)
     try {
       const formData = isFirstUser ? { ...data, role: "SuperAdmin" } : data;
 
       const res = await API.post("http://localhost:3000/api/users/register", formData);
 
       const userId = res.data.userId;
-      setMessage("🎉 Account created successfully!");
+      setMessage("Account created successfully!");
 
       setTimeout(() => navigate(`/admin/add-employee-details/${userId}`), 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -90,7 +95,7 @@ const SignUpPage = () => {
               <label className="block text-gray-700 font-medium mb-1">Role</label>
               <select
                 {...register("role")}
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border cursor-pointer border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Select Role --</option>
                 <option value="Admin">Admin</option>
@@ -104,9 +109,9 @@ const SignUpPage = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            className="w-full bg-blue-700 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-900 transition"
           >
-            Sign Up
+            {isLoading ? <Loader/> : "Sign Up"}
           </button>
 
           {message && (

@@ -1,47 +1,40 @@
 import React from "react";
-import { UseFormRegister,RegisterOptions, FieldError } from "react-hook-form";
-interface LoginFormInputs {
-  email: string;
-  password: string;
+import { UseFormRegister, RegisterOptions, FieldError } from "react-hook-form";
+
+interface InputFieldProps {
+  name: string;
+  type: string;
+  placeholder: string;
+  register: UseFormRegister<any>;
+  validation?: RegisterOptions;
+  error?: FieldError;
 }
 
-
-
-  interface InputFieldProps {
-    name: keyof LoginFormInputs;
-    type?: string;
-    placeholder?: string;
-    register: UseFormRegister<LoginFormInputs>;
-    validation?: RegisterOptions;
-    error?: FieldError;
-    label?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  }
-  
-
 const InputField: React.FC<InputFieldProps> = ({
-  label,
-  type,
   name,
+  type,
+  placeholder,
   register,
   validation,
   error,
-  placeholder,
-  onChange,
 }) => {
   return (
-    <div className="mb-4">
-      <label>{label}</label>
+    <div className="mb-2">
       <input
         type={type}
-        name={name}
-        placeholder={placeholder}
-        onChange={onChange}
         {...register(name, validation)}
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        required
+        placeholder={placeholder}
+        className={`w-full px-4 py-2 border ${
+          error ? "border-red-500" : "border-gray-300"
+        } rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
       />
-       {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+      <div className="h-5 mt-1">
+        {error ? (
+          <p className="text-red-500 text-sm">{error.message}</p>
+        ) : (
+          <p className="invisible text-sm">placeholder</p>
+        )}
+      </div>
     </div>
   );
 };

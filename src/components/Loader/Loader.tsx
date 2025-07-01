@@ -7,7 +7,7 @@ interface LoaderProps {
   className?: string;
 }
 
-const Loader: React.FC<LoaderProps> = ({
+export const Loader: React.FC<LoaderProps> = ({
   size = "w-8 h-8",
   color = "text-blue-600",
   className = "",
@@ -22,4 +22,4 @@ const Loader: React.FC<LoaderProps> = ({
   );
 };
 
-export default Loader;
+

@@ -42,21 +42,21 @@ const EmployeeLayout: React.FC = () => {
   fetchEmployee();
 }, [user]);
 
-useEffect(() => {
-  const getProfile = async () => {
-    if (user?.userId) {
-      try {
-        const data = await getProfileImage(user.userId);
-        setImageUrl(data); 
-        console.log("Fetched Employee profile image:", data);
-      } catch (err) {
-        console.error("Error loading employee data:", err);
-      }
-    }
-  };
+// useEffect(() => {
+//   const getProfile = async () => {
+//     if (user?.userId) {
+//       try {
+//         const data = await getProfileImage(user.userId);
+//         setImageUrl(data); 
+//         console.log("Fetched Employee profile image:", data);
+//       } catch (err) {
+//         console.error("Error loading employee data:", err);
+//       }
+//     }
+//   };
 
-  getProfile();
-}, [user]);
+//   getProfile();
+// }, [user]);
 
 
   const fullName =
@@ -67,7 +67,7 @@ useEffect(() => {
   const role = user?.role || "Employee";
 
   const sidebarLinks = [
-    { label: "Dashboard", path: "/employee", icon: LayoutDashboard },
+    { label: "Dashboard", path: "/employee/", icon: LayoutDashboard },
     { label: "Attendance", path: "/employee/attendance", icon: UserCheck },
     {
       label: "Leaves",
@@ -98,13 +98,13 @@ useEffect(() => {
       {/* Sidebar */}
       <aside className="w-72 bg-[#0f172a] text-white flex flex-col p-5">
         {/* Logo */}
-        <div className="flex justify-center mb-4">
+        {/* <div className="flex justify-center mb-4">
           <img
             src="/logo.jpg"
             alt="Logo"
             className="w-28 h-auto bg-white rounded-md"
           />
-        </div>
+        </div> */}
 
         {/* Profile Info */}
         <div className="flex items-center gap-4 p-3 bg-[#1e293b] rounded-xl mb-6 shadow">
@@ -142,7 +142,7 @@ useEffect(() => {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="mt-6 flex items-center gap-3 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl"
+          className="mt-6 flex items-center gap-3 px-4 py-3 bg-red-600 hover:bg-red-700 cursor-pointer text-white rounded-xl"
         >
           <LogOut size={20} />
           Logout
@@ -150,32 +150,21 @@ useEffect(() => {
       </aside>
 
       {/* Main Section */}
-      <main className="flex-1 flex flex-col overflow-auto p-4 md:p-6 bg-gray-100">
+      <main className="flex-1 flex flex-col p-4 md:p-6 bg-gray-100 min-h-screen">
         {/* Topbar */}
         <div className="flex justify-between items-center mb-4">
           {/* Left: Active Feature */}
           <div className="text-xl font-semibold text-gray-800 capitalize mr-6 min-w-[150px]">
-            {activeFeature || "Welcome"}
+            {"Welcome"}
           </div>
 
-          {/* Search Bar */}
-          <div className="relative w-full max-w-md">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="pl-10 pr-4 py-2 rounded-lg w-full bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            />
-            <Search
-              className="absolute left-3 top-2.5 text-gray-500"
-              size={18}
-            />
-          </div>
+    
 
           {/* Icons */}
           <div className="flex items-center gap-4 ml-4">
             <button className="relative p-2 rounded-full bg-white hover:bg-gray-200">
               <Bell size={20} className="text-gray-700" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 cursor-pointer rounded-full"></span>
             </button>
             <button className="p-2 rounded-full bg-white hover:bg-gray-200">
               <Mail size={20} className="text-gray-700" />
@@ -184,7 +173,7 @@ useEffect(() => {
         </div>
 
         {/* Dynamic Page Content */}
-        <div className="bg-white rounded-xl shadow p-6 w-full h-auto">
+        <div className="bg-white rounded-xl shadow p-6 w-full">
           <Outlet />
         </div>
       </main>

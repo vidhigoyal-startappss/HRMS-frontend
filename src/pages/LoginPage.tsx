@@ -6,6 +6,7 @@ import { useAppDispatch } from "../hooks/hooks";
 import { toast } from "react-toastify";
 import { login } from "../feature/User/userSlice";
 import axios from "axios";
+
 import { useForm ,RegisterOptions, FieldError } from "react-hook-form";
 interface LoginFormInputs {
   email: string;
@@ -71,11 +72,7 @@ const Login: React.FC = () => {
 
   return (
     <>
-      <img
-        src="/logo.webp"
-        alt="Logo"
-        className="logo fixed top-4 left-4 w-20"
-      />
+    
       <div className="flex items-center justify-center min-h-screen p-4 bg-image">
         <div className="bg-white p-8 rounded-lg shadow-md w-96">
           <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
@@ -128,8 +125,8 @@ const Login: React.FC = () => {
               </p>
             </div>
 
-            {errorMsg && (
-              <p className="text-red-500 mb-4 text-center">{errorMsg}</p>
+             {errorMsg && (
+             toast.error(errorMsg)
             )}
 
             <Button

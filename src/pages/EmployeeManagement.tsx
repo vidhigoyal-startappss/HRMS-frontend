@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { fetchEmployees } from "../api/auth";
-import Loader from "../components/Loader/Loader";
-import { Funnel } from "lucide-react";
+import { Loader } from "../components/Loader/Loader";
+import { Funnel ,Eye ,Edit,UserPlus} from "lucide-react";
 interface Employee {
   _id: string;
   account: {
@@ -83,10 +83,10 @@ const EmployeeManagement = () => {
             <Funnel size={"35px"} fill="#000" />
           </button>
           <button
-            className="add-employee bg-green-600 p-2 font-extrabold text-white rounded-xl"
+            className="bg-green-600 p-2 font-extrabold flex items-center gap-2 cursor-pointer text-white rounded hover:bg-green-800"
             onClick={() => navigate("/admin/add-employee")}
           >
-            Create User
+            Create User <UserPlus size={20}/>
           </button>
         </div>
       </div>
@@ -117,30 +117,18 @@ const EmployeeManagement = () => {
               <td className="px-4 py-3">{emp.gender}</td>
               <td className="px-4 py-3 relative">
                 <button
-                  onClick={() => toggleDropdown(index)}
-                  className="p-1 rounded hover:bg-gray-300"
+                  className="p-2 cursor-pointer hover:bg-gray-200 rounded-full"
+                  onClick={() => handleViewProfile(emp._id)}
                 >
-                  <MoreVertical size={20} />
+                 <Eye size={20} color={"orange"}/>
+                </button>
+                <button
+                   className="p-2 cursor-pointer hover:bg-gray-200 rounded-full"
+                onClick={() => handleEditProfile(emp._id)}>
+                 <Edit size={20} color={"green"}/>
                 </button>
 
-                {dropdownIndex === index && (
-                  <div className="absolute right-0 mt-2 w-40 bg-[#001f3f] text-white rounded shadow-md z-10">
-                    <ul>
-                      <li
-                        className="px-4 py-2 hover:bg-[#003366] cursor-pointer"
-                        onClick={() => handleViewProfile(emp._id)}
-                      >
-                        View Profile
-                      </li>
-                      <li
-                        className="px-4 py-2 hover:bg-[#003366] cursor-pointer"
-                        onClick={() => handleEditProfile(emp._id)}
-                      >
-                        Edit Profile
-                      </li>
-                    </ul>
-                  </div>
-                )}
+                
               </td>
             </tr>
           ))}

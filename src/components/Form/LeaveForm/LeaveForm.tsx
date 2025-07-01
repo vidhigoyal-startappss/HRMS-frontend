@@ -1,7 +1,5 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { LeaveRequestSchema } from "./LeaveRequestForm";
 import { applyLeave } from "../../../api/leave";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -22,8 +20,9 @@ const LeaveRequestForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    getValues,
   } = useForm<LeaveRequest>({
-    resolver: yupResolver(LeaveRequestSchema),
+    mode: "onBlur",
   });
 
   const onSubmit = async (data: LeaveRequest) => {
@@ -38,6 +37,8 @@ const LeaveRequestForm: React.FC = () => {
     }
   };
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -49,9 +50,10 @@ const LeaveRequestForm: React.FC = () => {
         <div>
           <label className="block mb-1 font-medium">Leave Type</label>
           <select
-            {...register("leaveType")}
+            {...register("leaveType", { required: "Leave type is required" })}
             className="w-full border px-3 py-2 rounded"
           >
+            <option value="">Select Type</option>
             <option value="sick">Sick Leave</option>
             <option value="casual">Casual Leave</option>
           </select>
@@ -63,9 +65,10 @@ const LeaveRequestForm: React.FC = () => {
         <div>
           <label className="block mb-1 font-medium">Day Type</label>
           <select
-            {...register("dayType")}
+            {...register("dayType", { required: "Day type is required" })}
             className="w-full border px-3 py-2 rounded"
           >
+            <option value="">Select Day Type</option>
             <option value="fullday">Full Day</option>
             <option value="halfday">Half Day</option>
           </select>
@@ -80,18 +83,39 @@ const LeaveRequestForm: React.FC = () => {
           <label className="block mb-1 font-medium">Start Date</label>
           <input
             type="date"
-            {...register("startDate")}
+            {...register("startDate", {
+              required: "Start date is required",
+              validate: (startDate) => {
+                const endDate = getValues("endDate");
+                if (endDate && new Date(startDate) > new Date(endDate)) {
+                  return "Start date cannot be after end date";
+                }
+                return true;
+              },
+            })}
+            min={today}
             className="w-full border px-3 py-2 rounded"
           />
           {errors.startDate && (
             <p className="text-red-500 text-sm">{errors.startDate.message}</p>
           )}
         </div>
+
         <div>
           <label className="block mb-1 font-medium">End Date</label>
           <input
             type="date"
-            {...register("endDate")}
+            {...register("endDate", {
+              required: "End date is required",
+              validate: (endDate) => {
+                const startDate = getValues("startDate");
+                if (startDate && new Date(endDate) < new Date(startDate)) {
+                  return "End date cannot be before start date";
+                }
+                return true;
+              },
+            })}
+            min={today}
             className="w-full border px-3 py-2 rounded"
           />
           {errors.endDate && (
@@ -103,7 +127,13 @@ const LeaveRequestForm: React.FC = () => {
       <div>
         <label className="block mb-1 font-medium">Reason</label>
         <textarea
-          {...register("reason")}
+          {...register("reason", {
+            required: "Reason is required",
+            minLength: {
+              value: 5,
+              message: "Reason must be at least 5 characters",
+            },
+          })}
           rows={4}
           className="w-full border px-3 py-2 rounded"
           placeholder="Reason for leave..."
@@ -116,7 +146,7 @@ const LeaveRequestForm: React.FC = () => {
       <div className="text-right">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-700 text-white cursor-pointer px-6 py-2 rounded hover:bg-blue-900"
         >
           Submit Request
         </button>
