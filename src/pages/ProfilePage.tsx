@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api/auth";
 import { toast } from "react-toastify";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
@@ -13,7 +13,7 @@ const Profile: React.FC = () => {
   const userId = user?.userId;
 
   useEffect(() => {
-    axios
+    API
       .get(`http://localhost:3000/api/users/employee/${userId}`)
       .then((res) => setProfile(res.data))
       .catch((err) => toast.error("Failed to load profile"));

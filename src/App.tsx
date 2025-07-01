@@ -7,7 +7,7 @@ function App() {
     <>
       {/* Your routes/components */}
       <AppRouter />
-      <ToastContainer autoClose={900}/>
+      <ToastContainer autoClose={700}/>
     </>
   );
 }

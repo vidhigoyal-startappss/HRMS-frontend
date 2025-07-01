@@ -64,7 +64,6 @@ export const updateUserDetail = async (userId, data) => {
 export const fetchEmployees = async () => {
   try {
     const response = await API.get("/api/users/employees");
-    console.log("<<<<employessdata", response.data);
     return response.data;
   } catch (error) {
     console.error(

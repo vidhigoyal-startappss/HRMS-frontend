@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { fetchEmployees } from "../api/auth";
 import { Loader } from "../components/Loader/Loader";
-import { Funnel ,Eye ,Edit,UserPlus} from "lucide-react";
+import { Funnel,Search ,Eye ,Edit,UserPlus} from "lucide-react";
 interface Employee {
   _id: string;
   account: {
@@ -77,7 +76,19 @@ const EmployeeManagement = () => {
 
   return (
     <div className="overflow-x-auto rounded-lg shadow-md p-4 bg-white">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between mb-4">
+          <div className="relative w-full max-w-sm">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="pl-10 pr-4 py-2 rounded-lg w-full bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            />
+            <Search
+              className="absolute left-3 top-2.5 text-gray-500"
+              size={18}
+            />
+          </div>
+
         <div className="flex gap-4">
           <button className="filter">
             <Funnel size={"35px"} fill="#000" />
