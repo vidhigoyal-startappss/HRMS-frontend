@@ -36,7 +36,7 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
     });
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-900"
       role="dialog"
       aria-modal="true"
       aria-labelledby="leave-details-title"
@@ -44,7 +44,7 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative">
         <button
           onClick={onClose}
-          className="absolute top-3 right-4 text-gray-500 hover:text-black text-2xl focus:outline-none"
+          className="absolute top-3 cursor-pointer right-4 text-gray-500 hover:text-black text-2xl focus:outline-none"
           aria-label="Close"
         >
           &times;
@@ -57,10 +57,10 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
           {user?.name ? `${user.name}'s Leave Details` : "Leave Details"}
         </h2>
 
-        <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-md">
           <div>
-            <strong>Start Date:</strong>
-            <div>{formatDate(leave.startDate)}</div>
+            <p className="font-extrabold text-md text-black">Start Date:</p>
+            <div className="border-2 border-blue-950 p-2 rounded-sm ">{formatDate(leave.startDate)}</div>
           </div>
           <div>
             <strong>End Date:</strong>
@@ -100,7 +100,12 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
           )}
           <div className="col-span-2">
             <strong>Approved By:</strong>
-            <div>{leave.approvedBy?.firstName +" "+leave.approvedBy.lastName|| "N/A"}</div>
+            <div>
+  {leave?.approvedBy?.firstName && leave?.approvedBy?.lastName
+    ? `${leave.approvedBy.firstName} ${leave.approvedBy.lastName}`
+    : "N/A"}
+</div>
+
           </div>
         </div>
       </div>

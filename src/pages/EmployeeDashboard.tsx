@@ -69,18 +69,17 @@ const EmployeeDashboard = () => {
     };
 
     fetchEmployee();
-  }, [user]);
+  }, []);
   return (
     <div className="w-full px-4 md:px-8 py-4">
-      {/* Title */}
       <h1 className="text-2xl font-bold text-blue-900 mb-4">Dashboard</h1>
 
       {/* Profile Card */}
-      <EmployeeCard
-        imageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUpiglNG5F4DdRpAG_jVCrqsQVX4P2d4jLzQ&s"
+     {/* <EmployeeCard
+        imageUrl={employeeData?.profileImage}
         name={employeeData?.firstName + "  " + employeeData?.lastName}
         role={employeeData?.designation}
-      />
+      />*/}
       {/* Leave + Payslip */}
       <div className="flex flex-col lg:flex-row gap-4 mt-6">
         <div className="w-full lg:w-1/2">

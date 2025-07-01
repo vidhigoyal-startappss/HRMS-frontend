@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { getEmployeeById } from "../../../../api/auth";
 import API from "../../../../api/auth";
+import { Loader } from "../../../Loader/Loader";
+
 type FormValues = {
   basicDetails: {
     firstName: string;
@@ -19,13 +20,11 @@ type FormValues = {
     designation?: string;
     department?: string;
     employmentType?: string;
-    profileImage?:string;
+    profileImage?: string;
   };
 };
 
-const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
-  readOnly = false,
-}) => {
+const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
   const {
     register,
     formState: { errors },
@@ -33,36 +32,38 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
 
   const inputClass = `w-full border px-3 py-2 rounded ${
     readOnly ? "bg-gray-100 cursor-not-allowed" : ""
-}`;
-const [selectedFile, setSelectedFile] = useState<File | null>(null);
-const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-const { id } = useParams(); // current employee ID from route
+  }`;
 
-const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (file) {
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
-  }
-};
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { id } = useParams();
 
-const handleUpload = async () => {
-  if (!selectedFile || !id) return alert("No file or user ID found");
-  const formData = new FormData();
-  formData.append("file", selectedFile);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
-  try {
-  await API.post(`/api/users/upload-profile/${id}`,formData,{
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-    alert("Profile image uploaded successfully!");
-  } catch (err) {
-    console.error(err);
-    alert("Upload failed.");
-  }
-};
+  const handleUpload = async () => {
+    if (!selectedFile || !id) return alert("No file or user ID found");
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    setIsLoading(true);
+    try {
+      await API.post(`/api/users/upload-profile/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Profile image uploaded successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-2">
@@ -75,7 +76,6 @@ const handleUpload = async () => {
           })}
           disabled={readOnly}
           className={inputClass}
-          // value={employee?.firstName}
         />
         {!readOnly && errors?.basicDetails?.firstName?.message && (
           <p className="text-red-500 text-sm">
@@ -131,6 +131,18 @@ const handleUpload = async () => {
           type="date"
           {...register("basicDetails.dob", {
             required: !readOnly ? "Date of birth is required" : false,
+            validate: !readOnly
+              ? (value) => {
+                  const today = new Date();
+                  const dob = new Date(value);
+                  let age = today.getFullYear() - dob.getFullYear();
+                  const m = today.getMonth() - dob.getMonth();
+                  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                    age--;
+                  }
+                  return age >= 21 || "Employee must be at least 21 years old";
+                }
+              : undefined,
           })}
           disabled={readOnly}
           className={inputClass}
@@ -164,98 +176,35 @@ const handleUpload = async () => {
         )}
       </div>
 
-      {/* Address */}
-      <div className="md:col-span-2">
-        <label className="block">Address</label>
-        <input
-          {...register("basicDetails.address", {
-            required: !readOnly ? "Address is required" : false,
-          })}
-          disabled={readOnly}
-          className={inputClass}
-        />
-        {!readOnly && errors?.basicDetails?.address?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.address.message}
-          </p>
-        )}
-      </div>
+      {/* Address Fields */}
+      {[
+        { label: "Address", name: "address" },
+        { label: "City", name: "city" },
+        { label: "State", name: "state" },
+        { label: "ZIP Code", name: "zipCode", pattern: /^\d{5,6}$/, patternMsg: "Invalid ZIP code" },
+        { label: "Country", name: "country" },
+      ].map((field) => (
+        <div key={field.name}>
+          <label className="block">{field.label}</label>
+          <input
+            {...register(`basicDetails.${field.name}` as const, {
+              required: !readOnly ? `${field.label} is required` : false,
+              pattern: field.pattern
+                ? { value: field.pattern, message: field.patternMsg }
+                : undefined,
+            })}
+            disabled={readOnly}
+            className={inputClass}
+          />
+          {!readOnly && errors?.basicDetails?.[field.name]?.message && (
+            <p className="text-red-500 text-sm">
+              {errors.basicDetails[field.name]?.message}
+            </p>
+          )}
+        </div>
+      ))}
 
-      {/* City */}
-      <div>
-        <label className="block">City</label>
-        <input
-          {...register("basicDetails.city", {
-            required: !readOnly ? "City is required" : false,
-          })}
-          disabled={readOnly}
-          className={inputClass}
-        />
-        {!readOnly && errors?.basicDetails?.city?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.city.message}
-          </p>
-        )}
-      </div>
-
-      {/* State */}
-      <div>
-        <label className="block">State</label>
-        <input
-          {...register("basicDetails.state", {
-            required: !readOnly ? "State is required" : false,
-          })}
-          disabled={readOnly}
-          className={inputClass}
-        />
-        {!readOnly && errors?.basicDetails?.state?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.state.message}
-          </p>
-        )}
-      </div>
-
-      {/* ZIP Code */}
-      <div>
-        <label className="block">ZIP Code</label>
-        <input
-          {...register("basicDetails.zipCode", {
-            required: !readOnly ? "ZIP code is required" : false,
-            pattern: !readOnly
-              ? {
-                  value: /^\d{5,6}$/,
-                  message: "Invalid ZIP code",
-                }
-              : undefined,
-          })}
-          disabled={readOnly}
-          className={inputClass}
-        />
-        {!readOnly && errors?.basicDetails?.zipCode?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.zipCode.message}
-          </p>
-        )}
-      </div>
-
-      {/* Country */}
-      <div>
-        <label className="block">Country</label>
-        <input
-          {...register("basicDetails.country", {
-            required: !readOnly ? "Country is required" : false,
-          })}
-          disabled={readOnly}
-          className={inputClass}
-        />
-        {!readOnly && errors?.basicDetails?.country?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.country.message}
-          </p>
-        )}
-      </div>
-
-      {/* Joining Date */}
+      {/* Joining Date, Designation, Department, Employment Type */}
       <div>
         <label className="block">Joining Date</label>
         <input
@@ -266,7 +215,6 @@ const handleUpload = async () => {
         />
       </div>
 
-      {/* Designation */}
       <div>
         <label className="block">Designation</label>
         <input
@@ -276,7 +224,6 @@ const handleUpload = async () => {
         />
       </div>
 
-      {/* Department */}
       <div>
         <label className="block">Department</label>
         <select
@@ -291,7 +238,6 @@ const handleUpload = async () => {
         </select>
       </div>
 
-      {/* Employment Type */}
       <div>
         <label className="block">Employment Type</label>
         <select
@@ -306,33 +252,44 @@ const handleUpload = async () => {
         </select>
       </div>
 
-      {/* profile upload */}
+      {/* Profile Upload */}
       {!readOnly && (
-  <div>
-    <label className="block mb-1">Upload Profile Image</label>
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleFileChange}
-      className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:border file:rounded file:border-gray-300 file:text-sm file:bg-white hover:file:bg-gray-100"
-    />
-    {previewUrl && (
-      <img
-        src={previewUrl}
-        alt="Profile Preview"
-        className="mt-2 w-28 h-28 object-cover rounded-full border"
-      />
-    )}
-    <button
-      type="button"
-      onClick={handleUpload}
-      className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded"
-    >
-      Upload
-    </button>
-  </div>
-)}
+        <div className="md:col-span-2">
+          <label className="block mb-1">Upload Profile Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="block w-full text-sm cursor-pointer text-gray-700 file:mr-4 file:py-2 file:px-4 file:border file:rounded file:border-gray-300 file:text-sm file:bg-white hover:file:bg-gray-100"
+          />
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt="Profile Preview"
+              className="mt-2 w-28 h-28 object-cover rounded-full border"
+            />
+          )}
+          <button
+            type="button"
+            onClick={handleUpload}
+            className="mt-2 bg-blue-700 hover:bg-blue-900 text-white cursor-pointer py-1 px-3 rounded-sm"
+          >
+            {isLoading ? <Loader /> : "Upload"}
+          </button>
+        </div>
+      )}
 
+      {/* ✅ Update Button */}
+      {!readOnly && (
+        <div className="md:col-span-4 flex justify-end mt-4">
+          <button
+            type="submit"
+            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
+          >
+            Update
+          </button>
+        </div>
+      )}
     </div>
   );
 };

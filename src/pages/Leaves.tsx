@@ -81,7 +81,7 @@ const closeModal = () => {
       {/* Leave Request Button */}
       <div className="text-right">
         <button
-          className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-700 text-white px-5 py-2 rounded hover:bg-blue-900 cursor-pointer"
           onClick={handleNavigateLeaveForm}
         >
           + Request Leave

@@ -6,6 +6,7 @@ import { useAppDispatch } from "../hooks/hooks";
 import { toast } from "react-toastify";
 import { login } from "../feature/User/userSlice";
 import axios from "axios";
+
 import { useForm ,RegisterOptions, FieldError } from "react-hook-form";
 interface LoginFormInputs {
   email: string;
@@ -125,6 +126,16 @@ const Login: React.FC = () => {
         <p className="text-gray-500 hover:underline cursor-pointer">
           Forgot password?
         </p>
+             {errorMsg && (
+             toast.error(errorMsg)
+            )}
+
+            <Button
+              name="Login"
+              cls="bg-blue-600 hover:bg-blue-900 text-white w-full py-2 cursor-pointer rounded-md transition"
+            />
+          </form>
+        </div>
       </div>
 
       {/* Error Message */}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-
+import { ArrowRightIcon } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 // import UserAccountCreationForm from "../AccountCreationStep/AccountCreation";
 import BasicDetailsForm from "../BasicDetails/BasicDetail";
 import EducationDetailsForm from "../EducationDetails/EducationDetail";
@@ -144,7 +145,7 @@ const EmployeeForm = () => {
                 onClick={handleBack}
                 className="bg-gray-300 text-black font-medium px-6 py-2 rounded-lg hover:bg-gray-400 transition"
               >
-                Back
+                Back<ArrowLeftIcon/>
               </button>
             )}
 
@@ -152,9 +153,11 @@ const EmployeeForm = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="bg-blue-600 text-white font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="bg-blue-700 text-white font-medium px-6 py-2 cursor-pointer rounded-lg hover:bg-blue-900 transition"
               >
-                Next
+                <div className="flex gap-2">
+                  Next<ArrowRightIcon size={22}/>
+                </div>
               </button>
             ) : (
               <button

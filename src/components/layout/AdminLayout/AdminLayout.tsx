@@ -140,9 +140,9 @@ const AdminLayout: React.FC = () => {
     <div className="flex h-screen bg-[#f4f6fa]">
       {/* Sidebar */}
       <aside className="w-72 bg-[#0f172a] text-white flex flex-col p-3 shadow-lg">
-        <div className="flex justify-center mb-2">
+        {/* <div className="flex justify-center mb-2">
           <img src="/logo.jpg" alt="Logo" className="w-15 bg-amber-50 " />
-        </div>
+        </div> */}
 
         {/* Profile Info */}
         <div className="flex items-center gap-4 p-2 bg-[#1e293b] rounded-xl mb-4 shadow relative">
@@ -180,7 +180,7 @@ const AdminLayout: React.FC = () => {
         </div>
         <button
           onClick={handleLogout}
-          className="mt-6 flex items-center gap-3 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl"
+          className="mt-6 flex items-center gap-3 px-4 py-3 cursor-pointer bg-red-500 hover:bg-red-700 text-white rounded-xl"
         >
           <LogOut size={20} />
           Logout
