@@ -5,12 +5,15 @@ import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { updateEmployee } from "../api/auth";
 import { Edit } from "lucide-react";
+import { useParams } from "react-router-dom";
 
 const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<any>({});
   const { user } = useSelector((state: RootState) => state.user);
-  const userId = user?.userId;
+  const { id } =  useParams()
+
+  const userId = id || user?.userId;
 
   useEffect(() => {
     API

@@ -9,6 +9,7 @@ import { login } from "../feature/User/userSlice";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 
+
 interface LoginFormInputs {
   email: string;
   password: string;
@@ -69,6 +70,11 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleForgot = () =>{
+   setTimeout(()=>
+  navigate('forgot-password'),200)
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-image">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -121,7 +127,8 @@ const Login: React.FC = () => {
 
           {/* Forgot Password */}
           <div className="text-right text-sm">
-            <p className="text-gray-500 hover:underline cursor-pointer">
+            <p className="text-gray-500 hover:underline cursor-pointer"
+            onClick={handleForgot}>
               Forgot password?
             </p>
           </div>

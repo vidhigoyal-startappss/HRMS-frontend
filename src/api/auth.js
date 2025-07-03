@@ -110,5 +110,13 @@ export const getProfileImage = async (userId) => {
   }
 };
 
+// export const forgotPassword  = async ()=>{
+//   try{
+//     const response = await API.
+//   }catch{
+//     console.log("error while forgot or reset employee")
+//   }
+// }
+
 
 export default API;

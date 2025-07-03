@@ -7,7 +7,10 @@ import { useNavigate, Link } from "react-router-dom";
 import API from "../api/auth";
 import { Loader } from "../components/Loader/Loader";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
+import { User } from "lucide-react";
+import { RootState } from "../store/store";
 
 const SignUpPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -26,13 +29,13 @@ const SignUpPage = () => {
             .required("Role is required"),
         }),
   });
-
+  const { user } = useSelector((state: RootState) => state.user);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
-
+  const role=user?.role
   useEffect(() => {
     const checkFirstUser = async () => {
       try {
@@ -64,8 +67,8 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center px-4 min-h-screen bg-gray-100">
-      <div className="bg-white rounded-2xl shadow-lg shadow-blue-900 p-8 w-full max-w-md">
+    <div className="flex items-center justify-center px-4">
+      <div className="bg-white rounded-xl shadow-xs shadow-black  p-8 w-full max-w-md">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Create an Account</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -96,16 +99,18 @@ const SignUpPage = () => {
           {!isFirstUser && (
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-1">Role</label>
-              <select
-                {...register("role")}
-                className="w-full border cursor-pointer border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">-- Select Role --</option>
-                <option value="Admin">Admin</option>
-                <option value="HR">HR</option>
-                <option value="Manager">Manager</option>
-                <option value="Employee">Employee</option>
-              </select>
+             <select
+  {...register("role")}
+  className="w-full border cursor-pointer border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <option value="">-- Select Role --</option>
+  <option value="Admin">Admin</option>
+  {(role === "HR" || role === "SuperAdmin") && <option value="HR">HR</option>}
+  <option value="Manager">Manager</option>
+  {(role === "HR" || role === "SuperAdmin") && (
+    <option value="Employee">Employee</option>
+  )}
+</select>
               <p className="text-red-500 text-sm mt-1">{errors.role?.message}</p>
             </div>
           )}

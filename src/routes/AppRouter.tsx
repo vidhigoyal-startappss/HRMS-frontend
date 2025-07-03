@@ -22,6 +22,7 @@ import ViewEmployee from "../pages/ViewEmployee";
 import UpdateEmployee from "../pages/UpdateEmployee";
 import Calender from "../pages/CalenderView";
 import EmployeeLeaveDashboard from "../pages/Leaves";
+import { ForgotPasswordForm } from "../components/Form/ForgotPasswordForm/ForgotPasswordForm";
 
 const AppRouter = () => {
   return (
@@ -29,6 +30,7 @@ const AppRouter = () => {
       <Routes>
         {/* Public Routes */}
         <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/" element={<Login />} />
 
         {/* Admin Routes */}
@@ -55,8 +57,8 @@ const AppRouter = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="payroll" element={<Payroll />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="/admin/employee/:id" element={<ViewEmployee />} />
-          <Route path="/admin/employee/edit/:id" element={<UpdateEmployee />} />
+          <Route path="/admin/employee/:id" element={<Profile />} />
+          <Route path="/admin/employee/edit/:id" element={<Profile />} />
         </Route>
 
         {/* Employee Routes */}
