@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 import { Loader } from "../components/Loader/Loader";
 import { login } from "../feature/User/userSlice";
 import axios from "axios";
-import { useForm } from "react-hook-form";
-
+import { useForm, FieldErrors } from "react-hook-form";
 
 interface LoginFormInputs {
   email: string;
@@ -18,8 +17,12 @@ interface LoginFormInputs {
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+<<<<<<< Updated upstream
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading ,setIsLoading]= useState<boolean>(false)
+=======
+  const [errorMsg, setErrorMsg] = useState<string>("");
+>>>>>>> Stashed changes
 
   const {
     register,
@@ -27,12 +30,22 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>({ mode: "onChange" });
 
+<<<<<<< Updated upstream
   const onSubmit = async (data: LoginFormInputs) => {
     setErrorMsg("");
     setIsLoading(true)
     try {
       const response = await axios.post("http://localhost:3000/api/users/login", data);
       const token = response.data.accessToken;
+=======
+  const onSubmit = async (data: LoginFormInputs): Promise<void> => {
+    setErrorMsg("");
+
+    try {
+      const response = await axios.post("http://localhost:3000/api/users/login", data);
+      const token: string = response.data.accessToken;
+
+>>>>>>> Stashed changes
       if (!token) throw new Error("Token not found in response.");
 
       localStorage.setItem("token", token);
@@ -52,15 +65,14 @@ const Login: React.FC = () => {
       toast.success("Login successful!");
 
       const role = user.role?.toLowerCase();
-      setTimeout(() => {
-        if (["superadmin", "admin", "manager", "hr"].includes(role)) {
-          navigate("/admin/dashboard");
-        } else if (role === "employee") {
-          navigate("/employee");
-        } else {
-          toast.error("Unknown role. Cannot redirect.");
-        }
-      }, 1200);
+
+      if (["superadmin", "admin", "manager", "hr"].includes(role)) {
+        setTimeout(() => navigate("/admin/dashboard"), 1000);
+      } else if (role === "employee") {
+        setTimeout(() => navigate("/employee"), 1000);
+      } else {
+        toast.error("Unknown role. Cannot redirect.");
+      }
     } catch (err: any) {
       const msg = err.response?.data?.message || "Invalid credentials or server error.";
       setErrorMsg(msg);
@@ -127,12 +139,12 @@ const Login: React.FC = () => {
 
           {/* Forgot Password */}
           <div className="text-right text-sm">
-            <p className="text-gray-500 hover:underline cursor-pointer"
-            onClick={handleForgot}>
+            <p className="text-gray-500 hover:underline cursor-pointer">
               Forgot password?
             </p>
           </div>
 
+<<<<<<< Updated upstream
           {/* Submit Button */}
           <Button
             name="Login"
@@ -140,6 +152,19 @@ const Login: React.FC = () => {
             cls="bg-blue-600 hover:bg-blue-900 text-white w-full py-2 cursor-pointer rounded-md transition"
           />
         </form>
+=======
+          {/* Login Button */}
+          <Button
+            name="Login"
+            cls="bg-blue-600 hover:bg-blue-900 text-white w-full py-2 rounded-md transition"
+          />
+        </form>
+
+        {/* Error Message */}
+        {errorMsg && (
+          <p className="text-red-500 mt-3 text-center font-medium">{errorMsg}</p>
+        )}
+>>>>>>> Stashed changes
       </div>
     </div>
   );

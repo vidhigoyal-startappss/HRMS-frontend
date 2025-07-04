@@ -20,7 +20,6 @@ import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/Emplo
 import Unauthorized from "../pages/Unauthorised"; // create this page
 import ViewEmployee from "../pages/ViewEmployee";
 import UpdateEmployee from "../pages/UpdateEmployee";
-import Calender from "../pages/CalenderView";
 import EmployeeLeaveDashboard from "../pages/Leaves";
 import { ForgotPasswordForm } from "../components/Form/ForgotPasswordForm/ForgotPasswordForm";
 import { ResetPasswordForm } from "../components/Form/ResetPasswordForm/ResetPasswordForm";
@@ -53,7 +52,6 @@ const AppRouter = () => {
             path="/admin/add-employee-details/:id"
             element={<EmployeeForm />}
           />
-          <Route path="attendance" element={<Attendance />} />
           <Route path="leave-requests" element={<LeaveRequests />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
@@ -74,7 +72,6 @@ const AppRouter = () => {
           }
         >
           <Route index element={<EmployeeDashboard />} />
-          <Route path="attendance" element={<Calender/>} />
           <Route path="leaves" element={<EmployeeLeaveDashboard />} />
           <Route path="request-leave" element={<LeaveRequestForm />} />
 
