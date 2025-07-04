@@ -12,7 +12,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { User } from "lucide-react";
 import { RootState } from "../store/store";
 
-const SignUpPage = () => {
+// Define form data type
+interface FormData {
+  email: string;
+  password: string;
+  role?: "Admin" | "HR" | "Employee" | "Manager";
+}
+
+const SignUpPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFirstUser, setIsFirstUser] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -35,8 +42,15 @@ const SignUpPage = () => {
     register,
     handleSubmit,
     formState: { errors },
+<<<<<<< Updated upstream
   } = useForm({ resolver: yupResolver(schema) });
   const role=user?.role
+=======
+  } = useForm<FormData>({
+    resolver: yupResolver(schema),
+  });
+
+>>>>>>> Stashed changes
   useEffect(() => {
     const checkFirstUser = async () => {
       try {
@@ -50,29 +64,51 @@ const SignUpPage = () => {
     checkFirstUser();
   }, []);
 
+<<<<<<< Updated upstream
   const onSubmit = async (data) => {
+=======
+  const onSubmit = async (data: FormData) => {
+>>>>>>> Stashed changes
     setIsLoading(true);
     try {
       const formData = isFirstUser ? { ...data, role: "SuperAdmin" } : data;
       const res = await API.post("http://localhost:3000/api/users/register", formData);
+<<<<<<< Updated upstream
 
       toast.success("Account created successfully!");
+=======
+>>>>>>> Stashed changes
       const userId = res.data.userId;
 
+      setMessage("Account created successfully!");
       setTimeout(() => navigate(`/admin/add-employee-details/${userId}`), 1500);
+<<<<<<< Updated upstream
     } catch (err) {
       toast.error(err.response?.data?.message || "Signup failed.");
+=======
+    } catch (err: any) {
+      setMessage(err.response?.data?.message || "Signup failed.");
+>>>>>>> Stashed changes
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
+<<<<<<< Updated upstream
     <div className="flex items-center justify-center px-4">
       <div className="bg-white rounded-xl shadow-xs shadow-black  p-8 w-full max-w-md">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Create an Account</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
+=======
+    <div className="flex items-center justify-center px-4 min-h-screen bg-gray-100">
+      <div className="bg-white rounded-2xl shadow-lg shadow-blue-900 p-8 w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Create an Account</h2>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+
+>>>>>>> Stashed changes
           {/* Email */}
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-1">Email</label>
@@ -85,7 +121,10 @@ const SignUpPage = () => {
           </div>
 
           {/* Password */}
+<<<<<<< Updated upstream
           {/* Password */}
+=======
+>>>>>>> Stashed changes
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-1">Password</label>
             <input
@@ -97,7 +136,11 @@ const SignUpPage = () => {
             <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>
           </div>
 
+<<<<<<< Updated upstream
           {/* Role (if not first user) */}
+=======
+          {/* Role */}
+>>>>>>> Stashed changes
           {!isFirstUser && (
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-1">Role</label>
@@ -118,18 +161,33 @@ const SignUpPage = () => {
           )}
 
           {/* Submit */}
+<<<<<<< Updated upstream
           {/* Submit */}
+=======
+>>>>>>> Stashed changes
           <button
             type="submit"
             className="w-full bg-blue-700 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-900 transition"
           >
             {isLoading ? <Loader /> : "Sign Up"}
+<<<<<<< Updated upstream
             {isLoading ? <Loader /> : "Sign Up"}
           </button>
         </form>
 
         {/* Redirect */}
         {/* Redirect */}
+=======
+          </button>
+
+          {/* Message */}
+          {message && (
+            <p className="text-green-600 text-center mt-4 font-medium">{message}</p>
+          )}
+        </form>
+
+        {/* Redirect */}
+>>>>>>> Stashed changes
         <p className="text-center mt-6 text-gray-600">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600 font-semibold hover:underline">

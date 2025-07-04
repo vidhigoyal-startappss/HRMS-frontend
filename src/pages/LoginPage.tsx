@@ -17,8 +17,12 @@ interface LoginFormInputs {
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+<<<<<<< Updated upstream
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading ,setIsLoading]= useState<boolean>(false)
+=======
+  const [errorMsg, setErrorMsg] = useState<string>("");
+>>>>>>> Stashed changes
 
   const {
     register,
@@ -26,12 +30,22 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>({ mode: "onChange" });
 
+<<<<<<< Updated upstream
   const onSubmit = async (data: LoginFormInputs) => {
     setErrorMsg("");
     setIsLoading(true)
     try {
       const response = await axios.post("http://localhost:3000/api/users/login", data);
       const token = response.data.accessToken;
+=======
+  const onSubmit = async (data: LoginFormInputs): Promise<void> => {
+    setErrorMsg("");
+
+    try {
+      const response = await axios.post("http://localhost:3000/api/users/login", data);
+      const token: string = response.data.accessToken;
+
+>>>>>>> Stashed changes
       if (!token) throw new Error("Token not found in response.");
 
       localStorage.setItem("token", token);
@@ -130,6 +144,7 @@ const Login: React.FC = () => {
             </p>
           </div>
 
+<<<<<<< Updated upstream
           {/* Submit Button */}
           <Button
             name="Login"
@@ -137,6 +152,19 @@ const Login: React.FC = () => {
             cls="bg-blue-600 hover:bg-blue-900 text-white w-full py-2 cursor-pointer rounded-md transition"
           />
         </form>
+=======
+          {/* Login Button */}
+          <Button
+            name="Login"
+            cls="bg-blue-600 hover:bg-blue-900 text-white w-full py-2 rounded-md transition"
+          />
+        </form>
+
+        {/* Error Message */}
+        {errorMsg && (
+          <p className="text-red-500 mt-3 text-center font-medium">{errorMsg}</p>
+        )}
+>>>>>>> Stashed changes
       </div>
     </div>
   );
