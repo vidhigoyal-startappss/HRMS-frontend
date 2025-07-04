@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 import { Loader } from "../components/Loader/Loader";
 import { login } from "../feature/User/userSlice";
 import axios from "axios";
-import { useForm } from "react-hook-form";
-
+import { useForm, FieldErrors } from "react-hook-form";
 
 interface LoginFormInputs {
   email: string;
@@ -52,15 +51,14 @@ const Login: React.FC = () => {
       toast.success("Login successful!");
 
       const role = user.role?.toLowerCase();
-      setTimeout(() => {
-        if (["superadmin", "admin", "manager", "hr"].includes(role)) {
-          navigate("/admin/dashboard");
-        } else if (role === "employee") {
-          navigate("/employee");
-        } else {
-          toast.error("Unknown role. Cannot redirect.");
-        }
-      }, 1200);
+
+      if (["superadmin", "admin", "manager", "hr"].includes(role)) {
+        setTimeout(() => navigate("/admin/dashboard"), 1000);
+      } else if (role === "employee") {
+        setTimeout(() => navigate("/employee"), 1000);
+      } else {
+        toast.error("Unknown role. Cannot redirect.");
+      }
     } catch (err: any) {
       const msg = err.response?.data?.message || "Invalid credentials or server error.";
       setErrorMsg(msg);
@@ -127,8 +125,7 @@ const Login: React.FC = () => {
 
           {/* Forgot Password */}
           <div className="text-right text-sm">
-            <p className="text-gray-500 hover:underline cursor-pointer"
-            onClick={handleForgot}>
+            <p className="text-gray-500 hover:underline cursor-pointer">
               Forgot password?
             </p>
           </div>

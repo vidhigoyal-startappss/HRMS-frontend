@@ -17,6 +17,7 @@ const SignUpPage = () => {
   const [isFirstUser, setIsFirstUser] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  // Dynamic schema depending on first user
   const schema = yup.object().shape({
     email: yup.string().email("Invalid email").required("Email is required"),
     password: yup.string().min(6, "Minimum 6 characters").required("Password is required"),
@@ -84,6 +85,7 @@ const SignUpPage = () => {
           </div>
 
           {/* Password */}
+          {/* Password */}
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-1">Password</label>
             <input
@@ -116,14 +118,17 @@ const SignUpPage = () => {
           )}
 
           {/* Submit */}
+          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-blue-700 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-900 transition"
           >
             {isLoading ? <Loader /> : "Sign Up"}
+            {isLoading ? <Loader /> : "Sign Up"}
           </button>
         </form>
 
+        {/* Redirect */}
         {/* Redirect */}
         <p className="text-center mt-6 text-gray-600">
           Already have an account?{" "}
