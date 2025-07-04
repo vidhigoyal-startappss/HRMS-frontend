@@ -24,7 +24,7 @@ export const ForgotPasswordForm = () => {
 
   const onSubmit = async (data: { email: string }) => {
     try {
-      await API.post("/api/users/forgotpassword", { email: data.email });
+      await API.post("/api/users/forgot-password", { email: data.email });
       toast.success("Check your email for reset link");
       reset();
     } catch (error) {
@@ -47,7 +47,7 @@ export const ForgotPasswordForm = () => {
 
           <button
             type="submit"
-            className="bg-blue-900 text-white cursor-pointer p-2 rounded-sm hover:bg-blue-800"
+            className="bg-blue-900 text-white cursor-pointer p-2 rounded-sm hover:bg-blue-800 transition-2"
           >
             Send Reset Link
           </button>

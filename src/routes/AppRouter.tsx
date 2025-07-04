@@ -23,6 +23,7 @@ import UpdateEmployee from "../pages/UpdateEmployee";
 import Calender from "../pages/CalenderView";
 import EmployeeLeaveDashboard from "../pages/Leaves";
 import { ForgotPasswordForm } from "../components/Form/ForgotPasswordForm/ForgotPasswordForm";
+import { ResetPasswordForm } from "../components/Form/ResetPasswordForm/ResetPasswordForm";
 
 const AppRouter = () => {
   return (
@@ -32,6 +33,7 @@ const AppRouter = () => {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/" element={<Login />} />
+        <Route path="/reset-password" element={<ResetPasswordForm/>}/>
 
         {/* Admin Routes */}
         <Route
