@@ -27,17 +27,26 @@ type FormValues = {
 const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
   const {
     register,
+    watch,
     formState: { errors },
   } = useFormContext<FormValues>();
 
-  const inputClass = `w-full border px-3 py-2 rounded ${
-    readOnly ? "bg-gray-100 cursor-not-allowed" : ""
+  const inputClass = `w-full border border-gray-300 px-3 py-2 rounded-md shadow-sm text-sm focus:outline-none ${
+    readOnly ? "bg-gray-100 cursor-not-allowed" : "bg-white"
   }`;
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { id } = useParams();
+
+  const departmentDesignationMap: Record<string, string[]> = {
+    engineering: ["MERN-Stack Developer", "Data Engineer"],
+    hr: ["HR Manager", "HR Executive"],
+    sales: ["Business Development Executive", "Sales"],
+  };
+  const selectedDepartment = watch("basicDetails.department");
+  const designationOptions = departmentDesignationMap[selectedDepartment] || [];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -65,11 +74,26 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
     }
   };
 
+  const addressFields = [
+    { label: "Address", name: "address" },
+    { label: "City", name: "city" },
+    { label: "State", name: "state" },
+    {
+      label: "ZIP Code",
+      name: "zipCode",
+      pattern: /^\d{5,6}$/,
+      patternMsg: "Invalid ZIP code",
+    },
+    { label: "Country", name: "country" },
+  ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-2">
-      {/* First Name */}
-      <div>
-        <label className="block">First Name</label>
+    <>
+    <h4>Add User Information</h4>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 p-4 bg-white rounded-xl">
+      
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">First Name</label>
         <input
           {...register("basicDetails.firstName", {
             required: !readOnly ? "First name is required" : false,
@@ -77,16 +101,17 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && errors?.basicDetails?.firstName?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.firstName.message}
-          </p>
+        <div className="h-5 mt-1">
+ {!readOnly && errors.basicDetails?.firstName?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.firstName.message}</p>
         )}
+        </div>
+       
       </div>
 
       {/* Last Name */}
-      <div>
-        <label className="block">Last Name</label>
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Last Name</label>
         <input
           {...register("basicDetails.lastName", {
             required: !readOnly ? "Last name is required" : false,
@@ -94,39 +119,35 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && errors?.basicDetails?.lastName?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.lastName.message}
-          </p>
+                <div className="h-5 mt-1">
+        {!readOnly && errors.basicDetails?.lastName?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.lastName.message}</p>
         )}
+        </div>
       </div>
 
-      {/* Phone Number */}
-      <div>
-        <label className="block">Phone Number</label>
+      {/* Phone */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Phone</label>
         <input
           {...register("basicDetails.phone", {
             required: !readOnly ? "Phone number is required" : false,
-            pattern: !readOnly
-              ? {
-                  value: /^[0-9]{10}$/,
-                  message: "Phone number must be 10 digits",
-                }
-              : undefined,
+            pattern: {
+              value: /^[0-9]{10}$/,
+              message: "Phone number must be 10 digits",
+            },
           })}
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && errors?.basicDetails?.phone?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.phone.message}
-          </p>
+        {!readOnly && errors.basicDetails?.phone?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.phone.message}</p>
         )}
       </div>
 
       {/* Date of Birth */}
-      <div>
-        <label className="block">Date of Birth</label>
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
         <input
           type="date"
           {...register("basicDetails.dob", {
@@ -147,16 +168,17 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && errors?.basicDetails?.dob?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.dob.message}
-          </p>
+        <div className="h-5 mt-1">
+           {!readOnly && errors.basicDetails?.dob?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.dob.message}</p>
         )}
+      </div>
+   
       </div>
 
       {/* Gender */}
-      <div>
-        <label className="block">Gender</label>
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Gender</label>
         <select
           {...register("basicDetails.gender", {
             required: !readOnly ? "Gender is required" : false,
@@ -169,44 +191,39 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
-        {!readOnly && errors?.basicDetails?.gender?.message && (
-          <p className="text-red-500 text-sm">
-            {errors.basicDetails.gender.message}
-          </p>
+        <div className="h-5 mt-1">
+        {!readOnly && errors.basicDetails?.gender?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.gender.message}</p>
         )}
+        </div>
       </div>
 
       {/* Address Fields */}
-      {[
-        { label: "Address", name: "address" },
-        { label: "City", name: "city" },
-        { label: "State", name: "state" },
-        { label: "ZIP Code", name: "zipCode", pattern: /^\d{5,6}$/, patternMsg: "Invalid ZIP code" },
-        { label: "Country", name: "country" },
-      ].map((field) => (
-        <div key={field.name}>
-          <label className="block">{field.label}</label>
-          <input
-            {...register(`basicDetails.${field.name}` as const, {
-              required: !readOnly ? `${field.label} is required` : false,
-              pattern: field.pattern
-                ? { value: field.pattern, message: field.patternMsg }
-                : undefined,
-            })}
-            disabled={readOnly}
-            className={inputClass}
-          />
+      {addressFields.map((field) => (
+        <div className="flex flex-col" key={field.name}>
+          <label className="text-sm font-medium text-gray-700 mb-1">{field.label}</label>
+            <input
+              {...register(`basicDetails.${field.name}` as const, {
+                pattern: field.pattern
+                  ? { value: field.pattern, message: field.patternMsg }
+                  : undefined,
+              })}
+              disabled={readOnly}
+              className={inputClass}
+            />
+             <div className="h-5 mt-1">
           {!readOnly && errors?.basicDetails?.[field.name]?.message && (
             <p className="text-red-500 text-sm">
-              {errors.basicDetails[field.name]?.message}
+              {errors.basicDetails?.[field.name]?.message}
             </p>
           )}
+          </div>
         </div>
       ))}
 
-      {/* Joining Date, Designation, Department, Employment Type */}
-      <div>
-        <label className="block">Joining Date</label>
+      {/* Joining Date */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Joining Date</label>
         <input
           type="date"
           {...register("basicDetails.joiningDate")}
@@ -215,17 +232,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
         />
       </div>
 
-      <div>
-        <label className="block">Designation</label>
-        <input
-          {...register("basicDetails.designation")}
-          disabled={readOnly}
-          className={inputClass}
-        />
-      </div>
-
-      <div>
-        <label className="block">Department</label>
+      {/* Department */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Department</label>
         <select
           {...register("basicDetails.department")}
           disabled={readOnly}
@@ -236,10 +245,38 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           <option value="hr">HR</option>
           <option value="sales">Sales</option>
         </select>
+         <div className="h-5 mt-1">
+        {!readOnly && errors.basicDetails?.department?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.department.message}</p>
+        )}
+        </div>
       </div>
 
-      <div>
-        <label className="block">Employment Type</label>
+      {/* Designation */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Designation</label>
+        <select
+          {...register("basicDetails.designation")}
+          disabled={readOnly || !selectedDepartment}
+          className={inputClass}
+        >
+          <option value="">Select Designation</option>
+          {designationOptions.map((designation) => (
+            <option key={designation} value={designation}>
+              {designation}
+            </option>
+          ))}
+        </select>
+              <div className="h-5 mt-1">
+        {!readOnly && errors.basicDetails?.designation?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails.designation.message}</p>
+        )}
+        </div>
+      </div>
+
+      {/* Employment Type */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Employment Type</label>
         <select
           {...register("basicDetails.employmentType")}
           disabled={readOnly}
@@ -252,45 +289,36 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
         </select>
       </div>
 
-      {/* Profile Upload */}
+      {/* Upload Profile Image */}
       {!readOnly && (
-        <div className="md:col-span-2">
-          <label className="block mb-1">Upload Profile Image</label>
+        <div className="md:col-span-3">
+          <label className="text-sm font-medium text-gray-700 mb-1">Upload Profile Image</label>
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="block w-full text-sm cursor-pointer text-gray-700 file:mr-4 file:py-2 file:px-4 file:border file:rounded file:border-gray-300 file:text-sm file:bg-white hover:file:bg-gray-100"
+            className="block w-full text-sm cursor-pointer text-gray-700 file:mr-4 file:py-2 file:px-4 file:border file:rounded file:border-gray-300 file:bg-white hover:file:bg-gray-100"
           />
           {previewUrl && (
             <img
               src={previewUrl}
               alt="Profile Preview"
-              className="mt-2 w-28 h-28 object-cover rounded-full border"
+              className="mt-2 w-24 h-24 object-cover rounded-full border"
             />
           )}
           <button
             type="button"
             onClick={handleUpload}
-            className="mt-2 bg-blue-700 hover:bg-blue-900 text-white cursor-pointer py-1 px-3 rounded-sm"
+            className="mt-2 bg-blue-700 hover:bg-blue-800 text-white py-1.5 px-4 rounded-md"
           >
             {isLoading ? <Loader /> : "Upload"}
           </button>
         </div>
       )}
 
-      {/* ✅ Update Button */}
-      {!readOnly && (
-        <div className="md:col-span-4 flex justify-end mt-4">
-          <button
-            type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
-          >
-            Update
-          </button>
-        </div>
-      )}
-    </div>
+       <h4>Add Leave Details</h4>
+
+    </div></>
   );
 };
 

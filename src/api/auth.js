@@ -16,6 +16,16 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+export const Me = async()=>{
+  try{
+    const res = await API.get("/api/users/me")
+    return res;
+  }
+   catch(err){
+      console.error("Invalid token, Logging out",err);
+    }
+}
+
 export const signup = async (data) => {
   try {
     const response = await API.post("/api/users/register", data);

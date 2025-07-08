@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { updateEmployee } from "../api/auth";
-import { Edit } from "lucide-react";
+import { Edit , X } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 const Profile: React.FC = () => {
@@ -12,7 +12,6 @@ const Profile: React.FC = () => {
   const [profile, setProfile] = useState<any>({});
   const { user } = useSelector((state: RootState) => state.user);
   const { id } =  useParams()
-
   const userId = id || user?.userId;
 
   useEffect(() => {
@@ -91,14 +90,14 @@ const Profile: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-8 py-10 bg-white rounded-2xl">
   {/* Header */}
-  <div className="flex justify-between items-center mb-10  pb-4">
-    <h2 className="text-xl font-semibold text-gray-800">Profile</h2>
+  <div className="flex justify-end items-center mb-10  pb-4">
+    {/* <h2 className="text-xl font-semibold text-gray-800">Profile</h2>s */}
     <button
       type="button"
       onClick={() => setIsEditing((prev) => !prev)}
-      className="text-sm flex gap-2 items-center cursor-pointer font-medium text-blue-600 border border-blue-600 px-4 py-2 rounded-md transition hover:bg-blue-50"
+      className="text-sm flex gap-2 items-center cursor-pointer font-medium text-gray-600  px-4 py-2 rounded-md transition hover:bg-blue-50"
     >
-      {isEditing ? <>Cancel Edit</>: <>Edit Profile<Edit/></>}
+      {isEditing ? <X/>: <Edit/>}
     </button>
   </div>
 

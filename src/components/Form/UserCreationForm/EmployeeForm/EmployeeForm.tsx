@@ -130,7 +130,7 @@ const EmployeeForm = () => {
       ) : (
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
-          className="mx-auto p-6 max-w-4xl bg-white shadow-lg rounded-xl"
+          className="mx-auto p-6 max-w-4xl bg-white  rounded-xl"
         >
           <Stepper steps={steps} activeStep={activeStep} />
 
@@ -155,7 +155,7 @@ const EmployeeForm = () => {
                 onClick={handleNext}
                 className="bg-blue-700 text-white font-medium px-6 py-2 cursor-pointer rounded-lg hover:bg-blue-900 transition"
               >
-                <div className="flex gap-2">
+                <div className="flex justify-center gap-2">
                   Next<ArrowRightIcon size={22}/>
                 </div>
               </button>
