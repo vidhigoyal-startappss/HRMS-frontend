@@ -65,75 +65,90 @@ const LeaveManagement: React.FC = () => {
     new Date(dateStr).toLocaleDateString("en-IN");
 
   return (
-    <div className="overflow-x-auto rounded-lg shadow-md p-4 bg-white">
-      <h2 className="text-xl font-bold mb-4">Employee's Leave Requests</h2>
+    <div className="overflow-x-auto rounded-xl p-3 bg-white">
+  {/* <h2 className="text-xl font-bold mb-4 text-[#113F67]">
+    Employee's Leave Requests
+  </h2> */}
 
-      <table className="w-full text-sm text-left text-gray-700">
-        <thead className="bg-blue-900 text-white uppercase font-semibold text-sm">
-          <tr>
-            {leaveHeaders.map((header) => (
-              <th key={header} className="px-4 py-3 whitespace-nowrap">
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {leaves.map((leave, index) => (
-            <tr
-              key={index}
-              className={index % 2 === 0 ? "bg-white" : "bg-blue-50"}
-            >
-              <td className="px-4 py-3">
-                {leave.userId.firstName + " " + leave.userId.lastName}
-              </td>
-              <td className="px-4 py-3">
-               {leave?.noOfDays}
-              </td>
-              <td className="px-4 py-3">{formatDate(leave.startDate)}</td>
-              <td className="px-4 py-3">{formatDate(leave.endDate)}</td>
-              <td className="px-4 py-3">{leave.leaveType}</td>
-              <td className="px-4 py-3">{leave.reason}</td>
-              <td className={`px-4 py-3 ${getStatusStyle(leave.status)}`}>
-                {leave.status}
-              </td>
-              <td className="px-4 py-3 relative">
-                {leave.status === "Pending" ? (
-                  <>
-                    <button
-                      onClick={() => toggleDropdown(index)}
-                      className="p-1 rounded hover:bg-gray-300"
-                    >
-                      <MoreVertical size={20} />
-                    </button>
-                    {dropdownIndex === index && (
-                      <div className="absolute right-0 mt-2 w-40 bg-[#001f3f] text-white rounded shadow-md z-50">
-                        <ul>
-                          <li
-                            className="px-4 py-2 hover:bg-[#003366] cursor-pointer"
-                            onClick={() => updateStatus(index, "Approved")}
-                          >
-                            Approve
-                          </li>
-                          <li
-                            className="px-4 py-2 hover:bg-[#003366] cursor-pointer"
-                            onClick={() => updateStatus(index, "Rejected")}
-                          >
-                            Reject
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-gray-400">—</span>
+  <table className="w-full text-sm text-left text-[#113F67]">
+    <thead className="bg-[#113F67] text-white uppercase text-sm">
+      <tr>
+        {leaveHeaders.map((header) => (
+          <th key={header} className="px-4 py-3 whitespace-nowrap font-semibold">
+            {header}
+          </th>
+        ))}
+      </tr>
+    </thead>
+
+    <tbody>
+      {leaves.map((leave, index) => (
+        <tr
+          key={index}
+          className={`${
+            index % 2 === 0 ? "bg-white" : "bg-[#F3F9FB]"
+          } hover:bg-[#E6F0F5] transition`}
+        >
+          <td className="px-4 py-3 font-medium capitalize">
+            {leave.userId.firstName + " " + leave.userId.lastName}
+          </td>
+          <td className="px-4 py-3">{leave.noOfDays}</td>
+          <td className="px-4 py-3">{formatDate(leave.startDate)}</td>
+          <td className="px-4 py-3">{formatDate(leave.endDate)}</td>
+          <td className="px-4 py-3 capitalize">{leave.leaveType}</td>
+          <td className="px-4 py-3">{leave.reason}</td>
+
+          <td
+            className={`px-4 py-3 font-semibold ${
+              leave.status === "Approved"
+                ? "text-green-600"
+                : leave.status === "Rejected"
+                ? "text-red-600"
+                : "text-yellow-600"
+            }`}
+          >
+            {leave.status}
+          </td>
+
+          <td className="px-4 py-3 relative">
+            {leave.status === "Pending" ? (
+              <>
+                <button
+                  onClick={() => toggleDropdown(index)}
+                  className="p-1 rounded-full hover:bg-[#226597]/20"
+                >
+                  <MoreVertical size={20} color="#113F67" />
+                </button>
+
+                {dropdownIndex === index && (
+                  <div className="absolute right-0 mt-2 w-40 bg-[#113F67] text-white rounded shadow-lg z-50">
+                    <ul className="divide-y divide-[#1e3a5f]">
+                      <li
+                        className="px-4 py-2 hover:bg-[#226597] cursor-pointer"
+                        onClick={() => updateStatus(index, "Approved")}
+                      >
+                        Approve
+                      </li>
+                      <li
+                        className="px-4 py-2 hover:bg-[#226597] cursor-pointer"
+                        onClick={() => updateStatus(index, "Rejected")}
+                      >
+                        Reject
+                      </li>
+                    </ul>
+                  </div>
                 )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+              </>
+            ) : (
+              <span className="text-gray-400">—</span>
+            )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
   );
 };
 

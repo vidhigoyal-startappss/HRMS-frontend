@@ -126,7 +126,3 @@ export const getTodayAttendance = async () => {
     throw err;
   }
 };
-
-// 22.769387667499323, 75.90196408976776
-// https://maps.windows.com/?form=WNAMSH&collection=point.22.770947_75.90174_My%20location%20%28within%2076%20m%29
-// https://maps.windows.com/?form=WNAMSH&collection=point.22.770966_75.901738_My%20location%20%28within%2068%20m%29
