@@ -69,24 +69,20 @@ export function Autocomplete<T extends object>({
         value={input}
         onChange={handleInput}
         placeholder={placeholder}
-        className="pr-1 py-2 rounded-lg w-full bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900"
+        className="pl-10 pr-4 py-2 rounded-lg w-full bg-[#F3F9FB] border border-[#226597] text-[#113F67] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#226597]"
       />
 
-      {isOpen && (
-        <ul className="absolute z-10 bg-white border rounded shadow w-full mt-1 max-h-60 overflow-y-auto">
-          {filtered.length > 0 ? (
-            filtered.map((item, i) => (
-              <li
-                key={i}
-                className="px-2 py-2 hover:bg-blue-50 cursor-pointer"
-                onClick={() => handleSelect(item)}
-              >
-                {displayValue(item)}
-              </li>
-            ))
-          ) : (
-            <li className="px-2 py-2 text-gray-500">No matching profiles</li>
-          )}
+      {filtered.length > 0 && (
+        <ul className="absolute z-10 bg-white border border-[#226597] rounded shadow-md w-full mt-1 max-h-60 overflow-y-auto">
+          {filtered.map((item, i) => (
+            <li
+              key={i}
+              className="px-3 py-2 text-[#113F67] hover:bg-[#F3F9FB] cursor-pointer transition-colors"
+              onClick={() => handleSelect(item)}
+            >
+              {displayValue(item)}
+            </li>
+          ))}
         </ul>
       )}
     </div>
