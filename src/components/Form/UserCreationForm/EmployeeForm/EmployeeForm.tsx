@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { ArrowRightIcon } from "lucide-react";
-import { ArrowLeftIcon } from "lucide-react";
+import { UserPlus,LayoutDashboard } from "lucide-react"
 // import UserAccountCreationForm from "../AccountCreationStep/AccountCreation";
 import BasicDetailsForm from "../BasicDetails/BasicDetail";
 import EducationDetailsForm from "../EducationDetails/EducationDetail";
@@ -24,6 +23,11 @@ const stepComponents = [
 ];
 
 // Form type — must match your backend DTO
+
+type leaves ={
+      paidAllowed?:number;
+      wfhAllowed?:number;
+}
 type FormValues = {
   // account: {
   //   email: string;
@@ -45,6 +49,7 @@ type FormValues = {
     designation: string;
     department: string;
     employmentType: string;
+    leaves:leaves;
   };
   educationDetails: {
     qualification: string;
@@ -67,7 +72,15 @@ const EmployeeForm = () => {
   const userId = useParams<{ userId: string }>();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const methods = useForm<FormValues>({ mode: "onTouched" });
+  const methods = useForm<FormValues>({ mode: "onTouched",
+  defaultValues: {
+    basicDetails: {
+      leaves: {
+        paidAllowed: 1.5,
+        wfhAllowed: 1,
+      }
+    }}
+ });
 
   const CurrentStepComponent = stepComponents[activeStep];
 
@@ -87,12 +100,12 @@ const EmployeeForm = () => {
       const keys = Object.keys(userId);
       const firstKey = keys[0];
       const firstValue = userId[firstKey];
-      // console.log(firstValue);
+      console.log(data);
       const res = await updateUserDetail(firstValue, data);
       setIsSubmitted(true);
       // console.log("Response:", res);
     } catch (error: any) {
-      // console.error("Submission Error:", error.response?.data || error.message);
+      console.error("Submission Error:", error.response?.data || error.message);
       alert(
         "Failed to submit: " + (error.response?.data?.message || error.message)
       );
@@ -103,27 +116,27 @@ const EmployeeForm = () => {
   return (
     <FormProvider {...methods}>
       {isSubmitted ? (
-        <div className="flex flex-col items-center justify-center p-10 text-center mt-20 animate-fade-in">
-          <div className="text-green-600 text-4xl mb-4">✅</div>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+        <div className="flex flex-col items-center bg-[#113F67] justify-center rounded-lg p-20 m-20 text-center mt-20 animate-fade-in ">
+          {/* <h1 className="text-3xl font-bold text-white">Thank You</h1> */}
+          <h2 className="text-2xl font-semibold text-white mb-2">
             Employee Created Successfully
           </h2>
-          <p className="text-gray-600 mb-8">
+          <p className="text-white mb-8">
             Your new employee has been added. You can now manage them from the
             dashboard or add another.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
             <button
-              onClick={() => window.location.reload()}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm w-full sm:w-auto"
+              onClick={() => window.location.href="/employee-management"}
+              className="bg-[#226597] text-white flex gap-2 px-6 py-2 rounded-lg cursor-pointer hover:bg-[#87C0CD] transition shadow-sm w-full sm:w-auto"
             >
-              ➕ Add Another
+             <UserPlus size={18}/> <p>Add User</p> 
             </button>
             <button
               onClick={() => (window.location.href = "/dashboard")}
-              className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition shadow-sm w-full sm:w-auto"
+              className="bg-[#226597] text-white flex gap-2 px-6 py-2 rounded-lg cursor-pointer hover:bg-[#87C0CD] transition shadow-sm w-full sm:w-auto"
             >
-              📊 Go to Dashboard
+              <LayoutDashboard size={18}/> <p>Dashboard</p> 
             </button>
           </div>
         </div>
@@ -143,9 +156,9 @@ const EmployeeForm = () => {
               <button
                 type="button"
                 onClick={handleBack}
-                className="bg-gray-300 text-black font-medium px-6 py-2 rounded-lg hover:bg-gray-400 transition"
+                className="bg-#226597 text-white font-medium px-6 py-2 rounded-lg hover:bg-[#1c4c7a] transition"
               >
-                Back<ArrowLeftIcon/>
+                Back
               </button>
             )}
 
@@ -153,16 +166,16 @@ const EmployeeForm = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="bg-blue-700 text-white font-medium px-6 py-2 cursor-pointer rounded-lg hover:bg-blue-900 transition"
+                className="bg-[#226597] text-white font-medium px-6 py-2 cursor-pointer rounded-lg hover:bg-[#1c4c7a] transition"
               >
                 <div className="flex justify-center gap-2">
-                  Next<ArrowRightIcon size={22}/>
+                  Next
                 </div>
               </button>
             ) : (
               <button
                 type="submit"
-                className="bg-green-600 text-white font-medium px-6 py-2 rounded-lg hover:bg-green-700 transition"
+                className="bg-[#226597] text-white font-medium px-6 py-2 rounded-lg hover:bg-[#1c4c7a] transition"
               >
                 Submit
               </button>

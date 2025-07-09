@@ -74,6 +74,7 @@ export const updateUserDetail = async (userId, data) => {
 export const fetchEmployees = async () => {
   try {
     const response = await API.get("/api/users/employees");
+    console.log(response)
     return response.data;
   } catch (error) {
     console.error(
@@ -87,7 +88,7 @@ export const fetchEmployees = async () => {
 export const getEmployeeById = async (id) => {
   try {
     const res = await API.get(`/api/users/employee/${id}`);
-    console.log(res?.data);
+    // console.log(res?.data);
     return res.data;
   } catch (error) {
     console.error(
@@ -120,6 +121,16 @@ export const getProfileImage = async (userId) => {
   }
 };
 
+export const deleteUser = async (userId) =>{
+  try{
+    const response = await API.delete(`/api/users/delete/${userId}`);
+    return response.data
+  }
+  catch(error){
+    console.error("Failed to delete user", error);
+    return null;
+  }
+}
 // export const forgotPassword  = async ()=>{
 //   try{
 //     const response = await API.

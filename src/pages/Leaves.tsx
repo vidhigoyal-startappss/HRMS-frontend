@@ -3,6 +3,19 @@ import { useNavigate, Outlet } from "react-router-dom";
 import { EyeIcon,EyeClosedIcon } from "lucide-react";
 import { getLeaves } from "../api/leave";
 import LeaveDetailsModal from "../components/Modal/LeaveDetailsModal";
+
+interface UserLeaves{
+  paidAllowed: number;
+  wfhAllowed: number;
+  wfhLeft: number;
+  plLeft: number;
+}
+
+interface userId{
+  firstName:string;
+  lastName:string;
+  leaves: UserLeaves;
+}
 interface LeaveRecord {
   startDate: string;
   endDate: string;
@@ -11,6 +24,7 @@ interface LeaveRecord {
   dayType: string;
   reason: string;
   status: "Pending" | "Approved" | "Rejected";
+  userId: userId
 }
 
 const EmployeeLeaveDashboard: React.FC = () => {
@@ -18,6 +32,7 @@ const EmployeeLeaveDashboard: React.FC = () => {
   useEffect(() => {
     const fetch = async () => {
       const data = await getLeaves();
+      console.log(data)
       setLeaves(data);
     };
     fetch();
@@ -54,6 +69,7 @@ const closeModal = () => {
   setIsModalOpen(false);
 };
 
+
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <h1 className="text-3xl font-bold mb-4">Leave Dashboard</h1>
@@ -61,20 +77,20 @@ const closeModal = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-4 gap-5">
         <div className="bg-blue-100 p-2 rounded-lg shadow text-center">
-          <h2 className="text-lg font-semibold">Total Leaves</h2>
-          <p className="text-lg font-bold"></p>
+          <h2 className="text-lg font-semibold">Paid Leaves Left (PL)</h2>
+          <p className="text-lg font-bold">{leaves[0]?.userId?.leaves?.plLeft || 0}</p>
         </div>
         <div className="bg-green-100 p-2 rounded-lg shadow text-center">
           <h2 className="text-lg font-semibold">Paid Leaves</h2>
-          <p className="text-lg font-bold"></p>
+          <p className="text-lg font-bold">{}</p>
         </div>
         <div className="bg-red-100 p-2 rounded-lg shadow text-center">
           <h2 className="text-lg font-semibold">Unpaid Leaves</h2>
-          <p className="text-lg font-bold"></p>
+          <p className="text-lg font-bold">{leaves?.length-leaves[0]?.userId?.leaves?.plLeft}</p>
         </div>
         <div className="bg-yellow-100 p-2 rounded-lg shadow text-center">
           <h2 className="text-lg font-semibold">WFH</h2>
-          <p className="text-lg font-bold"></p>
+          <p className="text-lg font-bold">{leaves[0]?.userId?.leaves?.wfhLeft}</p>
         </div>
       </div>
 

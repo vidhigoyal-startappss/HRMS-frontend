@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchEmployees } from "../api/auth";
+import { fetchEmployees, deleteUser } from "../api/auth";
 import { Loader } from "../components/Loader/Loader";
-import { ListFilter, Eye, Edit, UserPlus } from "lucide-react";
+import { ListFilter, Eye, Edit, UserPlus, ChevronDown,Trash2 } from "lucide-react";
 import { Autocomplete } from "../components/common/AutoCompleteComp/AutoComplete";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { RootState } from "../store";
 
 interface Employee {
   _id: string;
@@ -13,6 +16,7 @@ interface Employee {
   joiningDate: string;
   employmentType: string;
   gender: string;
+  email: string;
 }
 
 const EmployeeManagement = () => {
@@ -20,19 +24,33 @@ const EmployeeManagement = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const dropdownRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(employeeData.length / itemsPerPage);
-  const paginatedEmployees = employeeData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const navigate = useNavigate();
-  const capitalizeFirstLetter = (str: string) => {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
+  const { user } = useSelector((state: RootState) => state.user);
+  const role = user?.role;
+
+  const [filters, setFilters] = useState({
+    joiningDate: "",
+    employmentType: "",
+    designation: "",
+  });
+
+  const headers = [
+    "Name",
+    "Email",
+    "Designation",
+    "Joining Date",
+    "Employment Type",
+    "Gender",
+    "Actions",
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,27 +67,8 @@ const EmployeeManagement = () => {
     fetchData();
   }, []);
 
-  const headers = [
-    "Name",
-    "Email",
-    "Designation",
-    "Joining Date",
-    "Employment Type",
-    "Gender",
-    "Actions",
-  ];
-  const dropdownRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [filters, setFilters] = useState({
-  joiningDate: "",
-  employmentType: "",
-  designation: "",
-});
-
-
-  // Close dropdown if click outside
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: any) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsOpen(false);
       }
@@ -78,9 +77,29 @@ const EmployeeManagement = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleApply = () => {
-    onFilterChange({ role: selectedRole });
-    setIsOpen(false);
+  const openModal = (userId: string) => {
+    setUserToDelete(userId);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (userId: string) => {
+    try {
+      await deleteUser(userId);
+      toast.success("User deleted successfully");
+      setEmployeeData((prev) => prev.filter((e) => e._id !== userId));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete user");
+    } finally {
+      setIsModalOpen(false);
+      setUserToDelete(null);
+    }
+  };
+
+  const handleRequestDelete = (userId: string) => {
+    toast.info("Delete request sent for approval.");
+    // Optionally send request to backend for approval workflow
+    console.log(`Delete request sent for: ${userId}`);
   };
 
   const handleViewProfile = (id: string) => {
@@ -88,8 +107,22 @@ const EmployeeManagement = () => {
   };
 
   const handleEditProfile = (id: string) => {
-    navigate(`/admin/employee/edit/${id}`);
+    navigate(`/admin/employee/${id}`);
   };
+
+  const filteredEmployees = employeeData.filter((emp) => {
+    return (
+      (!filters.designation ||
+        emp.designation.toLowerCase().includes(filters.designation.toLowerCase())) &&
+      (!filters.employmentType || emp.employmentType === filters.employmentType) &&
+      (!filters.joiningDate || emp.joiningDate.slice(0, 10) === filters.joiningDate)
+    );
+  });
+
+  const paginatedFiltered = filteredEmployees.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   if (loading) {
     return (
@@ -105,8 +138,7 @@ const EmployeeManagement = () => {
 
   return (
     <div className="overflow-x-auto rounded-xl p-3 bg-white">
-      {/* Top bar */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <Autocomplete<Employee>
           data={employeeData}
           searchFields={[
@@ -125,96 +157,78 @@ const EmployeeManagement = () => {
           onSelect={(emp) => navigate(`/admin/employee/${emp._id}`)}
         />
 
-        <div className="flex gap-3">
-          <button className="p-2 border rounded-md border-gray-300 hover:bg-[#F3F9FB] cursor-pointer">
-            <ListFilter size={20} color="#113F67" />
-          </button>
-        <div className="flex gap-6 ">
+        <div className="flex gap-3 items-center">
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center gap-2 bg-blue-900 cursor-pointer text-white px-4 py-2 rounded hover:bg-blue-950"
+              className="flex items-center gap-2 bg-[#226597] text-white px-4 py-2 rounded hover:bg-[#1c4c7a]"
             >
-              <ListFilter size={20} />
-              Filters
-              <ChevronDown size={16} />
+              <ListFilter size={20} /> Filters <ChevronDown size={16} />
             </button>
+            {isOpen && (
+              <div className="absolute right-0 mt-2 bg-white shadow-lg border rounded w-64 z-50">
+                <div className="p-4 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                    <input
+                      type="text"
+                      className="w-full border px-2 py-1 rounded"
+                      value={filters.designation}
+                      onChange={(e) =>
+                        setFilters((prev) => ({ ...prev, designation: e.target.value }))
+                      }
+                    />
+                  </div>
 
-          {isOpen && (
-  <div className="absolute right-0 mt-2 bg-white shadow-lg border rounded w-64 z-50">
-    <div className="p-4 space-y-2">
-      {/* Designation Filter */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Designation
-        </label>
-        <input
-          type="text"
-          className="w-full border px-2 py-1 rounded"
-          value={filters.designation}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, designation: e.target.value }))
-          }
-        />
-      </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
+                    <select
+                      className="w-full border px-2 py-1 rounded"
+                      value={filters.employmentType}
+                      onChange={(e) =>
+                        setFilters((prev) => ({ ...prev, employmentType: e.target.value }))
+                      }
+                    >
+                      <option value="">All</option>
+                      <option value="full-time">Full-Time</option>
+                      <option value="intern">Intern</option>
+                    </select>
+                  </div>
 
-      {/* Employment Type Filter */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Employment Type
-        </label>
-        <select
-          className="w-full border px-2 py-1 rounded"
-          value={filters.employmentType}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, employmentType: e.target.value }))
-          }
-        >
-          <option value="">All</option>
-          <option value="full-time">Full-Time</option>
-          <option value="intern">Intern</option>
-        </select>
-      </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Joining Date</label>
+                    <input
+                      type="date"
+                      className="w-full border px-2 py-1 rounded"
+                      value={filters.joiningDate}
+                      onChange={(e) =>
+                        setFilters((prev) => ({ ...prev, joiningDate: e.target.value }))
+                      }
+                    />
+                  </div>
 
-      {/* Joining Date Filter */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Joining Date
-        </label>
-        <input
-          type="date"
-          className="w-full border px-2 py-1 rounded"
-          value={filters.joiningDate}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, joiningDate: e.target.value }))
-          }
-        />
-      </div>
-
-      <button
-        onClick={() => setIsOpen(false)}
-        className="mt-3 w-full bg-blue-900 text-white py-1 rounded cursor-pointer text-sm hover:bg-blue-950"
-      >
-        Apply Filters
-      </button>
-    </div>
-  </div>
-)}
-
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="w-full mt-2 bg-[#226597] text-white py-1 rounded hover:hover:bg-[#1c4c7a]"
+                  >
+                    Apply Filters
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <button
             onClick={() => navigate("/admin/add-employee")}
-            className="bg-[#226597] text-white px-4 py-2 rounded-md font-semibold flex items-center gap-2 hover:bg-[#1c4c7a] cursor-pointer"
+            className="bg-[#226597] text-white px-4 py-2 rounded-md font-semibold flex items-center gap-2 hover:bg-[#1c4c7a]"
           >
             Create User <UserPlus size={18} />
           </button>
         </div>
       </div>
 
-      {/* Table */}
       <table className="w-full text-sm text-left text-[#113F67]">
-        <thead className="bg-[#113F67] text-white uppercase font-medium text-sm rounded-t-xl">
+        <thead className="bg-[#113F67] text-white uppercase font-medium text-sm">
           <tr>
             {headers.map((header) => (
               <th key={header} className="px-4 py-3 whitespace-nowrap">
@@ -224,66 +238,95 @@ const EmployeeManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedEmployees.map((emp, index) => (
-            <tr
-              key={emp._id}
-              className={index % 2 === 0 ? "bg-white" : "bg-[#F3F9FB]"}
-            >
-              <td className="px-4 py-3 font-medium text-[#113F67]">
+          {paginatedFiltered.map((emp, index) => (
+            <tr key={emp._id} className={index % 2 === 0 ? "bg-white" : "bg-[#F3F9FB]"}>
+              <td className="px-4 py-3 font-medium">
                 {emp.firstName} {emp.lastName}
               </td>
+              <td className="px-4 py-3">{emp.email}</td>
               <td className="px-4 py-3">{emp.designation}</td>
-              <td className="px-4 py-3">
-                {new Date(emp.joiningDate).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </td>
+              <td className="px-4 py-3">{new Date(emp.joiningDate).toLocaleDateString("en-GB")}</td>
               <td className="px-4 py-3">{emp.employmentType}</td>
               <td className="px-4 py-3">{emp.gender}</td>
               <td className="px-4 py-3 flex gap-2">
                 <button
-                  className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
                   onClick={() => handleViewProfile(emp._id)}
+                  className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
                 >
                   <Eye size={18} color="#113F67" />
                 </button>
                 <button
-                  className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
                   onClick={() => handleEditProfile(emp._id)}
+                  className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
                 >
                   <Edit size={18} color="#113F67" />
                 </button>
+                {role === "SuperAdmin" ? (
+                  <button
+                    onClick={() => openModal(emp._id)}
+                                      className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
+                  >
+                  <Trash2 size={18} color="#113F67" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleRequestDelete(emp._id)}
+                    className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full cursor-pointer"
+                  >
+                    Delete Request      <Trash2 size={18} color="#113F67" />
+                  </button>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Pagination */}
       <div className="flex justify-between mt-6 items-center">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-[#226597] text-white rounded-md disabled:opacity-50 cursor-pointer"
+          className="px-4 py-2 bg-[#226597] cursor-pointer text-white rounded-md disabled:opacity-0"
         >
           Prev
         </button>
 
-        <span className="text-sm text-gray-700">
+        <span className="text-sm text-hover:bg-[#1c4c7a]0">
           Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
         </span>
 
         <button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-[#226597] text-white rounded-md disabled:opacity-50 cursor-pointer"
+          className="px-4 py-2 bg-[#226597] cursor-pointer text-white hover:bg-[#1c4c7a] rounded-md disabled:opacity-0"
         >
           Next
         </button>
       </div>
-    </div>
+
+      {/* Delete Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-md w-80">
+            <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
+            <p>Are you sure you want to delete this user?</p>
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(userToDelete!)}
+                className="px-4 py-2 bg-[#226597] text-white rounded hover:bg-[#1c4c7a]"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

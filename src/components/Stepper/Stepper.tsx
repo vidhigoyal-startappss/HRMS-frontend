@@ -9,7 +9,7 @@ const Stepper: React.FC<StepperProps> = ({
   styleConfig,
 }) => {
   const defaultStyle: StyleConfig = {
-    activeBgColor: "#124Afc",
+    activeBgColor: "#226597",
     completedBgColor: "#000",
   };
 

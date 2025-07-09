@@ -1,7 +1,6 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 
-// Backend-aligned DTO type
 type FormValues = {
   educationDetails: {
     qualification: string;
@@ -10,6 +9,8 @@ type FormValues = {
     grade: string;
   };
 };
+
+const degrees = ["B.Tech", "MCA", "ME", "BE", "M.Tech", "BCS", "BBA", "MBA"];
 
 const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
   readOnly = false,
@@ -25,30 +26,45 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
     readOnly ? "bg-gray-100 cursor-not-allowed" : ""
   }`;
 
+  const selectClass = `w-full border px-3 py-2 rounded bg-white ${
+    readOnly ? "bg-gray-100 cursor-not-allowed text-gray-500" : ""
+  }`;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
       {/* Highest Qualification */}
       <div className="flex flex-col">
-        <label className=" text-sm font-medium text-gray-700 mb-1">Highest Qualification</label>
-        <input
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          Highest Qualification
+        </label>
+        <select
           {...register("educationDetails.qualification", {
             required: !readOnly ? "Highest qualification is required" : false,
           })}
           disabled={readOnly}
-          className={inputClass}
-        />
+          className={selectClass}
+        >
+          <option value="">Select degree</option>
+          {degrees.map((deg) => (
+            <option key={deg} value={deg}>
+              {deg}
+            </option>
+          ))}
+        </select>
         <div className="h-5 mt-1">
-                 {!readOnly && eduErrors.qualification && (
-          <p className="text-red-500 text-sm">
-            {eduErrors.qualification.message}
-          </p>
-        )}
+          {!readOnly && eduErrors.qualification && (
+            <p className="text-red-500 text-sm">
+              {eduErrors.qualification.message}
+            </p>
+          )}
         </div>
       </div>
 
       {/* University / College */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-700 mb-1">University / College</label>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          University / College
+        </label>
         <input
           {...register("educationDetails.institution", {
             required: !readOnly ? "University or college is required" : false,
@@ -56,18 +72,20 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
           disabled={readOnly}
           className={inputClass}
         />
-         <div className="h-5 mt-1">
-        {!readOnly && eduErrors.institution && (
-          <p className="text-red-500 text-sm">
-            {eduErrors.institution.message}
-          </p>
-        )}
+        <div className="h-5 mt-1">
+          {!readOnly && eduErrors.institution && (
+            <p className="text-red-500 text-sm">
+              {eduErrors.institution.message}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Year of Passing */}
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">Year of Passing</label>
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          Year of Passing
+        </label>
         <input
           type="text"
           {...register("educationDetails.yearOfPassing", {
@@ -83,17 +101,19 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
           className={inputClass}
         />
         <div className="h-5 mt-1">
-        {!readOnly && eduErrors.yearOfPassing && (
-          <p className="text-red-500 text-sm">
-            {eduErrors.yearOfPassing.message}
-          </p>
-        )}
+          {!readOnly && eduErrors.yearOfPassing && (
+            <p className="text-red-500 text-sm">
+              {eduErrors.yearOfPassing.message}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Grade / Percentage */}
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">Grade / Percentage</label>
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          Grade / Percentage
+        </label>
         <input
           {...register("educationDetails.grade", {
             required: !readOnly ? "Grade or percentage is required" : false,
@@ -101,9 +121,11 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
           disabled={readOnly}
           className={inputClass}
         />
-        {!readOnly && eduErrors.grade && (
-          <p className="text-red-500 text-sm">{eduErrors.grade.message}</p>
-        )}
+        <div className="h-5 mt-1">
+          {!readOnly && eduErrors.grade && (
+            <p className="text-red-500 text-sm">{eduErrors.grade.message}</p>
+          )}
+        </div>
       </div>
     </div>
   );

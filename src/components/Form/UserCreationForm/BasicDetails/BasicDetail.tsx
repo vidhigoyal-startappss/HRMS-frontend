@@ -3,6 +3,13 @@ import { useFormContext } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import API from "../../../../api/auth";
 import { Loader } from "../../../Loader/Loader";
+import {Info} from "lucide-react"
+
+type leaves = {
+  
+    paidAllowed?:number;
+    wfhAllowed?:number
+}
 
 type FormValues = {
   basicDetails: {
@@ -21,8 +28,11 @@ type FormValues = {
     department?: string;
     employmentType?: string;
     profileImage?: string;
+    leaves?: leaves;
+   
   };
 };
+
 
 const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }) => {
   const {
@@ -86,6 +96,7 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
     },
     { label: "Country", name: "country" },
   ];
+
 
   return (
     <>
@@ -309,16 +320,60 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({ readOnly = false }
           <button
             type="button"
             onClick={handleUpload}
-            className="mt-2 bg-blue-700 hover:bg-blue-800 text-white py-1.5 px-4 rounded-md"
+            className="mt-2 bg-[#226597] hover:bg-[#1c4c7a] cursor-pointer text-white py-1.5 px-4 rounded-md"
           >
             {isLoading ? <Loader /> : "Upload"}
+          
           </button>
         </div>
       )}
-
+      </div>
+      <div className="flex gap-2 items-center mt-5">
        <h4>Add Leave Details</h4>
-
-    </div></>
+         <div className="relative group w-fit cursor-pointer">
+      <Info className="text-blue-600" size={18} />
+      <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-800 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+        This Leaves details are filled monthly here
+      </div>
+    </div>
+    </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 p-4 bg-white rounded-xl">
+      
+         <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Paid Leaves Allowed</label>
+        <input
+        type="number"
+          {...register("basicDetails.leaves.paidAllowed", {
+            required: !readOnly ? "Paid Leaves are required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
+        />
+        <div className="h-5 mt-1">
+ {!readOnly && errors.basicDetails?.leaves?.paidAllowed?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails?.leaves?.paidAllowed.message}</p>
+        )}
+        </div>
+       </div>
+         <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">WFH Allowed</label>
+           <input
+           type="number"
+          {...register("basicDetails.leaves.wfhAllowed", {
+            required: !readOnly ? "Work From Home are required" : false,
+          })}
+          disabled={readOnly}
+          className={inputClass}
+        />
+        <div className="h-5 mt-1">
+ {!readOnly && errors.basicDetails?.leaves?.wfhAllowed?.message && (
+          <p className="text-red-500 text-sm">{errors.basicDetails?.leaves?.wfhAllowed.message}</p>
+        )}
+        
+       </div>
+      </div>
+      </div>
+    </>
   );
 };
 
