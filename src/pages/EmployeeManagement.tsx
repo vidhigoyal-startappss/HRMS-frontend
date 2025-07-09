@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchEmployees, deleteUser } from "../api/auth";
 import { Loader } from "../components/Loader/Loader";
-import { ListFilter, Eye, Edit, UserPlus, ChevronDown,Trash2,ArchiveRestore} from "lucide-react";
+import { ListFilter, Eye, Edit, UserPlus, ChevronDown,Trash2,ArchiveRestore,Archive} from "lucide-react";
 import { Autocomplete } from "../components/common/AutoCompleteComp/AutoComplete";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -28,7 +28,7 @@ const EmployeeManagement = () => {
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
   const dropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-
+const [showArchived, setShowArchived] = useState(false);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(employeeData.length / itemsPerPage);
 
@@ -55,7 +55,7 @@ const EmployeeManagement = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchEmployees();
+        const data = await fetchEmployees(showArchived);
         setEmployeeData(data);
       } catch (err) {
         setError("Failed to fetch employee data.");
@@ -65,7 +65,7 @@ const EmployeeManagement = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [showArchived]);
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {
@@ -209,7 +209,7 @@ const EmployeeManagement = () => {
 
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="w-full mt-2 bg-[#226597] text-white py-1 rounded hover:hover:bg-[#1c4c7a]"
+                    className="w-full mt-2 bg-[#226597] text-white py-1 cursor-pointer rounded hover:hover:bg-[#1c4c7a]"
                   >
                     Apply Filters
                   </button>
@@ -220,25 +220,33 @@ const EmployeeManagement = () => {
 
           <button
             onClick={() => navigate("/admin/add-employee")}
-            className="bg-[#226597] text-white px-4 py-2 rounded-md font-semibold flex items-center gap-2 hover:bg-[#1c4c7a]"
+            className="bg-[#226597] text-white px-4 py-2 rounded-md  cursor-pointer font-semibold flex items-center gap-2 hover:bg-[#1c4c7a]"
           >
             Create User <UserPlus size={18} />
           </button>
 
       { role==="SuperAdmin" ? (
         <button
-            onClick={() => navigate("/admin/add-employee")}
-            className="bg-[#226597] text-white px-4 py-2 rounded-md font-semibold flex items-center gap-2 hover:bg-[#1c4c7a]"
+            onClick={() => setShowArchived(prev => !prev)}
+            className="bg-[#226597] text-white px-4 py-2 rounded-md cursor-pointer font-semibold flex items-center gap-2 hover:bg-[#1c4c7a]"
             title="Archive Soft Deleted User"
           >
-            <ArchiveRestore size={18}/>
+            {
+              !showArchived?(
+                <Archive size={18}/>
+              ):(
+
+                <ArchiveRestore size={18}/>
+              )
+
+            }
           </button>
       ):<></> }     
         </div>
       </div>
 
-      <table className="w-full text-sm text-left text-[#113F67]">
-        <thead className="bg-[#113F67] text-white uppercase font-medium text-sm">
+      <table className={`w-full text-sm text-left`}>
+        <thead className={`${!showArchived?'bg-[#113F67] text-white':'bg-[#071b2c] text-gray-200'} uppercase font-medium text-sm`}>
           <tr>
             {headers.map((header) => (
               <th key={header} className="px-4 py-3 whitespace-nowrap">
@@ -249,7 +257,7 @@ const EmployeeManagement = () => {
         </thead>
         <tbody>
           {paginatedFiltered.map((emp, index) => (
-            <tr key={emp._id} className={index % 2 === 0 ? "bg-white" : "bg-[#F3F9FB]"}>
+            <tr key={emp._id} className={`${index % 2 === 0 ? (!showArchived ? "bg-white text-black" : "bg-gray-100 text-gray-500") : "bg-[#F3F9FB]"}`}>
               <td className="px-4 py-3 font-medium">
                 {emp.firstName} {emp.lastName}
               </td>
@@ -259,7 +267,7 @@ const EmployeeManagement = () => {
               <td className="px-4 py-3">{emp.employmentType}</td>
               <td className="px-4 py-3">{emp.gender}</td>
               <td className="px-4 py-3 flex gap-2">
-                <button
+                <button 
                   onClick={() => handleViewProfile(emp._id)}
                   className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
                 >
@@ -316,7 +324,8 @@ const EmployeeManagement = () => {
 
       {/* Delete Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0  backdrop-blur-sm
+bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-md w-80">
             <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
             <p>Are you sure you want to delete this user?</p>

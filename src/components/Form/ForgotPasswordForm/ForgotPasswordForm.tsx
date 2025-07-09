@@ -3,6 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import API from "../../../api/auth";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 // Define schema using Yup
 const schema = yup.object().shape({
@@ -21,12 +22,14 @@ export const ForgotPasswordForm = () => {
   } = useForm<{ email: string }>({
     resolver: yupResolver(schema),
   });
-
+  const navigate = useNavigate()
   const onSubmit = async (data: { email: string }) => {
     try {
       await API.post("/api/users/forgot-password", { email: data.email });
       toast.success("Check your email for reset link");
-      reset();
+      setTimeout(() => {
+        navigate('/reset-mail-message')
+      }, 1000);
     } catch (error) {
       toast.error("Failed to send reset link");
     }
