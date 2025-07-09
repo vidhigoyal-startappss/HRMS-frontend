@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchEmployees, deleteUser } from "../api/auth";
 import { Loader } from "../components/Loader/Loader";
-import { ListFilter, Eye, Edit, UserPlus, ChevronDown,Trash2 } from "lucide-react";
+import { ListFilter, Eye, Edit, UserPlus, ChevronDown,Trash2,ArchiveRestore} from "lucide-react";
 import { Autocomplete } from "../components/common/AutoCompleteComp/AutoComplete";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -224,6 +224,16 @@ const EmployeeManagement = () => {
           >
             Create User <UserPlus size={18} />
           </button>
+
+      { role==="SuperAdmin" ? (
+        <button
+            onClick={() => navigate("/admin/add-employee")}
+            className="bg-[#226597] text-white px-4 py-2 rounded-md font-semibold flex items-center gap-2 hover:bg-[#1c4c7a]"
+            title="Archive Soft Deleted User"
+          >
+            <ArchiveRestore size={18}/>
+          </button>
+      ):<></> }     
         </div>
       </div>
 
