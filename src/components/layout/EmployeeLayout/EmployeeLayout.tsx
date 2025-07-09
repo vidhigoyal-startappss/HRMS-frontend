@@ -22,6 +22,15 @@ const EmployeeLayout: React.FC = () => {
   const location = useLocation();
   const user = useSelector((state: RootState) => state.user.user);
   const [employeeData, setEmployeeData] = useState<any>(null);
+  const [pageTitle, setPageTitle] = useState("Dashboard");
+
+  const sidebarLinks = [
+    { label: "Dashboard", path: "/employee/", icon: LayoutDashboard },
+    { label: "Attendance", path: "/employee/attendance", icon: UserCheck },
+    { label: "Leaves", path: "/employee/leaves", icon: CalendarCheck },
+    { label: "Approval History", path: "/employee/approval-history", icon: Clock },
+    { label: "Profile", path: "/employee/profile", icon: User },
+  ];
 
   useEffect(() => {
     const fetchEmployee = async () => {
@@ -38,6 +47,13 @@ const EmployeeLayout: React.FC = () => {
     fetchEmployee();
   }, [user]);
 
+  useEffect(() => {
+    const matched = sidebarLinks.find(link =>
+      location.pathname.startsWith(link.path)
+    );
+    setPageTitle(matched?.label || "Dashboard");
+  }, [location.pathname]);
+
   const fullName =
     employeeData?.firstName && employeeData?.lastName
       ? `${employeeData.firstName} ${employeeData.lastName}`
@@ -45,21 +61,11 @@ const EmployeeLayout: React.FC = () => {
 
   const role = user?.role || "Employee";
 
-  const sidebarLinks = [
-    { label: "Dashboard", path: "/employee/", icon: LayoutDashboard },
-    { label: "Attendance", path: "/employee/attendance", icon: UserCheck },
-    { label: "Leaves", path: "/employee/leaves", icon: CalendarCheck },
-    { label: "Approval History", path: "/employee/approval-history", icon: Clock },
-    { label: "Profile", path: "/employee/profile", icon: User },
-  ];
-
-  const activeFeature =
-    sidebarLinks.find((link) => location.pathname.startsWith(link.path))?.label || "";
-
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
+
 
   return (
     <div className="flex h-screen bg-[#F3F9FB]">
@@ -127,7 +133,9 @@ const EmployeeLayout: React.FC = () => {
         {/* Outlet Section */}
         <section className="bg-white rounded-xl shadow-md p-4 min-h-[calc(100vh-160px)]">
           <header className="mb-3">
-            <h2 className="text-xl font-semibold text-[#113F67]">{activeFeature}</h2>
+            <h2 className="text-xl font-semibold text-[#113F67]">
+              {pageTitle}
+            </h2>
           </header>
           <Outlet />
         </section>
