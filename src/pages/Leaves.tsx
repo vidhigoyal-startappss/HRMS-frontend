@@ -71,108 +71,138 @@ const closeModal = () => {
 
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold mb-4">Leave Dashboard</h1>
+    <div className="max-w-6xl mx-auto p-4 space-y-10 text-[#113F67]">
+  {/* Summary Cards */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+    {[
+      {
+        label: "Paid Leaves Left (PL)",
+        value: leaves[0]?.userId?.leaves?.plLeft || 0,
+      },
+      {
+        label: "Paid Leaves",
+        value: leaves.filter((l) => l.leaveType === "Paid").length,
+      },
+      {
+        label: "Unpaid Leaves",
+        value: leaves.filter((l) => l.leaveType === "Unpaid").length,
+      },
+      {
+        label: "WFH",
+        value: leaves[0]?.userId?.leaves?.wfhLeft || 0,
+      },
+    ].map(({ label, value }) => (
+      <div
+        key={label}
+        className="bg-[#113F67] p-3 rounded-xl shadow-md text-center text-white"
+      >
+        <h2 className="text-base sm:text-lg font-medium mb-1">{label}</h2>
+        <p className="text-2xl font-bold">{value}</p>
+      </div>
+    ))}
+  </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-5">
-        <div className="bg-blue-100 p-2 rounded-lg shadow text-center">
-          <h2 className="text-lg font-semibold">Paid Leaves Left (PL)</h2>
-          <p className="text-lg font-bold">{leaves[0]?.userId?.leaves?.plLeft || 0}</p>
-        </div>
-        <div className="bg-green-100 p-2 rounded-lg shadow text-center">
-          <h2 className="text-lg font-semibold">Paid Leaves</h2>
-          <p className="text-lg font-bold">{}</p>
-        </div>
-        <div className="bg-red-100 p-2 rounded-lg shadow text-center">
-          <h2 className="text-lg font-semibold">Unpaid Leaves</h2>
-          <p className="text-lg font-bold">{leaves?.length-leaves[0]?.userId?.leaves?.plLeft}</p>
-        </div>
-        <div className="bg-yellow-100 p-2 rounded-lg shadow text-center">
-          <h2 className="text-lg font-semibold">WFH</h2>
-          <p className="text-lg font-bold">{leaves[0]?.userId?.leaves?.wfhLeft}</p>
-        </div>
-      </div>
+  {/* Request Leave Button */}
+  <div className="text-right">
+    <button
+      onClick={handleNavigateLeaveForm}
+      className="bg-[#226597] hover:bg-[#113F67] text-white px-6 py-2 rounded-md text-sm font-medium shadow transition"
+    >
+      + Request Leave
+    </button>
+  </div>
 
-      {/* Leave Request Button */}
-      <div className="text-right">
-        <button
-          className="bg-blue-700 text-white px-5 py-2 rounded hover:bg-blue-900 cursor-pointer"
-          onClick={handleNavigateLeaveForm}
-        >
-          + Request Leave
-        </button>
-      </div>
-
-      {/* Leave History Table */}
-      <div className="bg-white shadow rounded-xl overflow-x-auto">
-        <h2 className="text-xl font-semibold p-4 border-b">Leave History</h2>
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-blue-950  text-white">
-            <tr>
-              <th className="px-4 py-2">Start Date</th>
-              <th className="px-4 py-2">End Date</th>
-              <th className="px-4 py-2">No. of Days</th>
-              <th className="px-4 py-2">Leave Type</th>
-              <th className="px-4 py-2">Day Type</th>
-              <th className="px-4 py-2">Reason</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">View Details</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            {leaves.map((leave, index) => (
-              <tr key={index} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-2">
-                  {new Date(leave.startDate).toLocaleDateString()}
-                </td>
-                <td className="px-4 py-2">
-                  {new Date(leave.endDate).toLocaleDateString()}
-                </td>
-                <td className="px-4 py-2">
-                  {leave.noOfDays}
-                </td>
-                <td className="px-4 py-2">{leave.leaveType}</td>
-                <td className="px-4 py-2">{leave.dayType}</td>
-                <td className="px-4 py-2">{leave.reason}</td>
-                <td className="px-4 py-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      leave.status === "Approved"
-                        ? "bg-green-200 text-green-800"
-                        : leave.status === "Rejected"
-                        ? "bg-red-200 text-red-800"
-                        : "bg-yellow-200 text-yellow-800"
-                    }`}
-                  >
-                    {leave.status}
-                  </span>
-                </td>
-                <td className="px-4 py-2 cursor-pointer" onClick={()=>openModal(leave)}><EyeIcon size={20}/></td>
-              </tr>
-            ))}
-            {leaves.length === 0 && (
-              <tr>
-                <td colSpan={7} className="text-center px-4 py-4 text-gray-500">
-                  No leave history found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div>
-      </div>
-      <div>
-      <LeaveDetailsModal
-  isOpen={isModalOpen}
-  onClose={closeModal}
-  leave={selectedLeave}
-/>
-      </div>
-      <Outlet />
+  {/* Leave History Table */}
+  <div className="bg-white overflow-x-auto">
+    <div className="p-2">
+      <h2 className="text-lg font-semibold text-[#113F67]">Leave History</h2>
     </div>
+    <table className="min-w-full text-sm text-left text-[#113F67]">
+      <thead className="bg-[#113F67] text-white text-xs uppercase">
+        <tr>
+          {[
+            "Start Date",
+            "End Date",
+            "No. of Days",
+            "Leave Type",
+            "Day Type",
+            "Reason",
+            "Status",
+            "Details",
+          ].map((head) => (
+            <th key={head} className="px-4 py-3 whitespace-nowrap">
+              {head}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {leaves.length === 0 ? (
+          <tr>
+            <td
+              colSpan={8}
+              className="text-center px-4 py-6 text-gray-500 italic"
+            >
+              No leave history found.
+            </td>
+          </tr>
+        ) : (
+          leaves.map((leave, index) => (
+            <tr
+              key={index}
+              className={`${
+                index % 2 === 0 ? "bg-white" : "bg-[#F3F9FB]"
+              } hover:bg-[#E6F0F5] transition`}
+            >
+              <td className="px-4 py-3">
+                {new Date(leave.startDate).toLocaleDateString("en-IN")}
+              </td>
+              <td className="px-4 py-3">
+                {new Date(leave.endDate).toLocaleDateString("en-IN")}
+              </td>
+              <td className="px-4 py-3">{leave.noOfDays}</td>
+              <td className="px-4 py-3 capitalize">{leave.leaveType}</td>
+              <td className="px-4 py-3 capitalize">{leave.dayType}</td>
+              <td className="px-4 py-3">{leave.reason}</td>
+              <td className="px-4 py-3">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    leave.status === "Approved"
+                      ? "bg-green-200 text-green-800"
+                      : leave.status === "Rejected"
+                      ? "bg-red-200 text-red-800"
+                      : "bg-yellow-200 text-yellow-800"
+                  }`}
+                >
+                  {leave.status}
+                </span>
+              </td>
+              <td className="px-4 py-3 text-center">
+                <button
+                  onClick={() => openModal(leave)}
+                  className="text-[#113F67] hover:text-[#226597] transition"
+                >
+                  <EyeIcon size={20} />
+                </button>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Modal */}
+  <LeaveDetailsModal
+    isOpen={isModalOpen}
+    onClose={closeModal}
+    leave={selectedLeave}
+  />
+
+  <Outlet />
+</div>
+
+
   );
 };
 

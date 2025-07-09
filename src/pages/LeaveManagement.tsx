@@ -65,16 +65,17 @@ const LeaveManagement: React.FC = () => {
     new Date(dateStr).toLocaleDateString("en-IN");
 
   return (
-    <div className="overflow-x-auto rounded-xl p-3 bg-white">
-  {/* <h2 className="text-xl font-bold mb-4 text-[#113F67]">
-    Employee's Leave Requests
-  </h2> */}
+    <div className="overflow-x-auto p-2">
+  {/*   <h2 className="text-xl font-bold text-[#113F67] mt-2">Leave Requests</h2> */}
 
-  <table className="w-full text-sm text-left text-[#113F67]">
+  <table className="w-full text-sm text-left text-[#113F67] mt-1.5">
     <thead className="bg-[#113F67] text-white uppercase text-sm">
       <tr>
         {leaveHeaders.map((header) => (
-          <th key={header} className="px-4 py-3 whitespace-nowrap font-semibold">
+          <th
+            key={header}
+            className="px-4 py-3 font-semibold whitespace-nowrap text-[13px]"
+          >
             {header}
           </th>
         ))}
@@ -87,9 +88,9 @@ const LeaveManagement: React.FC = () => {
           key={index}
           className={`${
             index % 2 === 0 ? "bg-white" : "bg-[#F3F9FB]"
-          } hover:bg-[#E6F0F5] transition`}
+          } hover:bg-[#E6F0F5] transition duration-200`}
         >
-          <td className="px-4 py-3 font-medium capitalize">
+          <td className="px-4 py-3 capitalize font-medium">
             {leave.userId.firstName + " " + leave.userId.lastName}
           </td>
           <td className="px-4 py-3">{leave.noOfDays}</td>
@@ -112,25 +113,25 @@ const LeaveManagement: React.FC = () => {
 
           <td className="px-4 py-3 relative">
             {leave.status === "Pending" ? (
-              <>
+              <div className="flex justify-center items-center">
                 <button
                   onClick={() => toggleDropdown(index)}
-                  className="p-1 rounded-full hover:bg-[#226597]/20"
+                  className="p-1 rounded-full hover:bg-[#87C0CD] transition"
                 >
                   <MoreVertical size={20} color="#113F67" />
                 </button>
 
                 {dropdownIndex === index && (
-                  <div className="absolute right-0 mt-2 w-40 bg-[#113F67] text-white rounded shadow-lg z-50">
-                    <ul className="divide-y divide-[#1e3a5f]">
+                  <div className="absolute right-0 mt-2 w-40 bg-[#226597] text-white rounded-md shadow-md z-50">
+                    <ul className="divide-y divide-[#1b4f74] text-sm">
                       <li
-                        className="px-4 py-2 hover:bg-[#226597] cursor-pointer"
+                        className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
                         onClick={() => updateStatus(index, "Approved")}
                       >
                         Approve
                       </li>
                       <li
-                        className="px-4 py-2 hover:bg-[#226597] cursor-pointer"
+                        className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
                         onClick={() => updateStatus(index, "Rejected")}
                       >
                         Reject
@@ -138,9 +139,9 @@ const LeaveManagement: React.FC = () => {
                     </ul>
                   </div>
                 )}
-              </>
+              </div>
             ) : (
-              <span className="text-gray-400">—</span>
+              <span className="text-gray-400 flex justify-center">—</span>
             )}
           </td>
         </tr>
@@ -148,6 +149,7 @@ const LeaveManagement: React.FC = () => {
     </tbody>
   </table>
 </div>
+
 
   );
 };
