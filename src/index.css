@@ -22,3 +22,24 @@
   height: 150px;
   z-index: 50;
 }
+body, * {
+  scrollbar-width: none;       
+  -ms-overflow-style: none;  
+}
+
+body::-webkit-scrollbar, *::-webkit-scrollbar {
+  display: none;           
+}
+.nav-tooltip:hover::after {
+  content: "Under Progress 🚧";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #113F67;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 10;
+}

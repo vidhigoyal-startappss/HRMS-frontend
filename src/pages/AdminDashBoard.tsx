@@ -6,6 +6,7 @@ import {
   DollarSign,
   ChevronDown,
   ChevronUp,
+  Info,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -158,24 +159,50 @@ const AdminDashboard = () => {
     <div className="p-6 space-y-6">
   {/* Cards */}
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    {[
-      { label: "Employees", value: employees.length, icon: <Briefcase size={40} className="text-white" /> },
-      { label: "Leaves Today", value: attendance?.leaves ?? 0, icon: <CalendarDays size={40} className="text-white" /> },
-      { label: "Absent", value: attendance?.absent ?? 0, icon: <Users size={40} className="text-white" /> },
-      { label: "Payrolls", value: payrolls.length, icon: <DollarSign size={40} className="text-white" /> },
-    ].map((card, idx) => (
-      <div
-        key={idx}
-        className="bg-[#113F67] p-4 rounded-xl text-white flex items-center justify-between"
-      >
-        <div>
-          <h2 className="text-lg font-semibold">{card.label}</h2>
-          <p className="text-2xl">{card.value}</p>
-        </div>
-        {card.icon}
+  {[
+    {
+      label: "Employees",
+      value: employees.length,
+      icon: <Briefcase size={40} className="text-white" />,
+      disabled: false,
+    },
+    {
+      label: "Leaves Today",
+      value: attendance?.leaves ?? 0,
+      icon: <CalendarDays size={40} className="text-white" />,
+      disabled: false,
+    },
+    {
+      label: "Absent",
+      value: attendance?.absent ?? 0,
+      icon: <Users size={40} className="text-white" />,
+      disabled: false,
+    },
+    {
+      label: "Payrolls",
+      value: "In Progress",
+      icon: <DollarSign size={40} className="text-white" />,
+      disabled: true,
+    },
+  ].map((card, idx) => (
+    <div
+      key={idx}
+      className={`rounded-xl p-4 flex items-center justify-between ${
+        card.disabled ? "bg-gray-300 cursor-not-allowed opacity-60" : "bg-[#113F67] text-white"
+      }`}
+      title={card.disabled ? "This module is under progress." : ""}
+    >
+      <div>
+        <h2 className="text-lg font-semibold flex items-center gap-1">
+          {card.label}
+          {card.disabled && <Info size={16} />}
+        </h2>
+        <p className="text-2xl">{card.disabled ? "—" : card.value}</p>
       </div>
-    ))}
-  </div>
+      {card.icon}
+    </div>
+  ))}
+</div>
 
   {/* Employee List */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -224,11 +251,8 @@ const AdminDashboard = () => {
 
     {/* Map and Profile */}
     <div>
-      <LocationMap
-        onAddressFetched={(addr: string) => setLocation(addr)}
-        setLoading={setLocationLoading}
-      />
       <div className="bg-white shadow rounded-xl p-1 w-full flex flex-col items-center">
+        
         <img
           src={user?.profileImg || userimg}
           alt="User"
@@ -246,7 +270,10 @@ const AdminDashboard = () => {
         <p className="text-[#113F67] text-xs mt-1">
           {attendance?.date && `Date: ${attendance.date}`}
         </p>
-
+        <LocationMap
+        onAddressFetched={(addr: string) => setLocation(addr)}
+        setLoading={setLocationLoading}
+      />
         {isCheckedIn && (
           <div className="flex justify-center gap-2 text-black font-mono text-lg mt-1">
             {getTimer()
@@ -262,6 +289,7 @@ const AdminDashboard = () => {
                   {i < 2 && <span>:</span>}
                 </>
               ))}
+              
           </div>
         )}
 

@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../feature/user/userSlice";
 import { RootState } from "../../../store/store";
-import profileImage from "../../../assets/user-alt.svg";
+import profileImage from "../../../assets/userlogo.png";
 
 const AdminLayout: React.FC = () => {
   const dispatch = useDispatch();
@@ -42,39 +42,110 @@ const AdminLayout: React.FC = () => {
   > = {
     superadmin: [
       { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
-      { label: "Employee Management", path: "/admin/employee-management", icon: Users },
-      { label: "Attendance Management", path: "/admin/attendance", icon: UserCheck },
-      { label: "Leave Management", path: "/admin/leave-requests", icon: CalendarCheck },
-      { label: "Approval History", path: "/admin/approval-history", icon: Clock },
+      {
+        label: "Employee Management",
+        path: "/admin/employee-management",
+        icon: Users,
+      },
+      {
+        label: "Attendance Management",
+        path: "/admin/attendance",
+        icon: UserCheck,
+      },
+      {
+        label: "Leave Management",
+        path: "/admin/leave-requests",
+        icon: CalendarCheck,
+      },
+      {
+        label: "Approval History",
+        path: "/admin/approval-history",
+        icon: Clock,
+        disabled: true,
+      },
       { label: "Profile", path: "/admin/profile", icon: User },
-      { label: "Payroll", path: "/admin/payroll", icon: HandCoins },
-      { label: "Reports", path: "/admin/reports", icon: Flag },
+      {
+        label: "Payroll",
+        path: "/admin/payroll",
+        icon: HandCoins,
+        disabled: true,
+      },
+      { label: "Reports", path: "/admin/reports", icon: Flag, disabled: true },
     ],
     admin: [
       { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
-      { label: "Employee Management", path: "/admin/employee-management", icon: Users },
-      { label: "Attendance Management", path: "/admin/attendance", icon: UserCheck },
-      { label: "Leave Management", path: "/admin/leave-requests", icon: CalendarCheck },
-      { label: "Approval History", path: "/admin/approval-history", icon: Clock },
+      {
+        label: "Employee Management",
+        path: "/admin/employee-management",
+        icon: Users,
+      },
+      {
+        label: "Attendance Management",
+        path: "/admin/attendance",
+        icon: UserCheck,
+      },
+      {
+        label: "Leave Management",
+        path: "/admin/leave-requests",
+        icon: CalendarCheck,
+      },
+      {
+        label: "Approval History",
+        path: "/admin/approval-history",
+        icon: Clock,
+        disabled: true,
+      },
       { label: "Profile", path: "/admin/profile", icon: User },
-      { label: "Payroll", path: "/admin/payroll", icon: HandCoins },
-      { label: "Reports", path: "/admin/reports", icon: Flag },
+      {
+        label: "Payroll",
+        path: "/admin/payroll",
+        icon: HandCoins,
+        disabled: true,
+      },
+      { label: "Reports", path: "/admin/reports", icon: Flag, disabled: true },
     ],
     hr: [
       { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
-      { label: "Employee Management", path: "/admin/employee-management", icon: Users },
-      { label: "Attendance Management ", path: "/admin/attendance", icon: UserCheck },
-      { label: "Leave Management", path: "/admin/leave-requests", icon: CalendarCheck },
-      { label: "Approval History", path: "/admin/approval-history", icon: Clock },
+      {
+        label: "Employee Management",
+        path: "/admin/employee-management",
+        icon: Users,
+      },
+      {
+        label: "Attendance Management ",
+        path: "/admin/attendance",
+        icon: UserCheck,
+      },
+      {
+        label: "Leave Management",
+        path: "/admin/leave-requests",
+        icon: CalendarCheck,
+      },
+      {
+        label: "Approval History",
+        path: "/admin/approval-history",
+        icon: Clock,
+        disabled: true,
+      },
       { label: "Profile", path: "/admin/profile", icon: User },
-      { label: "Payroll", path: "/admin/payroll", icon: HandCoins },
-      { label: "Reports", path: "/admin/reports", icon: Flag },
+      {
+        label: "Payroll",
+        path: "/admin/payroll",
+        icon: HandCoins,
+        disabled: true,
+      },
+      { label: "Reports", path: "/admin/reports", icon: Flag, disabled: true },
     ],
     employee: [
       { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
       { label: "Attendance", path: "/attendance", icon: UserCheck },
       { label: "Leave Requests", path: "/leave-requests", icon: CalendarCheck },
-      { label: "Approval History", path: "/approval-history", icon: Clock },
+      {
+        label: "Approval History",
+        path: "/approval-history",
+        icon: Clock,
+        disabled: true,
+      },
       { label: "Profile", path: "/profile", icon: User },
     ],
   };
@@ -89,37 +160,60 @@ const AdminLayout: React.FC = () => {
   return (
     <div className="flex h-screen bg-[#F3F9FB]">
       <aside className="w-72 bg-[#113F67] text-white flex flex-col p-4 shadow-lg">
-        <div className="flex items-center gap-4 p-3 bg-[#226597] rounded-xl mb-6">
+        <div className="flex items-center gap-4 p-3 bg-gray-300 rounded-xl mb-6 font-bold text-[#113F67]">
           <img
             src={user?.profileImage || profileImage}
             alt="Profile"
-            className="w-14 h-14 rounded-full object-cover border-2 border-white"
+            className="w-14 h-14 rounded-full object-cover p-0.5"
           />
           <div>
-            <div className="text-base font-semibold capitalize">{user?.name}</div>
-            <div className="text-sm text-white capitalize">{role}</div>
+            <div className="text-xl capitalize font-extrabold text-[#113F67]">
+              {user?.name}
+            </div>
+            <div className="text-sm font-bold text-[#113F67] capitalize">
+              {role}
+            </div>
           </div>
         </div>
         <nav className="flex flex-col gap-3 flex-grow">
-          {linksToShow.map(({ label, path, icon: Icon }) => (
-            <NavLink
-              key={label}
-              to={path}
-              end={label === "Dashboard"}
-              onClick={() => setPageTitle(label)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  isActive
-                    ? "bg-[#226597] text-white font-semibold"
-                    : "hover:bg-[#226597] hover:text-white text-white"
-                }`
-              }
-            >
-              <Icon size={18} className="text-white" />
-              {label}
-            </NavLink>
+          {linksToShow.map(({ label, path, icon: Icon, disabled }) => (
+            <div key={label} className="relative group">
+              <NavLink
+                to={disabled ? "#" : path}
+                end={label === "Dashboard"}
+                onClick={(e) => {
+                  if (disabled) {
+                    e.preventDefault();
+                    alert(`${label} is under progress 🚧`);
+                  } else {
+                    setPageTitle(label);
+                  }
+                }}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    disabled
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : isActive
+                      ? "bg-[#226597] text-white font-semibold"
+                      : "hover:bg-[#226597] hover:text-white text-white"
+                  }`
+                }
+              >
+                <Icon size={18} className="text-white" />
+                {label}
+                {disabled && (
+                  <span
+                    className="ml-2 text-xs bg-[#113F67] text-white font-semibold px-2 py-0.5 rounded-full"
+                    title="Under Progress"
+                  >
+                    i
+                  </span>
+                )}
+              </NavLink>
+            </div>
           ))}
         </nav>
+
         <button
           onClick={handleLogout}
           className="mt-6 flex items-center cursor-pointer justify-center gap-3 px-4 py-3 bg-[#226597] hover:bg-[#87C0CD] text-white text-sm font-medium rounded-md"
@@ -147,7 +241,9 @@ const AdminLayout: React.FC = () => {
 
         <section className="bg-white rounded-xl shadow-md p-4 min-h-[calc(100vh-160px)]">
           <header className="mb-3">
-            <h2 className="text-xl font-semibold text-[#113F67]">{pageTitle}</h2>
+            <h2 className="text-xl font-semibold text-[#113F67]">
+              {pageTitle}
+            </h2>
           </header>
           <Outlet />
         </section>
