@@ -13,8 +13,8 @@ interface BirthdayBoxProps {
 
 const BirthdayBox: React.FC<BirthdayBoxProps> = ({ birthdays, onSendWish }) => {
   return (
-    <div className="space-y-6 w-full h-full bg-white py-10 px-6 shadow-md rounded-md">
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+    <div className="space-y-6 w-full h-full bg-white py-6 px-5 shadow-md rounded-md border border-[#dbe9f1]">
+      <h2 className="text-xl font-semibold text-[#113F67] mb-2 flex items-center gap-2">
         Birthdays
       </h2>
 
@@ -22,14 +22,13 @@ const BirthdayBox: React.FC<BirthdayBoxProps> = ({ birthdays, onSendWish }) => {
         <p className="text-gray-500">No upcoming birthdays.</p>
       ) : (
         <ul className="space-y-3">
-          
           {birthdays.map(({ name, date }, index) => (
             <li
               key={index}
-              className="flex items-center justify-between px-5 py-2 bg-blue-100 rounded-md"
-            > 
+              className="flex items-center justify-between px-4 py-2 bg-[#f0f8fb] border border-[#dbe9f1] rounded-md"
+            >
               <div>
-                <p className="font-semibold text-gray-800">{name}</p>
+                <p className="font-medium text-[#113F67]">{name}</p>
                 <p className="text-sm text-gray-600">
                   {new Date(date).toLocaleDateString(undefined, {
                     month: "long",
@@ -39,9 +38,9 @@ const BirthdayBox: React.FC<BirthdayBoxProps> = ({ birthdays, onSendWish }) => {
               </div>
               <button
                 onClick={() => onSendWish(name)}
-                className="flex items-center gap-2 bg-yellow-500 px-4 py-1.5 rounded hover:bg-yellow-400 text-sm transition duration-200"
+                className="flex items-center gap-2 bg-[#113F67] text-[#FFF] px-4 py-1.5 rounded-md text-sm font-medium hover:bg-[#] transition duration-200"
               >
-                <Send size={14} /> Send Wish
+                Send Wish
               </button>
             </li>
           ))}

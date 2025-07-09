@@ -69,7 +69,7 @@ const EmployeeLayout: React.FC = () => {
           <img
             src={employeeData?.profileImg || profileImage}
             alt="Profile"
-            className="w-14 h-14 rounded-full object-cover border-2 border-white"
+            className="w-14 h-14 rounded-full object-cover border-2 border-white p-0.5"
           />
           <div>
             <div className="text-base font-semibold capitalize">{fullName}</div>

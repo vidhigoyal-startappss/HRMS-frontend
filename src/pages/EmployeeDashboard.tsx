@@ -1,21 +1,10 @@
 import React, { useEffect, useState } from "react";
-import EmployeeCard from "../components/EmployeeCards";
-import QuickBtnData from "../assets/data/QuickActionsBtn.json";
-import Button from "../components/common/ButtonComp";
-import LeaveProgressBar, { LeaveType } from "../components/LeaveProgressBar/LeaveProgressBar";
-import TaskBox from "../components/TaskBox/TaskBox";
+import LocationMap from "../components/Location/LocationMap";
 import AnnouncementBox from "../components/Announcement/Announcement";
 import BirthdayBox from "../components/BirthdayBox/BirthdayBox";
-import PayslipBreakdown from "../pages/PayslipBreakdown";
-import LocationMap from "../components/Location/LocationMap";
-import {
-  checkIn,
-  checkOut,
-  getTodayAttendance,
-} from "../api/attendance";
-
-// ✅ Get employee info from the correct source (likely auth.js or user.js)
-import { getEmployeeById } from "../api/auth"; 
+import LeaveProgressBar, { LeaveType } from "../components/LeaveProgressBar/LeaveProgressBar";
+import { checkIn, checkOut } from "../api/attendance";
+import { getEmployeeById } from "../api/auth";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 
@@ -24,13 +13,6 @@ const EmployeeDashboard = () => {
     { type: "Sick Leave", used: 4, total: 10 },
     { type: "Casual Leave", used: 2, total: 5 },
     { type: "Annual Leave", used: 8, total: 15 },
-  ];
-
-  const tasks = [
-    "Design Login Page",
-    "Set up Redux",
-    "Implement JWT",
-    "Write Tests",
   ];
 
   const birthdays = [
@@ -53,14 +35,8 @@ const EmployeeDashboard = () => {
     },
   ];
 
-  const handleSendWish = (name: string) => {
-    alert(`🎉 Birthday wish sent to ${name}!`);
-  };
-
-  const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const { user } = useSelector((state: RootState) => state.user);
   const [employeeData, setEmployeeData] = useState<any>(null);
-
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [checkInTime, setCheckInTime] = useState<Date | null>(null);
   const [status, setStatus] = useState("Out");
@@ -83,7 +59,7 @@ const EmployeeDashboard = () => {
     let interval: NodeJS.Timeout;
     if (isCheckedIn && checkInTime) {
       interval = setInterval(() => {
-        setTimerTick(t => t + 1);
+        setTimerTick((t) => t + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -138,64 +114,52 @@ const EmployeeDashboard = () => {
     }
   };
 
+  const handleSendWish = (name: string) => {
+    alert(`🎉 Birthday wish sent to ${name}!`);
+  };
+
   return (
-    <div className="w-full px-4 md:px-8 py-4">
-      <h1 className="text-2xl font-bold text-blue-900 mb-4">Dashboard</h1>
-
-      {/* Location + Timer */}
-      <LocationMap
-        onAddressFetched={(addr: string) => setLocation(addr)}
-        setLoading={setLocationLoading}
-      />
-
-      <div className="bg-white shadow rounded p-4 mt-4 flex flex-col items-center">
-        <p className="text-sm text-gray-700">Status: {status}</p>
-        {isCheckedIn && (
-          <div className="flex gap-2 font-mono text-lg mt-1">
-            {getTimer()
-              .split(":")
-              .map((val, i) => (
-                <>
-                  <span key={i} className="bg-gray-200 px-3 py-1 rounded">
-                    {val}
-                  </span>
-                  {i < 2 && <span>:</span>}
-                </>
-              ))}
+    <div className="w-full px-4 py-4">
+      {/* Grid Row: Location + Leave Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white p-2 rounded-md shadow-md border border-[#dbe9f1]">
+          <LocationMap
+            onAddressFetched={(addr: string) => setLocation(addr)}
+            setLoading={setLocationLoading}
+          />
+          <div className="rounded p-3 mt-2 flex flex-col items-center">
+            <p className="text-sm text-[#113F67] font-medium mb-2">Status: {status}</p>
+            {isCheckedIn && (
+              <div className="flex gap-2 font-mono text-lg mt-1">
+                {getTimer()
+                  .split(":")
+                  .map((val, i) => (
+                    <React.Fragment key={i}>
+                      <span className="px-3 py-1 bg-gray-200 rounded">{val}</span>
+                      {i < 2 && <span>:</span>}
+                    </React.Fragment>
+                  ))}
+              </div>
+            )}
+            <button
+              onClick={handleClick}
+              disabled={locationLoading}
+              className="m-2 px-4 py-1 text-white rounded bg-[#113F67] hover:bg-[#87C0CD]"
+            >
+              {isCheckedIn ? "Check-out" : "Check-in"}
+            </button>
           </div>
-        )}
-        <button
-          onClick={handleClick}
-          disabled={locationLoading}
-          className="mt-2 px-4 py-1 border border-green-600 text-green-700 rounded hover:bg-green-100 disabled:opacity-50"
-        >
-          {isCheckedIn ? "Check-out" : "Check-in"}
-        </button>
-      </div>
+        </div>
 
-      {/* Leave + Payslip */}
-      <div className="flex flex-col lg:flex-row gap-4 mt-6">
-        <div className="w-full lg:w-1/2">
+        <div className="w-full">
           <LeaveProgressBar leaveData={leaveStats} />
         </div>
-        <div className="w-full lg:w-1/2">
-          <PayslipBreakdown month={currentMonth} />
-        </div>
       </div>
 
-      {/* Announcements + Birthdays */}
-      <div className="flex flex-col md:flex-row gap-4 mt-6">
-        <div className="w-full md:w-1/2">
-          <AnnouncementBox announcements={announcements} />
-        </div>
-        <div className="w-full md:w-1/2">
-          <BirthdayBox birthdays={birthdays} onSendWish={handleSendWish} />
-        </div>
-      </div>
-
-      {/* Tasks */}
-      <div className="mt-6">
-        <TaskBox tasks={tasks} />
+      {/* Grid Row: Announcements + Birthdays */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <AnnouncementBox announcements={announcements} />
+        <BirthdayBox birthdays={birthdays} onSendWish={handleSendWish} />
       </div>
     </div>
   );

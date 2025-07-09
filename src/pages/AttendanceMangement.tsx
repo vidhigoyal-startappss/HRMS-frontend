@@ -64,7 +64,8 @@ const AttendanceManagement = () => {
                     className="hover:bg-blue-50 transition-colors text-[#226597]"
                   >
                     <td className="px-4 py-2 ">
-                      {record.date?.split("T")[0]}
+                      {record.checkInTime ? new Date(record.checkInTime).toISOString().split("T")[0] : "--"}
+
                     </td>
                     <td className="px-4 py-2 ">
                       {record.checkInTime

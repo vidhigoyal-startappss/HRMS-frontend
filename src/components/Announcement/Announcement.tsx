@@ -18,25 +18,32 @@ const AnnouncementBox: React.FC<AnnouncementBoxProps> = ({ announcements }) => {
   };
 
   return (
-    <div className="space-y-6 w-full h-full bg-white py-10 px-6 shadow-md rounded-md">
-      <h2 className="text-xl font-bold">Announcement(s)</h2>
+   <div className="space-y-6 w-full h-full bg-white py-2 px-5 shadow-md rounded-md border border-[#dbe9f1]">
+      {/* Heading */}
+      <h2 className="text-xl font-semibold text-[#113F67]">Announcement(s)</h2>
+
+      {/* Announcements List */}
       {announcements.map((announcement, index) => (
-        <div key={index} className="border border-blue-200 rounded-md overflow-hidden">
+        <div key={index} className="border border-[#dbe9f1] rounded-md overflow-hidden">
+          {/* Title Button */}
           <button
             onClick={() => toggle(index)}
-            className="w-full text-left py-3 px-4 bg-blue-100 hover:bg-blue-200 font-medium flex justify-between items-center"
+            className="w-full text-left py-1 px-4 bg-[#f0f8fb] hover:bg-[#dbe9f1] font-medium text-[#113F67] flex justify-between items-center"
           >
-            {announcement.title}
-            <span>{openIndex === index ? <ChevronUp /> : <ChevronDown />}</span>
+            <span>{announcement.title}</span>
+            <span>{openIndex === index ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</span>
           </button>
+
+          {/* Content */}
           {openIndex === index && (
-            <div className="px-4 py-3 text-gray-700 bg-gray-100 border-t border-blue-200">
+            <div className="px-4 py-3 text-sm text-gray-700 bg-[#f9fcfd] border-t border-[#dbe9f1]">
               {announcement.content}
             </div>
           )}
         </div>
       ))}
     </div>
+
   );
 };
 
