@@ -21,6 +21,8 @@ interface LeaveRecord {
   startDate: string;
   endDate: string;
   noOfDays: number;
+  paidDays:number;
+  unpaidDays:number;
   leaveType: string;
   dayType: string;
   reason: string;
@@ -40,7 +42,7 @@ const EmployeeLeaveDashboard: React.FC = () => {
       console.log(data)
       setLeaves(data);
       const user = await getEmployeeById(userId)
-      setUserData(user)
+      setUserData(user);
     };
     fetch();
   }, []);
@@ -76,6 +78,7 @@ const closeModal = () => {
   setIsModalOpen(false);
 };
 
+console.log(leaves)
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-10 text-[#113F67]">
@@ -84,15 +87,19 @@ const closeModal = () => {
     {[
       {
         label: "Paid Leaves Left (PL)",
-        value: userData?.leaves?.plLeft || 'Not Available',
+        value: userData?.leaves?.plLeft,
       },
       {
         label: "Unpaid Leaves (Monthly)",
-        value: 0,
+        value: leaves.reduce((a, c) => a + (c?.unpaidDays || 0), 0)
+      },
+      {
+        label: "Paid Leaves (Monthly)",
+        value: leaves.reduce((a, c) => a + (c?.paidDays || 0), 0)
       },
       {
         label: "WFH",
-        value: userData?.leaves?.wfhLeft || 'Not Available',
+        value: userData?.leaves?.wfhLeft,
       },
     ].map(({ label, value }) => (
       <div
@@ -161,7 +168,8 @@ const closeModal = () => {
                 {new Date(leave.startDate).toLocaleDateString("en-IN")}
               </td>
               <td className="px-4 py-3">
-                {new Date(leave.endDate).toLocaleDateString("en-IN")}
+                {(leave.endDate!==null) ? new Date(leave.endDate).toLocaleDateString("en-IN"): 'Not Applicable'}
+                {/* {new Date(leave.endDate).toLocaleDateString("en-IN") || 'Not Applicable'} */}
               </td>
               <td className="px-4 py-3">{leave.noOfDays}</td>
               <td className="px-4 py-3 capitalize">{leave.leaveType}</td>
