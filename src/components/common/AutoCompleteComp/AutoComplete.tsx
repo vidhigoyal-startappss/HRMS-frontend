@@ -72,7 +72,7 @@ export function Autocomplete<T extends object>({
         className="pl-10 pr-4 py-2 rounded-lg w-full bg-[#F3F9FB] border border-[#226597] text-[#113F67] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#226597]"
       />
 
-      {filtered.length > 0 && (
+      {isOpen && filtered.length > 0 && (
         <ul className="absolute z-10 bg-white border border-[#226597] rounded shadow-md w-full mt-1 max-h-60 overflow-y-auto">
           {filtered.map((item, i) => (
             <li

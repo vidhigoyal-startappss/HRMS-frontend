@@ -47,7 +47,7 @@ export const ResetPasswordForm = () => {
   if (!token) return <p className="text-center mt-20 text-red-600">Invalid or missing token</p>;
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="bg-blue-400 flex justify-center items-center w-full min-h-screen">
+      <div className="bg-[#113F67] flex justify-center items-center w-full min-h-screen">
         <div className="flex flex-col bg-white p-4 gap-4 w-96 rounded-sm">
           <input
             type="password"
@@ -55,7 +55,10 @@ export const ResetPasswordForm = () => {
             className="p-2 border border-gray-300 rounded-sm"
             {...register("password")}
           />
-          {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+          <div className="h-1 m-1">
+       {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+          </div>
+       
 
           <input
             type="password"
@@ -63,13 +66,14 @@ export const ResetPasswordForm = () => {
             className="p-2 border border-gray-300 rounded-sm"
             {...register("confirmPassword")}
           />
+          <div className="h-1 m-1">
           {errors.confirmPassword && (
             <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
           )}
-
+  </div>
           <button
             type="submit"
-            className="bg-blue-900 text-white p-2 rounded-sm hover:bg-blue-800"
+            className="bg-[#226597] text-white p-2 rounded-sm hover:bg-[#113F67]"
           >
             Reset Password
           </button>

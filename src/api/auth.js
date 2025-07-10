@@ -71,9 +71,9 @@ export const updateUserDetail = async (userId, data) => {
   }
 };
 
-export const fetchEmployees = async () => {
+export const fetchEmployees = async (showArchived = false) => {
   try {
-    const response = await API.get("/api/users/employees");
+    const response = await API.get(`/api/users/employees?archived=${showArchived}`);
     console.log(response)
     return response.data;
   } catch (error) {

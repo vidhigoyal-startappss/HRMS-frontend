@@ -3,10 +3,11 @@ import { useNavigate, Outlet } from "react-router-dom";
 import { EyeIcon,EyeClosedIcon } from "lucide-react";
 import { getLeaves } from "../api/leave";
 import LeaveDetailsModal from "../components/Modal/LeaveDetailsModal";
+import { getEmployeeById } from "../api/auth";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 interface UserLeaves{
-  paidAllowed: number;
-  wfhAllowed: number;
   wfhLeft: number;
   plLeft: number;
 }
@@ -20,6 +21,8 @@ interface LeaveRecord {
   startDate: string;
   endDate: string;
   noOfDays: number;
+  paidDays:number;
+  unpaidDays:number;
   leaveType: string;
   dayType: string;
   reason: string;
@@ -27,13 +30,19 @@ interface LeaveRecord {
   userId: userId
 }
 
+
 const EmployeeLeaveDashboard: React.FC = () => {
   const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
+  const [userData, setUserData] = useState({});
+  const { user } = useSelector((state: RootState) => state.user);
+    const userId =  user?.userId;
   useEffect(() => {
     const fetch = async () => {
       const data = await getLeaves();
       console.log(data)
       setLeaves(data);
+      const user = await getEmployeeById(userId)
+      setUserData(user);
     };
     fetch();
   }, []);
@@ -69,6 +78,7 @@ const closeModal = () => {
   setIsModalOpen(false);
 };
 
+console.log(leaves)
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-10 text-[#113F67]">
@@ -77,19 +87,19 @@ const closeModal = () => {
     {[
       {
         label: "Paid Leaves Left (PL)",
-        value: leaves[0]?.userId?.leaves?.plLeft || 0,
+        value: userData?.leaves?.plLeft,
       },
       {
-        label: "Paid Leaves",
-        value: leaves.filter((l) => l.leaveType === "Paid").length,
+        label: "Unpaid Leaves (Monthly)",
+        value: leaves.reduce((a, c) => a + (c?.unpaidDays || 0), 0)
       },
       {
-        label: "Unpaid Leaves",
-        value: leaves.filter((l) => l.leaveType === "Unpaid").length,
+        label: "Paid Leaves (Monthly)",
+        value: leaves.reduce((a, c) => a + (c?.paidDays || 0), 0)
       },
       {
         label: "WFH",
-        value: leaves[0]?.userId?.leaves?.wfhLeft || 0,
+        value: userData?.leaves?.wfhLeft,
       },
     ].map(({ label, value }) => (
       <div
@@ -158,7 +168,8 @@ const closeModal = () => {
                 {new Date(leave.startDate).toLocaleDateString("en-IN")}
               </td>
               <td className="px-4 py-3">
-                {new Date(leave.endDate).toLocaleDateString("en-IN")}
+                {(leave.endDate!==null) ? new Date(leave.endDate).toLocaleDateString("en-IN"): 'Not Applicable'}
+                {/* {new Date(leave.endDate).toLocaleDateString("en-IN") || 'Not Applicable'} */}
               </td>
               <td className="px-4 py-3">{leave.noOfDays}</td>
               <td className="px-4 py-3 capitalize">{leave.leaveType}</td>
