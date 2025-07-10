@@ -3,10 +3,11 @@ import { useNavigate, Outlet } from "react-router-dom";
 import { EyeIcon,EyeClosedIcon } from "lucide-react";
 import { getLeaves } from "../api/leave";
 import LeaveDetailsModal from "../components/Modal/LeaveDetailsModal";
+import { getEmployeeById } from "../api/auth";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 interface UserLeaves{
-  paidAllowed: number;
-  wfhAllowed: number;
   wfhLeft: number;
   plLeft: number;
 }
@@ -27,13 +28,19 @@ interface LeaveRecord {
   userId: userId
 }
 
+
 const EmployeeLeaveDashboard: React.FC = () => {
   const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
+  const [userData, setUserData] = useState({});
+  const { user } = useSelector((state: RootState) => state.user);
+    const userId =  user?.userId;
   useEffect(() => {
     const fetch = async () => {
       const data = await getLeaves();
       console.log(data)
       setLeaves(data);
+      const user = await getEmployeeById(userId)
+      setUserData(user)
     };
     fetch();
   }, []);
@@ -77,19 +84,15 @@ const closeModal = () => {
     {[
       {
         label: "Paid Leaves Left (PL)",
-        value: leaves[0]?.userId?.leaves?.plLeft || 0,
+        value: userData?.leaves?.plLeft || 'Not Available',
       },
       {
-        label: "Paid Leaves",
-        value: leaves.filter((l) => l.leaveType === "Paid").length,
-      },
-      {
-        label: "Unpaid Leaves",
-        value: leaves.filter((l) => l.leaveType === "Unpaid").length,
+        label: "Unpaid Leaves (Monthly)",
+        value: 0,
       },
       {
         label: "WFH",
-        value: leaves[0]?.userId?.leaves?.wfhLeft || 0,
+        value: userData?.leaves?.wfhLeft || 'Not Available',
       },
     ].map(({ label, value }) => (
       <div

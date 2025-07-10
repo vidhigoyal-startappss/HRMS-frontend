@@ -37,20 +37,22 @@ export const ForgotPasswordForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="bg-blue-400 flex justify-center items-center w-full min-h-screen">
-        <div className="flex flex-col bg-white p-4 gap-4 w-96 rounded-sm">
+      <div className="bg-[#113F67] p-4 flex justify-center items-center w-full min-h-screen">
+        <div className="flex flex-col bg-white p-6 justify-center gap-4 w-96 rounded-lg">
+           <h1 className="text-2xl text-[#113F67] font-bold text-center">Reset Your Password</h1>
           <input
-            className="bg-gray-50 border border-gray-300 h-10 p-2 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+            className="bg-gray-50 border border-gray-300 h-10 p-2 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#113F67]"
             placeholder="Enter Your Registered Email"
             {...register("email")}
           />
-          {errors.email && (
+         <div className="m-2 h-1">
+           {errors.email && (
             <p className="text-red-500 text-sm">{errors.email.message}</p>
           )}
-
+         </div>
           <button
             type="submit"
-            className="bg-blue-900 text-white cursor-pointer p-2 rounded-sm hover:bg-blue-800 transition-2"
+            className="bg-[#226597] text-white cursor-pointer p-2 rounded-sm hover:bg-[#113F67] transition-2"
           >
             Send Reset Link
           </button>

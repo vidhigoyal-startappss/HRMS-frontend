@@ -36,7 +36,7 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
     });
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-900"
+      className="fixed inset-0 z-50  backdrop-blur-sm flex items-center justify-center bg-opacity-900"
       role="dialog"
       aria-modal="true"
       aria-labelledby="leave-details-title"
@@ -58,30 +58,30 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
         </h2>
 
         <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-md">
-          <div>
-            <p className="font-extrabold text-md text-black">Start Date:</p>
-            <div className="border-2 border-blue-950 p-2 rounded-sm ">{formatDate(leave.startDate)}</div>
+          <div className="flex gap-2 p-2">
+            <strong>Start Date:</strong>
+            <div>{formatDate(leave.startDate)}</div>
           </div>
-          <div>
+          <div className="flex gap-2 p-2">
             <strong>End Date:</strong>
             <div>{formatDate(leave.endDate)}</div>
           </div>
-          <div>
+          <div className="flex gap-2 p-2">
             <strong>No. of Days:</strong>
             <div>{leave.noOfDays}</div>
           </div>
-          <div>
+          <div className="flex gap-2 p-2">
             <strong>Leave Type:</strong>
             <div>{leave.leaveType}</div>
           </div>
-          <div>
+          <div className="flex gap-2 p-2">
             <strong>Day Type:</strong>
             <div>{leave.dayType}</div>
           </div>
-          <div>
+          <div className="flex gap-2 p-2">
             <strong>Status:</strong>
             <div
-              className={`inline-block px-2 py-1 rounded-full text-white text-xs ${
+              className={`py-1 flex gap-2 p-2 rounded-full text-white text-xs ${
                 leave.status === "Approved"
                   ? "bg-green-500"
                   : leave.status === "Pending"
@@ -93,12 +93,12 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
             </div>
           </div>
           {leave.reason && (
-            <div className="col-span-2">
+            <div className="flex gap-2 p-2">
               <strong>Reason:</strong>
               <div>{leave.reason}</div>
             </div>
           )}
-          <div className="col-span-2">
+          <div className="flex gap-2 p-2">
             <strong>Approved By:</strong>
             <div>
   {leave?.approvedBy?.firstName && leave?.approvedBy?.lastName
