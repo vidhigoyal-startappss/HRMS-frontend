@@ -193,11 +193,11 @@ const AdminDashboard = () => {
       title={card.disabled ? "This module is under progress." : ""}
     >
       <div>
-        <h2 className="text-lg font-semibold flex items-center gap-1">
+        <h2 className="text-xl font-semibold flex items-center gap-1">
           {card.label}
           {card.disabled && <Info size={16} />}
         </h2>
-        <p className="text-2xl">{card.disabled ? "—" : card.value}</p>
+        <p className="text-xl">{card.disabled ? "—" : card.value}</p>
       </div>
       {card.icon}
     </div>

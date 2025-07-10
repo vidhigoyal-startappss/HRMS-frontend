@@ -37,12 +37,12 @@ const AttendanceManagement = () => {
     <div className="p-3">
       {/* My Attendance */}
       <div className="bg-white rounded-xl p-4 mb-5">
-        <h2 className="text-xl font-semibold mb-4 text-[#113F67]">
+        <h2 className="text-lg font-semibold mb-4 text-[#113F67]">
           My Attendance History
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-md">
-            <thead className="bg-[#113F67] text-white text-left">
+            <thead className="bg-[#113F67] text-white text-left text-base capitalize">
               <tr>
                 <th className="px-4 py-2">Date</th>
                 <th className="px-4 py-2">Check-In</th>
@@ -61,7 +61,7 @@ const AttendanceManagement = () => {
                 myAttendance.map((record, idx) => (
                   <tr
                     key={idx}
-                    className="hover:bg-blue-50 transition-colors text-[#226597]"
+                    className="hover:bg-blue-50 transition-colors text-[#226597] text-sm"
                   >
                     <td className="px-4 py-2 ">
                       {record.checkInTime ? new Date(record.checkInTime).toISOString().split("T")[0] : "--"}
