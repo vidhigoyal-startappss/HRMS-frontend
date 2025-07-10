@@ -167,7 +167,7 @@ const AdminLayout: React.FC = () => {
             className="w-14 h-14 rounded-full object-cover p-0.5"
           />
           <div>
-            <div className="text-xl capitalize font-extrabold text-[#113F67]">
+            <div className="text-lg capitalize font-extrabold text-[#113F67]">
               {user?.name}
             </div>
             <div className="text-sm font-bold text-[#113F67] capitalize">
@@ -190,7 +190,7 @@ const AdminLayout: React.FC = () => {
                   }
                 }}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  `flex items-center gap-3 px-4 py-2 rounded-md text-base font-medium transition-all ${
                     disabled
                       ? "bg-gray-400 text-white cursor-not-allowed"
                       : isActive

@@ -10,13 +10,13 @@ import { RootState } from "../store";
 
 interface Employee {
   _id: string;
-  firstName: string;
-  lastName: string;
-  designation: string;
-  joiningDate: string;
-  employmentType: string;
-  gender: string;
-  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  designation?: string | null;
+  joiningDate?: string | null;
+  employmentType?: string | null;
+  gender?: string | null;
+  email?: string | null;
 }
 
 const EmployeeManagement = () => {
@@ -30,7 +30,6 @@ const EmployeeManagement = () => {
   const [isOpen, setIsOpen] = useState(false);
 const [showArchived, setShowArchived] = useState(false);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(employeeData.length / itemsPerPage);
 
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.user);
@@ -40,6 +39,9 @@ const [showArchived, setShowArchived] = useState(false);
     joiningDate: "",
     employmentType: "",
     designation: "",
+    gender: "",
+    sortOrder: "",
+    email: "",
   });
 
   const headers = [
@@ -51,6 +53,10 @@ const [showArchived, setShowArchived] = useState(false);
     "Gender",
     "Actions",
   ];
+
+  // Utility to safely display text or fallback
+  const safeDisplay = (value?: string | null) =>
+    value && value.trim() !== "" ? value : "N/A";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,6 +83,10 @@ const [showArchived, setShowArchived] = useState(false);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1); // Reset page to 1 when filters change
+  }, [filters]);
+
   const openModal = (userId: string) => {
     setUserToDelete(userId);
     setIsModalOpen(true);
@@ -98,7 +108,6 @@ const [showArchived, setShowArchived] = useState(false);
 
   const handleRequestDelete = (userId: string) => {
     toast.info("Delete request sent for approval.");
-    // Optionally send request to backend for approval workflow
     console.log(`Delete request sent for: ${userId}`);
   };
 
@@ -110,14 +119,32 @@ const [showArchived, setShowArchived] = useState(false);
     navigate(`/admin/employee/${id}`);
   };
 
-  const filteredEmployees = employeeData.filter((emp) => {
+  // Filter employees safely with null/empty checks
+  let filteredEmployees = employeeData.filter((emp) => {
     return (
       (!filters.designation ||
-        emp.designation.toLowerCase().includes(filters.designation.toLowerCase())) &&
+        (emp.designation ?? "").toLowerCase().includes(filters.designation.toLowerCase())) &&
       (!filters.employmentType || emp.employmentType === filters.employmentType) &&
-      (!filters.joiningDate || emp.joiningDate.slice(0, 10) === filters.joiningDate)
+      (!filters.gender || (emp.gender ?? "") === filters.gender) &&
+      (!filters.email || (emp.email ?? "").toLowerCase().includes(filters.email.toLowerCase())) &&
+      (!filters.joiningDate || emp.joiningDate?.slice(0, 10) === filters.joiningDate)
     );
   });
+
+  // Sort if needed
+  if (filters.sortOrder === "latest") {
+    filteredEmployees.sort(
+      (a, b) =>
+        new Date(b.joiningDate ?? "").getTime() - new Date(a.joiningDate ?? "").getTime()
+    );
+  } else if (filters.sortOrder === "oldest") {
+    filteredEmployees.sort(
+      (a, b) =>
+        new Date(a.joiningDate ?? "").getTime() - new Date(b.joiningDate ?? "").getTime()
+    );
+  }
+
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage) || 1;
 
   const paginatedFiltered = filteredEmployees.slice(
     (currentPage - 1) * itemsPerPage,
@@ -137,7 +164,7 @@ const [showArchived, setShowArchived] = useState(false);
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl p-3 bg-white">
+    <div className="relative min-h-[400px] overflow-x-auto rounded-xl p-3 bg-white">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <Autocomplete<Employee>
           data={employeeData}
@@ -151,9 +178,16 @@ const [showArchived, setShowArchived] = useState(false);
             "email",
           ]}
           placeholder="Search by ID, Name, Designation, DOJ..."
-          displayValue={(emp) =>
-            `${emp.firstName} ${emp.lastName} - ${emp.designation} (${emp.employmentType}) ${emp.joiningDate}`
-          }
+          displayValue={(emp) => {
+            const name = `${safeDisplay(emp.firstName)} ${safeDisplay(emp.lastName)}`.trim() || "No Name";
+            const designation = safeDisplay(emp.designation);
+            const employmentType = safeDisplay(emp.employmentType);
+            const joiningDate = emp.joiningDate
+              ? new Date(emp.joiningDate).toLocaleDateString()
+              : "N/A";
+
+            return `${name} - ${designation} (${employmentType}) ${joiningDate}`;
+          }}
           onSelect={(emp) => navigate(`/admin/employee/${emp._id}`)}
         />
 
@@ -196,6 +230,22 @@ const [showArchived, setShowArchived] = useState(false);
                   </div>
 
                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                    <select
+                      className="w-full border px-2 py-1 rounded"
+                      value={filters.gender}
+                      onChange={(e) =>
+                        setFilters((prev) => ({ ...prev, gender: e.target.value }))
+                      }
+                    >
+                      <option value="">All</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Joining Date</label>
                     <input
                       type="date"
@@ -207,11 +257,54 @@ const [showArchived, setShowArchived] = useState(false);
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input
+                      type="text"
+                      className="w-full border px-2 py-1 rounded"
+                      value={filters.email}
+                      onChange={(e) =>
+                        setFilters((prev) => ({ ...prev, email: e.target.value }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sort by Joining Date</label>
+                    <select
+                      className="w-full border px-2 py-1 rounded"
+                      value={filters.sortOrder}
+                      onChange={(e) =>
+                        setFilters((prev) => ({ ...prev, sortOrder: e.target.value }))
+                      }
+                    >
+                      <option value="">Default</option>
+                      <option value="latest">Latest First</option>
+                      <option value="oldest">Oldest First</option>
+                    </select>
+                  </div>
+
                   <button
                     onClick={() => setIsOpen(false)}
                     className="w-full mt-2 bg-[#226597] text-white py-1 cursor-pointer rounded hover:hover:bg-[#1c4c7a]"
                   >
                     Apply Filters
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      setFilters({
+                        joiningDate: "",
+                        employmentType: "",
+                        designation: "",
+                        gender: "",
+                        sortOrder: "",
+                        email: "",
+                      })
+                    }
+                    className="w-full mt-2 bg-gray-200 text-black py-1 rounded hover:bg-gray-300"
+                  >
+                    Clear Filters
                   </button>
                 </div>
               </div>
@@ -259,13 +352,13 @@ const [showArchived, setShowArchived] = useState(false);
           {paginatedFiltered.map((emp, index) => (
             <tr key={emp._id} className={`${index % 2 === 0 ? (!showArchived ? "bg-white text-black" : "bg-gray-100 text-gray-500") : "bg-[#F3F9FB]"}`}>
               <td className="px-4 py-3 font-medium">
-                {emp.firstName} {emp.lastName}
+                {safeDisplay(emp.firstName)} {safeDisplay(emp.lastName)}
               </td>
-              <td className="px-4 py-3">{emp.email}</td>
-              <td className="px-4 py-3">{emp.designation}</td>
-              <td className="px-4 py-3">{new Date(emp.joiningDate).toLocaleDateString("en-GB")}</td>
-              <td className="px-4 py-3">{emp.employmentType}</td>
-              <td className="px-4 py-3">{emp.gender}</td>
+              <td className="px-4 py-3">{safeDisplay(emp.email)}</td>
+              <td className="px-4 py-3">{safeDisplay(emp.designation)}</td>
+              <td className="px-4 py-3">{emp.joiningDate ? new Date(emp.joiningDate).toLocaleDateString("en-GB") : "N/A"}</td>
+              <td className="px-4 py-3">{safeDisplay(emp.employmentType)}</td>
+              <td className="px-4 py-3">{safeDisplay(emp.gender)}</td>
               <td className="px-4 py-3 flex gap-2">
                 <button 
                   onClick={() => handleViewProfile(emp._id)}
@@ -282,9 +375,9 @@ const [showArchived, setShowArchived] = useState(false);
                 {role === "SuperAdmin" ? (
                   <button
                     onClick={() => openModal(emp._id)}
-                                      className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
+                    className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
                   >
-                  <Trash2 size={18} color="#113F67" />
+                    <Trash2 size={18} color="#113F67" />
                   </button>
                 ) : (
                   <button
@@ -300,27 +393,37 @@ const [showArchived, setShowArchived] = useState(false);
         </tbody>
       </table>
 
-      <div className="flex justify-between mt-6 items-center">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-[#226597] cursor-pointer text-white rounded-md disabled:opacity-0"
-        >
-          Prev
-        </button>
+      {/* Show message if no results */}
+      {filteredEmployees.length === 0 && (
+        <div className="text-center py-6 text-gray-600 font-medium">
+          No such user exists.
+        </div>
+      )}
 
-        <span className="text-sm text-hover:bg-[#1c4c7a]0">
-          Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
-        </span>
+      {/* Pagination controls only if results */}
+      {filteredEmployees.length > 0 && (
+        <div className="flex justify-between mt-6 items-center">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-[#226597] cursor-pointer text-white rounded-md disabled:opacity-40"
+          >
+            Prev
+          </button>
 
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-[#226597] cursor-pointer text-white hover:bg-[#1c4c7a] rounded-md disabled:opacity-0"
-        >
-          Next
-        </button>
-      </div>
+          <span className="text-sm text-[#113F67]">
+            Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+          </span>
+
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-[#226597] cursor-pointer text-white rounded-md hover:bg-[#1c4c7a] disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* Delete Modal */}
       {isModalOpen && (
