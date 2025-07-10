@@ -366,7 +366,7 @@ const EmployeeManagement = () => {
                     onClick={() => handleRequestDelete(emp._id)}
                     className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full cursor-pointer"
                   >
-                    Delete Request <Trash2 size={18} color="#113F67" />
+                  <Trash2 size={18} color="#113F67" />
                   </button>
                 )}
               </td>

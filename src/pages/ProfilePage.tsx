@@ -69,6 +69,7 @@ const Profile: React.FC = () => {
         designation: profile.designation,
         department: profile.department,
         employmentType: profile.employmentType,
+        leaves: profile.leaves,
       },
       bankDetails: {
         bankName: profile.bankName,
@@ -131,8 +132,8 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-8 py-10 bg-white rounded-2xl">
-      <div className="flex justify-end items-center mb-10 pb-4">
+    <div className="max-w-8xl mx-auto px-6 py-2 bg-white rounded-2xl">
+      <div className="flex justify-end items-center pb-2">
         <button
           type="button"
           onClick={() => setIsEditing((prev) => !prev)}

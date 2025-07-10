@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Info } from "lucide-react";
 
 interface Announcement {
   title: string;
@@ -12,15 +12,36 @@ interface AnnouncementBoxProps {
 
 const AnnouncementBox: React.FC<AnnouncementBoxProps> = ({ announcements }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [showInfo, setShowInfo] = useState(false);
 
   const toggle = (index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));
   };
 
   return (
-   <div className="space-y-6 w-full h-full bg-white py-2 px-5 shadow-md rounded-md border border-[#dbe9f1]">
+    <div className="space-y-6 w-full h-full bg-gray-300 py-2 px-5 shadow-md rounded-md border border-[#dbe9f1] relative">
       {/* Heading */}
-      <h2 className="text-xl font-semibold text-[#113F67]">Announcement(s)</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-[#113F67]">Announcement(s)</h2>
+
+        {/* Info Button */}
+        <div className="relative">
+          <button
+            className="text-[#113F67] hover:text-[#226597]"
+            onClick={() => setShowInfo(!showInfo)}
+            aria-label="Info"
+          >
+            <Info size={18} />
+          </button>
+
+          {/* Info Tooltip */}
+          {showInfo && (
+            <div className="absolute right-0 mt-2 w-48 text-sm text-gray-700 bg-white border border-gray-300 shadow-md rounded p-2 z-50">
+              🚧 This feature is in progress.
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Announcements List */}
       {announcements.map((announcement, index) => (
@@ -43,7 +64,6 @@ const AnnouncementBox: React.FC<AnnouncementBoxProps> = ({ announcements }) => {
         </div>
       ))}
     </div>
-
   );
 };
 

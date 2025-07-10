@@ -28,7 +28,11 @@ const EmployeeLayout: React.FC = () => {
     { label: "Dashboard", path: "/employee/", icon: LayoutDashboard },
     { label: "Attendance", path: "/employee/attendance", icon: UserCheck },
     { label: "Leaves", path: "/employee/leaves", icon: CalendarCheck },
-    { label: "Approval History", path: "/employee/approval-history", icon: Clock },
+    {
+      label: "Approval History",
+      path: "/employee/approval-history",
+      icon: Clock,
+    },
     { label: "Profile", path: "/employee/profile", icon: User },
   ];
 
@@ -48,11 +52,13 @@ const EmployeeLayout: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    const matched = sidebarLinks.find(link =>
-      location.pathname.startsWith(link.path)
-    );
-    setPageTitle(matched?.label || "Dashboard");
-  }, [location.pathname]);
+  const matched = sidebarLinks.find((link) =>
+    link.path === "/employee/"
+      ? location.pathname === "/employee/"
+      : location.pathname.startsWith(link.path)
+  );
+  setPageTitle(matched?.label || "Dashboard");
+}, [location.pathname]);
 
   const fullName =
     employeeData?.firstName && employeeData?.lastName
@@ -65,7 +71,6 @@ const EmployeeLayout: React.FC = () => {
     dispatch(logout());
     navigate("/login");
   };
-
 
   return (
     <div className="flex h-screen bg-[#F3F9FB]">
@@ -85,23 +90,44 @@ const EmployeeLayout: React.FC = () => {
 
         {/* Navigation */}
         <nav className="flex flex-col gap-3 flex-grow">
-          {sidebarLinks.map(({ label, path, icon: Icon }) => (
-            <NavLink
-              key={label}
-              to={path}
-              end={label === "Dashboard"}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-md text-base font-medium transition-all ${
-                  isActive
-                    ? "bg-[#226597] text-white font-semibold"
-                    : "hover:bg-[#226597] hover:text-white text-white"
-                }`
-              }
-            >
-              <Icon size={18} className="text-white" />
-              {label}
-            </NavLink>
-          ))}
+          {sidebarLinks.map(({ label, path, icon: Icon }) =>
+            label === "Approval History" ? (
+              <div
+                key={label}
+                className="flex items-center justify-between gap-2 bg-gray-400 text-white cursor-not-allowed px-4 py-2 rounded-md text-base font-medium"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon size={18} className=" text-white" />
+                  {label}
+                </div>
+
+                {/* i Button */}
+                <button
+                  onClick={() => alert("This feature is under development.")}
+                  className="bg-[#113F67] text-white w-5 h-5 rounded-full text-xs font-semibold flex items-center justify-center hover:bg-[#226597]"
+                  title="This section is in progress"
+                >
+                  i
+                </button>
+              </div>
+            ) : (
+              <NavLink
+                key={label}
+                to={path}
+                end={label === "Dashboard"}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-2 rounded-md text-base font-medium transition-all ${
+                    isActive
+                      ? "bg-[#226597] text-white font-semibold"
+                      : "hover:bg-[#226597] hover:text-white text-white"
+                  }`
+                }
+              >
+                <Icon size={18} className="text-white" />
+                {label}
+              </NavLink>
+            )
+          )}
         </nav>
 
         <button
@@ -132,7 +158,7 @@ const EmployeeLayout: React.FC = () => {
 
         {/* Outlet Section */}
         <section className="bg-white rounded-xl shadow-md p-4 min-h-[calc(100vh-160px)]">
-          <header className="mb-3">
+          <header>
             <h2 className="text-xl font-semibold text-[#113F67]">
               {pageTitle}
             </h2>

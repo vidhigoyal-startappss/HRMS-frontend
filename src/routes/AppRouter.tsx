@@ -24,6 +24,7 @@ import AttendanceManagement from "../pages/AttendanceMangement";
 import EmployeeLeaveDashboard from "../pages/Leaves";
 import { ForgotPasswordForm } from "../components/Form/ForgotPasswordForm/ForgotPasswordForm";
 import { ResetPasswordForm } from "../components/Form/ResetPasswordForm/ResetPasswordForm";
+import RegisterPage from "../pages/RegisterPage";
 
 const AppRouter = () => {
   return (
@@ -49,7 +50,7 @@ const AppRouter = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="employee-management" element={<EmployeeManagement />} />
           <Route path="attendance" element={<AttendanceManagement/>} />
-          <Route path="add-employee" element={<SignUpPage />} />
+          <Route path="add-employee" element={<RegisterPage />} />
           <Route
             path="/admin/add-employee-details/:id"
             element={<EmployeeForm />}

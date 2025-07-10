@@ -17,7 +17,7 @@ interface FormData {
   role?: "Admin" | "HR" | "Employee" | "Manager";
 }
 
-const SignUpPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFirstUser, setIsFirstUser] = useState(false);
   const [message, setMessage] = useState("");
@@ -47,25 +47,11 @@ const SignUpPage: React.FC = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  useEffect(() => {
-    const checkFirstUser = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:3000/api/users/first-user-check"
-        );
-        setIsFirstUser(res.data.isFirst);
-      } catch (err) {
-        console.error("Error checking first user", err);
-        toast.error("Failed to check user status");
-      }
-    };
-    checkFirstUser();
-  }, []);
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
-      const formData = isFirstUser ? { ...data, role: "SuperAdmin" } : data;
+      const formData = data;
       const res = await API.post(
         "http://localhost:3000/api/users/register",
         formData
@@ -81,11 +67,12 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-gradient-to-b from-[#113F67] to-[#F3F9FB]">
+    <div className="max-h-screen flex items-center justify-center px-4 py-2">
       <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8 border border-[#87C0CD]">
         <h2 className="text-3xl font-extrabold text-center text-[#113F67] mb-6">
           Create an Account
         </h2>
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Email */}
           <div>
@@ -172,8 +159,8 @@ const SignUpPage: React.FC = () => {
           </Link>
         </p>
       </div>
-    </div>
+</div>
   );
 };
 
-export default SignUpPage;
+export default RegisterPage;
