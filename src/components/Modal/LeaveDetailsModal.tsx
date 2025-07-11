@@ -10,7 +10,10 @@ interface Leave {
   dayType: string;
   status: string;
   reason: string;
-  approvedBy?: string;
+  approvedBy?: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 interface LeaveDetailsModalProps {
@@ -34,79 +37,119 @@ const LeaveDetailsModal: React.FC<LeaveDetailsModalProps> = ({
       month: "short",
       day: "numeric",
     });
+
   return (
-    <div
-      className="fixed inset-0 z-50  backdrop-blur-sm flex items-center justify-center bg-opacity-900"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="leave-details-title"
-    >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md px-6 py-4 relative">
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 cursor-pointer right-4 text-gray-500 hover:text-black text-2xl focus:outline-none"
+          className="absolute top-3 right-4 text-gray-400 hover:text-black text-xl font-bold"
           aria-label="Close"
         >
-          &times;
+          ×
         </button>
 
-        <h2
-          id="leave-details-title"
-          className="text-2xl font-bold mb-5 text-gray-800"
-        >
+        {/* Title */}
+        <h2 className="text-center text-lg font-semibold text-[#174EA6] mb-2">
           {user?.name ? `${user.name}'s Leave Details` : "Leave Details"}
         </h2>
 
-        <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-md">
-          <div className="flex gap-2 p-2">
-            <strong>Start Date:</strong>
-            <div>{formatDate(leave.startDate)}</div>
-          </div>
-          <div className="flex gap-2 p-2">
-            <strong>End Date:</strong>
-            <div>{formatDate(leave.endDate)}</div>
-          </div>
-          <div className="flex gap-2 p-2">
-            <strong>No. of Days:</strong>
-            <div>{leave.noOfDays}</div>
-          </div>
-          <div className="flex gap-2 p-2">
-            <strong>Leave Type:</strong>
-            <div>{leave.leaveType}</div>
-          </div>
-          <div className="flex gap-2 p-2">
-            <strong>Day Type:</strong>
-            <div>{leave.dayType}</div>
-          </div>
-          <div className="flex gap-2 p-2">
-            <strong>Status:</strong>
-            <div
-              className={`py-1 flex gap-2 p-2 rounded-full text-white text-xs ${
-                leave.status === "Approved"
-                  ? "bg-green-500"
-                  : leave.status === "Pending"
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
-              }`}
-            >
-              {leave.status}
-            </div>
-          </div>
-          {leave.reason && (
-            <div className="flex gap-2 p-2">
-              <strong>Reason:</strong>
-              <div>{leave.reason}</div>
-            </div>
-          )}
-          <div className="flex gap-2 p-2">
-            <strong>Approved By:</strong>
-            <div>
-  {leave?.approvedBy?.firstName && leave?.approvedBy?.lastName
-    ? `${leave.approvedBy.firstName} ${leave.approvedBy.lastName}`
-    : "N/A"}
-</div>
+        {/* Form Fields */}
+        <div className="space-y-4">
+          <label className="block">
+            <span className="text-[#113F67] font-medium">Start Date</span>
+            <input
+              type="text"
+              readOnly
+              value={formatDate(leave.startDate)}
+              className="w-full border border-gray-300 rounded-md px-3 py-1 bg-gray-100 text-sm text-gray-700 mt-1"
+            />
+          </label>
 
-          </div>
+          <label className="block">
+            <span className="text-[#113F67] font-medium">End Date</span>
+            <input
+              type="text"
+              readOnly
+              value={formatDate(leave.endDate)}
+              className="w-full border border-gray-300 rounded-md px-3 py-1 bg-gray-100 text-sm text-gray-700 mt-1"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[#113F67] font-medium">No. of Days</span>
+            <input
+              type="text"
+              readOnly
+              value={leave.noOfDays}
+              className="w-full border border-gray-300 rounded-md px-3 py-1 bg-gray-100 text-sm text-gray-700 mt-1"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[#113F67] font-medium">Leave Type</span>
+            <input
+              type="text"
+              readOnly
+              value={leave.leaveType}
+              className="w-full border border-gray-300 rounded-md px-3 py-1 bg-gray-100 text-sm text-gray-700 mt-1 capitalize"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[#113F67] font-medium">Day Type</span>
+            <input
+              type="text"
+              readOnly
+              value={leave.dayType}
+              className="w-full border border-gray-300 rounded-md px-3 py-1 bg-gray-100 text-sm text-gray-700 mt-1 capitalize"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[#113F67] font-medium">Status</span>
+            <input
+              type="text"
+              readOnly
+              value={leave.status}
+              className={`inline-block ml-2 w-20 px-3 py-1 rounded-lg text-xs font-semibold mt-1 text-white cursor-default
+      ${
+        leave.status === "Approved"
+          ? "bg-green-500"
+          : leave.status === "Pending"
+          ? "bg-yellow-500 text-black"
+          : "bg-red-500"
+      }
+    `}
+            />
+          </label>
+
+          {leave.reason && (
+            <label className="block">
+              <span className="text-[#113F67] font-medium">Reason</span>
+              <textarea
+                readOnly
+                rows={2}
+                value={leave.reason}
+                className="w-full border border-gray-300 rounded-md px-3 py-1 bg-gray-100 text-sm text-gray-700 mt-1"
+              />
+            </label>
+          )}
+
+          <label className="block">
+            <span className="text-[#113F67] font-medium">Approved By</span>
+            <input
+              type="text"
+              readOnly
+              value={
+                leave?.approvedBy?.firstName && leave?.approvedBy?.lastName
+                  ? `${leave.approvedBy.firstName} ${leave.approvedBy.lastName}`
+                  : "N/A"
+              }
+              className="w-full border border-gray-300 rounded-md px-3 py-1 bg-gray-100 text-sm text-gray-700 mt-1"
+            />
+          </label>
         </div>
       </div>
     </div>
