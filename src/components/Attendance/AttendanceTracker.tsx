@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
 import LocationMap from "../Location/LocationMap";
-import { checkIn, checkOut, getTodayAttendance } from "../../api/attendance";
+import { checkIn, checkOut, getMyTodayAttendance } from "../../api/attendance";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import userimg from "../../assets/userlogo.png";
 
-const AttendanceTracker = () => {
+interface AttendanceTrackerProps {
+  showTimer?: boolean;
+  showDate?: boolean;
+}
+
+const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({
+  showTimer = true,
+  showDate = true,
+}) => {
   const user = useSelector((state: RootState) => state.user.user);
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [checkInTime, setCheckInTime] = useState<Date | null>(null);
@@ -15,16 +23,14 @@ const AttendanceTracker = () => {
   const [, setTimerTick] = useState(0);
   const [attendanceDate, setAttendanceDate] = useState<string | null>(null);
 
-  // 🟢 Fetch current attendance state on load/login
-    useEffect(() => {
+  useEffect(() => {
     if (!user?.userId) return;
-    fetchTodayAttendance(); // Load user's attendance status
+    fetchTodayAttendance();
   }, [user?.userId]);
 
-    useEffect(() => {
+  useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    // Only start timer if checkInTime is valid and user is not checked out
     if (checkInTime && status === "Checked In") {
       interval = setInterval(() => {
         setTimerTick((t) => t + 1);
@@ -34,17 +40,18 @@ const AttendanceTracker = () => {
     return () => clearInterval(interval);
   }, [checkInTime, status]);
 
-
-  // ✅ Fetch attendance status from backend
   const fetchTodayAttendance = async () => {
     try {
-      const res = await getTodayAttendance();
+      const res = await getMyTodayAttendance();
+
       if (res?.checkInTime && !res?.checkedOut) {
         const time = new Date(res.checkInTime);
-        setCheckInTime(time);
-        setIsCheckedIn(true);
-        setStatus("Checked In");
-        setAttendanceDate(time.toLocaleDateString());
+        if (!isNaN(time.getTime())) {
+          setCheckInTime(time);
+          setIsCheckedIn(true);
+          setStatus("Checked In");
+          setAttendanceDate(time.toLocaleDateString());
+        }
       } else {
         setCheckInTime(null);
         setIsCheckedIn(false);
@@ -60,7 +67,6 @@ const AttendanceTracker = () => {
     }
   };
 
-  // ✅ Timer string generator
   const getTimer = () => {
     if (!checkInTime) return "00:00:00";
     const now = new Date().getTime();
@@ -71,52 +77,46 @@ const AttendanceTracker = () => {
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  // ✅ Handle check-in / check-out
   const handleClick = async () => {
-  if (
-    locationLoading ||
-    location === "Fetching location..." ||
-    location === "Unable to fetch location"
-  ) {
-    alert("Please wait, location is still loading or failed.");
-    return;
-  }
-
-  try {
-    if (!isCheckedIn) {
-      // 🔹 Check-in logic
-      const res = await checkIn(location);
-      if (res?.checkInTime && !res?.checkedOut) {
-        const time = new Date(res.checkInTime);
-        setCheckInTime(time);
-        setIsCheckedIn(true);
-        setStatus("Checked In");
-        setAttendanceDate(time.toLocaleDateString());
-      } else {
-        alert("Unable to check in. You may have already checked out.");
-      }
-    } else {
-      // 🔹 Check-out logic
-      await checkOut(); // ✅ no need to store res
-      // ✅ Update UI state regardless of getTodayAttendance
-      setCheckInTime(null);
-      setIsCheckedIn(false);
-      setStatus("Out");
-      setAttendanceDate(null);
-
-      // Optional: refetch for backend confirmation
-      try {
-        await fetchTodayAttendance();
-      } catch (innerErr) {
-        console.warn("Post-checkout fetch failed:", innerErr);
-        // still proceed — user has been checked out already
-      }
+    if (
+      locationLoading ||
+      location === "Fetching location..." ||
+      location === "Unable to fetch location"
+    ) {
+      alert("Please wait, location is still loading or failed.");
+      return;
     }
-  } catch (err: any) {
-    console.error("Attendance error:", err);
-    alert("Attendance Error: " + (err?.response?.data?.message || err.message));
-  }
-};
+
+    try {
+      if (!isCheckedIn) {
+        const res = await checkIn(location);
+        if (res?.checkInTime && !res?.checkedOut) {
+          const time = new Date(res.checkInTime);
+          setCheckInTime(time);
+          setIsCheckedIn(true);
+          setStatus("Checked In");
+          setAttendanceDate(time.toLocaleDateString());
+        } else {
+          alert("Unable to check in. You may have already checked out.");
+        }
+      } else {
+        await checkOut();
+        setCheckInTime(null);
+        setIsCheckedIn(false);
+        setStatus("Out");
+        setAttendanceDate(null);
+
+        try {
+          await fetchTodayAttendance();
+        } catch (innerErr) {
+          console.warn("Post-checkout fetch failed:", innerErr);
+        }
+      }
+    } catch (err: any) {
+      console.error("Attendance error:", err);
+      alert("Attendance Error: " + (err?.response?.data?.message || err.message));
+    }
+  };
 
   return (
     <div className="bg-white shadow rounded-xl p-1 w-full flex flex-col items-center">
@@ -134,16 +134,17 @@ const AttendanceTracker = () => {
       <p className="text-[#113F67] text-sm font-medium mt-2">
         Status: <span className="text-[#226597]">{status}</span>
       </p>
-      <p className="text-[#113F67] text-xs mt-1">
-        {attendanceDate && `Date: ${attendanceDate}`}
-      </p>
+
+      {showDate && attendanceDate && (
+        <p className="text-[#113F67] text-xs mt-1">Date: {attendanceDate}</p>
+      )}
 
       <LocationMap
         onAddressFetched={(addr: string) => setLocation(addr)}
         setLoading={setLocationLoading}
       />
 
-      {isCheckedIn && (
+      {showTimer && isCheckedIn && (
         <div className="flex justify-center gap-2 text-black font-mono text-lg mt-1">
           {getTimer()
             .split(":")

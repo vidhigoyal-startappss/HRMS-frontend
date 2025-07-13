@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import {
-  getMyAttendance,
-  getTodayAttendance,
-} from "../api/attendance";
+import { getMyAttendance, getTodayAllAttendance } from "../api/attendance";
+
+interface AttendanceRecord {
+  checkInTime?: string;
+  checkOutTime?: string;
+  location?: string;
+  userId?: {
+    firstName?: string;
+    lastName?: string;
+    role?: string;
+  };
+}
 
 const AttendanceManagement = () => {
   const user = useSelector((state: RootState) => state.user.user);
-  const [myAttendance, setMyAttendance] = useState([]);
-  const [todayAttendance, setTodayAttendance] = useState([]);
+  const [myAttendance, setMyAttendance] = useState<AttendanceRecord[]>([]);
+  const [todayAttendance, setTodayAttendance] = useState<AttendanceRecord[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
 
   const isAdmin = ["HR", "Admin", "SuperAdmin", "Manager"].includes(user?.role);
@@ -19,11 +29,11 @@ const AttendanceManagement = () => {
       setLoading(true);
       try {
         if (isAdmin) {
-          const data = await getTodayAttendance();
-          setTodayAttendance(data?.records || []);
+          const allToday = await getTodayAllAttendance();
+          setTodayAttendance(allToday || []);
         }
-        const myData = await getMyAttendance();
-        setMyAttendance(myData);
+        const mine = await getMyAttendance();
+        setMyAttendance(mine || []);
       } catch (err) {
         console.error("Attendance Fetch Error:", err);
       } finally {
@@ -31,21 +41,25 @@ const AttendanceManagement = () => {
       }
     };
 
-    if (user) {
-      fetchAttendance();
-    }
-  }, [user]);
+    if (user) fetchAttendance();
+  }, [user, isAdmin]);
+
+  const formatDate = (dateStr?: string) =>
+    dateStr ? new Date(dateStr).toLocaleDateString() : "--";
+
+  const formatTime = (timeStr?: string) =>
+    timeStr ? new Date(timeStr).toLocaleTimeString() : "--";
 
   return (
-    <div className="p-3">
+    <div className="p-4 space-y-8">
       {/* My Attendance */}
-      <div className="bg-white rounded-xl p-4 mb-5">
+      <div className="bg-white rounded-xl p-4 shadow">
         <h2 className="text-lg font-semibold mb-4 text-[#113F67]">
           My Attendance History
         </h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full rounded-md">
-            <thead className="bg-[#113F67] text-white text-left text-base capitalize">
+          <table className="min-w-full rounded-md text-sm">
+            <thead className="bg-[#113F67] text-white text-left">
               <tr>
                 <th className="px-4 py-2">Date</th>
                 <th className="px-4 py-2">Check-In</th>
@@ -67,29 +81,17 @@ const AttendanceManagement = () => {
                   </td>
                 </tr>
               ) : (
-                myAttendance.map((record, idx) => (
+                myAttendance.map((emp, i) => (
                   <tr
-                    key={idx}
-                    className="hover:bg-blue-50 transition-colors text-[#226597] text-sm"
+                    key={i}
+                    className="hover:bg-blue-50 transition-colors text-[#226597]"
                   >
+                    <td className="px-4 py-2">{formatDate(emp.checkInTime)}</td>
+                    <td className="px-4 py-2">{formatTime(emp.checkInTime)}</td>
                     <td className="px-4 py-2">
-                      {record.checkInTime
-                        ? new Date(record.checkInTime).toISOString().split("T")[0]
-                        : "--"}
+                      {formatTime(emp.checkOutTime)}
                     </td>
-                    <td className="px-4 py-2">
-                      {record.checkInTime
-                        ? new Date(record.checkInTime).toLocaleTimeString()
-                        : "--"}
-                    </td>
-                    <td className="px-4 py-2">
-                      {record.checkOutTime
-                        ? new Date(record.checkOutTime).toLocaleTimeString()
-                        : "--"}
-                    </td>
-                    <td className="px-4 py-2">
-                      {record.location || "N/A"}
-                    </td>
+                    <td className="px-4 py-2">{emp.location || "N/A"}</td>
                   </tr>
                 ))
               )}
@@ -98,14 +100,14 @@ const AttendanceManagement = () => {
         </div>
       </div>
 
-      {/* Admin View: Today's Attendance Summary */}
+      {/* Admin View */}
       {isAdmin && (
-        <div className="bg-white rounded-xl p-4">
-          <h2 className="text-xl font-semibold mb-4 text-[#113F67]">
+        <div className="bg-white rounded-xl p-4 shadow">
+          <h2 className="text-lg font-semibold mb-4 text-[#113F67]">
             Today's Attendance (All Employees)
           </h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full rounded-md">
+            <table className="min-w-full rounded-md text-sm">
               <thead className="bg-[#113F67] text-white text-left">
                 <tr>
                   <th className="px-4 py-2">Name</th>
@@ -132,27 +134,17 @@ const AttendanceManagement = () => {
                   todayAttendance.map((emp, i) => (
                     <tr
                       key={i}
-                      className="hover:bg-blue-50 transition-colors text-[#226597] text-sm"
+                      className="hover:bg-blue-50 transition-colors text-[#226597]"
                     >
+                      <td className="px-4 py-2">{emp.user?.name || "N/A"}</td>
+                      <td className="px-4 py-2">{emp.role || "Employee"}</td>
                       <td className="px-4 py-2">
-                        {emp.firstName} {emp.lastName}
+                        {formatTime(emp.checkInTime)}
                       </td>
                       <td className="px-4 py-2">
-                        {emp.role || "Employee"}
+                        {formatTime(emp.checkOutTime)}
                       </td>
-                      <td className="px-4 py-2">
-                        {emp.checkInTime
-                          ? new Date(emp.checkInTime).toLocaleTimeString()
-                          : "--"}
-                      </td>
-                      <td className="px-4 py-2">
-                        {emp.checkOutTime
-                          ? new Date(emp.checkOutTime).toLocaleTimeString()
-                          : "--"}
-                      </td>
-                      <td className="px-4 py-2">
-                        {emp.location || "N/A"}
-                      </td>
+                      <td className="px-4 py-2">{emp.location || "N/A"}</td>
                     </tr>
                   ))
                 )}

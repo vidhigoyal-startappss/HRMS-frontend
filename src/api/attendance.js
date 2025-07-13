@@ -47,12 +47,12 @@ export const checkOut = async () => {
 };
 
 // ✅ 3. Get Today's Attendance (for Admin)
-export const getTodayAttendance = async () => {
+export const getTodayAllAttendance = async () => {
   try {
-    const res = await API.get("/attendance/today/all");
+    const res = await API.get('/attendance/today/all');
     return res.data;
   } catch (err) {
-    handleError("Today's Attendance", err);
+    handleError('All Attendance Today', err);
     throw err;
   }
 };
