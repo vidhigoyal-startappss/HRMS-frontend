@@ -108,7 +108,7 @@ const [showArchived, setShowArchived] = useState(false);
 
   const handleRequestDelete = (userId: string) => {
     toast.info("Delete request sent for approval.");
-    console.log(`Delete request sent for: ${userId}`);
+    // console.log(`Delete request sent for: ${userId}`);
   };
 
   const handleViewProfile = (id: string) => {
@@ -326,7 +326,7 @@ const [showArchived, setShowArchived] = useState(false);
           >
             {
               !showArchived?(
-                <Archive size={18}/>
+                <Archive size={25}/>
               ):(
 
                 <ArchiveRestore size={18}/>

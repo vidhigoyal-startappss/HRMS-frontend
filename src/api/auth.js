@@ -55,7 +55,7 @@ export const login = async (data) => {
 };
 export const updateUserDetail = async (userId, data) => {
   // userId = JSON.stringify(userId);
-  console.log(typeof userId);
+  // console.log(typeof userId);
   try {
     const response = await API.post(
       `http://localhost:3000/api/users/complete-profile/${userId}`,
@@ -74,7 +74,7 @@ export const updateUserDetail = async (userId, data) => {
 export const fetchEmployees = async (showArchived = false) => {
   try {
     const response = await API.get(`/api/users/employees?archived=${showArchived}`);
-    console.log(response)
+    // console.log(response)
     return response.data;
   } catch (error) {
     console.error(
@@ -131,13 +131,6 @@ export const deleteUser = async (userId) =>{
     return null;
   }
 }
-// export const forgotPassword  = async ()=>{
-//   try{
-//     const response = await API.
-//   }catch{
-//     console.log("error while forgot or reset employee")
-//   }
-// }
 
 
 export default API;

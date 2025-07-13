@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import {
   getMyAttendance,
-  getAllAttendance,
   getTodayAttendance,
 } from "../api/attendance";
 
@@ -12,6 +11,7 @@ const AttendanceManagement = () => {
   const [myAttendance, setMyAttendance] = useState([]);
   const [todayAttendance, setTodayAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const isAdmin = ["HR", "Admin", "SuperAdmin", "Manager"].includes(user?.role);
 
   useEffect(() => {
@@ -26,12 +26,15 @@ const AttendanceManagement = () => {
         setMyAttendance(myData);
       } catch (err) {
         console.error("Attendance Fetch Error:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    fetchAttendance();
-  }, []);
+    if (user) {
+      fetchAttendance();
+    }
+  }, [user]);
 
   return (
     <div className="p-3">
@@ -51,7 +54,13 @@ const AttendanceManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {myAttendance.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={4} className="text-center py-4 text-[#226597]">
+                    Loading...
+                  </td>
+                </tr>
+              ) : myAttendance.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="text-center py-4 text-[#226597]">
                     No records found
@@ -63,11 +72,12 @@ const AttendanceManagement = () => {
                     key={idx}
                     className="hover:bg-blue-50 transition-colors text-[#226597] text-sm"
                   >
-                    <td className="px-4 py-2 ">
-                      {record.checkInTime ? new Date(record.checkInTime).toISOString().split("T")[0] : "--"}
-
+                    <td className="px-4 py-2">
+                      {record.checkInTime
+                        ? new Date(record.checkInTime).toISOString().split("T")[0]
+                        : "--"}
                     </td>
-                    <td className="px-4 py-2 ">
+                    <td className="px-4 py-2">
                       {record.checkInTime
                         ? new Date(record.checkInTime).toLocaleTimeString()
                         : "--"}
@@ -101,14 +111,18 @@ const AttendanceManagement = () => {
                   <th className="px-4 py-2">Name</th>
                   <th className="px-4 py-2">Role</th>
                   <th className="px-4 py-2">Check-In</th>
-                  <th className="px-4 py-2">
-                    Check-Out
-                  </th>
-                  <th className="px-4 py-2 ">Location</th>
+                  <th className="px-4 py-2">Check-Out</th>
+                  <th className="px-4 py-2">Location</th>
                 </tr>
               </thead>
               <tbody>
-                {todayAttendance.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-4 text-[#226597]">
+                      Loading...
+                    </td>
+                  </tr>
+                ) : todayAttendance.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center py-4 text-[#226597]">
                       No records found
@@ -118,13 +132,13 @@ const AttendanceManagement = () => {
                   todayAttendance.map((emp, i) => (
                     <tr
                       key={i}
-                      className="hover:bg-blue-50 transition-colors text-[#226597]"
+                      className="hover:bg-blue-50 transition-colors text-[#226597] text-sm"
                     >
                       <td className="px-4 py-2">
-                        {emp.user?.firstName} {emp.user?.lastName}
+                        {emp.firstName} {emp.lastName}
                       </td>
                       <td className="px-4 py-2">
-                        {emp.user?.role || "Employee"}
+                        {emp.role || "Employee"}
                       </td>
                       <td className="px-4 py-2">
                         {emp.checkInTime
