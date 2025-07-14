@@ -4,7 +4,7 @@ import Button from "../components/common/ButtonComp";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../hooks/hooks";
 import { toast } from "react-toastify";
-import { login } from "../feature/User/userSlice";
+import { login } from "../feature/user/userSlice";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { login as LoginAPI} from "../api/auth";
