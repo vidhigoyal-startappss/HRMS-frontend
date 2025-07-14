@@ -53,7 +53,7 @@ const RegisterPage: React.FC = () => {
     try {
       const formData = data;
       const res = await API.post(
-        "http://localhost:3000/api/users/register",
+        "/api/users/register",
         formData
       );
       toast.success("Account created successfully!");

@@ -17,7 +17,7 @@ const Profile: React.FC = () => {
   const userId = id || user?.userId;
 
   useEffect(() => {
-    API.get(`http://localhost:3000/api/users/employee/${userId}`)
+    API.get(`/api/users/employee/${userId}`)
       .then((res) => setProfile(res.data))
       .catch(() => toast.error("Failed to load profile"));
   }, [userId]);
@@ -134,13 +134,35 @@ const Profile: React.FC = () => {
   return (
     <div className="max-w-8xl mx-auto px-6 py-2 bg-white rounded-2xl">
       <div className="flex justify-end items-center pb-2">
-        <button
+        <div className="flex items-center w-full justify-between bg-[#113F67] p-4 rounded-lg shadow-md hover:shadow-lg transition">
+      <div className="flex  items-center gap-4">
+        <img
+  src={
+    profile.profileImage
+      ? profile.profileImage.startsWith("http")
+        ? profile.profileImage
+        : `${import.meta.env.VITE_APP_BASE_URL}/${profile.profileImage}`
+      : "/default-avatar.png"
+  }
+  alt="Profile"
+  className="w-24 h-24 rounded-full border-4 border-gray-200"
+/>
+<div className="flex flex-col gap-1 items-start">
+          <h3 className="md:text-2xl font-semibold text-white">{profile?.firstName + " " + profile?.lastName}</h3>
+          <p className="md:text-lg text-gray-300">{profile?.designation}</p>
+        </div>
+</div>
+        
+         <button
           type="button"
           onClick={() => setIsEditing((prev) => !prev)}
-          className="text-sm flex gap-2 items-center cursor-pointer font-medium text-gray-600 px-4 py-2 rounded-md transition hover:bg-blue-50"
+          className="text-sm flex gap-2 items-center cursor-pointer font-medium text-white px-4 py-2 rounded-md transition hover:text-gray-100"
         >
           {isEditing ? <X /> : <Edit />}
         </button>
+      </div>
+
+       
       </div>
 
       <form onSubmit={onSubmit} className="space-y-12">
@@ -199,6 +221,7 @@ const Profile: React.FC = () => {
         )}
       </form>
     </div>
+    
   );
 };
 

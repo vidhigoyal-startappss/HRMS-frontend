@@ -1,11 +1,9 @@
 import axios from "axios";
 
-// ✅ Base API Configuration
 const API = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
-// ✅ Attach token to each request
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -17,17 +15,15 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Unified Error Handler
 const handleError = (label, err) => {
   const message =
     err?.response?.data?.message || err.message || "Unknown error";
   console.error(`${label} Error:`, message);
 };
 
-// ✅ 1. Check-In Attendance
 export const checkIn = async (location) => {
   try {
-    const res = await API.post("/attendance/check-in", { location });
+    const res = await API.post("/api/attendance/check-in", { location });
     return res.data;
   } catch (err) {
     handleError("Check-In", err);
@@ -35,10 +31,9 @@ export const checkIn = async (location) => {
   }
 };
 
-// ✅ 2. Check-Out Attendance
 export const checkOut = async () => {
   try {
-    const res = await API.put("/attendance/check-out");
+    const res = await API.put("/api/attendance/check-out");
     return res.data;
   } catch (err) {
     handleError("Check-Out", err);
@@ -46,21 +41,19 @@ export const checkOut = async () => {
   }
 };
 
-// ✅ 3. Get Today's Attendance (for Admin)
 export const getTodayAllAttendance = async () => {
   try {
-    const res = await API.get('/attendance/today/all');
+    const res = await API.get("/api/attendance/today/all");
     return res.data;
   } catch (err) {
-    handleError('All Attendance Today', err);
+    handleError("All Attendance Today", err);
     throw err;
   }
 };
 
-// ✅ 4. Get My Attendance History
 export const getMyAttendance = async () => {
   try {
-    const res = await API.get("/attendance/my");
+    const res = await API.get("/api/attendance/my");
     return res.data;
   } catch (err) {
     handleError("My Attendance", err);
@@ -68,10 +61,9 @@ export const getMyAttendance = async () => {
   }
 };
 
-// ✅ 5. (Optional) Get Today’s Attendance for Logged-in User
 export const getMyTodayAttendance = async () => {
   try {
-    const res = await API.get("/attendance/my/today");
+    const res = await API.get("/api/attendance/my/today");
     return res.data;
   } catch (err) {
     handleError("My Today Attendance", err);

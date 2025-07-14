@@ -1,6 +1,7 @@
 import axios from 'axios';
+import API from '../auth';
 
 export const fetchFestivals = async () => {
-  const res = await axios.get('http://localhost:3000/calendar/festivals');
+  const res = await API.get('/calendar/festivals');
   return res.data;
 };

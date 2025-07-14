@@ -13,6 +13,7 @@ import { RootState } from "../store/store";
 import userimg from "../assets/userlogo.png";
 import { fetchEmployees } from "../api/auth";
 import AttendanceTracker from "../components/Attendance/AttendanceTracker";
+import { getLeaves } from "../api/leave";
 
 interface Employee {
   firstName: string;
@@ -30,6 +31,7 @@ interface Payroll {
 const AdminDashboard = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [leaves,setLeaves] = useState([])
   const [payrolls, setPayrolls] = useState<Payroll[]>([]);
   const [showAllEmployees, setShowAllEmployees] = useState(false);
 
@@ -40,6 +42,7 @@ const AdminDashboard = () => {
   const fetchData = async () => {
       try {
         const empData = await fetchEmployees();
+        const leaveData = await getLeaves();
         const formatted = empData.map((emp: any) => ({
           firstName: emp.firstName ?? "",
           lastName: emp.lastName ?? "",
@@ -47,6 +50,7 @@ const AdminDashboard = () => {
           profileImg: emp.profileImg || userimg,
         }));
         setEmployees(formatted);
+        setLeaves(leaveData)
   
         setPayrolls([{ name: "Sonia Patel", salary: "₹50,000", img: userimg }]);
         } catch (err) {
@@ -68,14 +72,14 @@ const AdminDashboard = () => {
             disabled: false,
           },
           {
-            label: "Leaves Today",
-            value: "—",
+            label: "Leaves",
+            value:leaves.length,
             icon: <CalendarDays size={40} className="text-white" />,
             disabled: false,
           },
           {
             label: "Absent",
-            value: "—",
+            value: "5",
             icon: <Users size={40} className="text-white" />,
             disabled: false,
           },

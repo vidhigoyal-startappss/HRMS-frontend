@@ -4,6 +4,7 @@ import axios from "axios";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
+import API from "../api/auth";
 
 const validationSchema = Yup.object({
   basicDetails: Yup.object({
@@ -52,7 +53,7 @@ const UserUpdateProfile: React.FC = () => {
   });
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/users/${userId}`).then((res) => {
+    API.get(`/api/users/${userId}`).then((res) => {
       reset(res.data);
     });
   }, [reset, userId]);
@@ -65,7 +66,7 @@ const UserUpdateProfile: React.FC = () => {
       ...data.educationDetails,
     };
 
-    await axios.put(`http://localhost:3000/api/users/${userId}`, flattenedData);
+    await API.put(`/api/users/${userId}`, flattenedData);
     toast.success("Profile updated successfully");
   } catch (error) {
     console.error("Update Employee Error:", error);

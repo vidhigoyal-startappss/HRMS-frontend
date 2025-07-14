@@ -4,6 +4,7 @@ import { checkIn, checkOut, getMyTodayAttendance } from "../../api/attendance";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import userimg from "../../assets/userlogo.png";
+import {toast} from "react-toastify"
 
 interface AttendanceTrackerProps {
   showTimer?: boolean;
@@ -114,12 +115,12 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({
       }
     } catch (err: any) {
       console.error("Attendance error:", err);
-      alert("Attendance Error: " + (err?.response?.data?.message || err.message));
+      toast.error((err?.response?.data?.message || err.message));
     }
   };
 
   return (
-    <div className="bg-white shadow rounded-xl p-1 w-full flex flex-col items-center">
+    <div className="bg-white shadow rounded-xl p-4 w-full flex flex-col items-center">
       <img
         src={user?.profileImg || userimg}
         alt="User"

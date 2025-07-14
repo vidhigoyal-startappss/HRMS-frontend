@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import { login } from "../feature/User/userSlice";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { login as LoginAPI} from "../api/auth";
+
 
 interface LoginFormInputs {
   email: string;
@@ -29,8 +31,8 @@ const Login: React.FC = () => {
     setErrorMsg("");
     setIsLoading(true);
     try {
-      const response = await axios.post("http://localhost:3000/api/users/login", data);
-      const token = response.data.accessToken;
+      const response = await LoginAPI(data)
+      const token = response.accessToken;
       if (!token) throw new Error("Token not found in response.");
 
       localStorage.setItem("token", token);

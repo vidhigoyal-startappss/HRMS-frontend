@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import "react-toastify/dist/ReactToastify.css";
 
+
 interface FormData {
   email: string;
   password: string;
@@ -51,7 +52,7 @@ const SignUpPage: React.FC = () => {
     const checkFirstUser = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:3000/api/users/first-user-check"
+          "/api/users/first-user-check"
         );
         setIsFirstUser(res.data.isFirst);
       } catch (err) {
@@ -67,7 +68,7 @@ const SignUpPage: React.FC = () => {
     try {
       const formData = isFirstUser ? { ...data, role: "SuperAdmin" } : data;
       const res = await API.post(
-        "http://localhost:3000/api/users/register",
+        "/api/users/register",
         formData
       );
       toast.success("Account created successfully!");
