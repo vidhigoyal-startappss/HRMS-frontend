@@ -5,7 +5,7 @@ import SignUpPage from "../pages/SignUpPage";
 import Login from "../pages/LoginPage";
 import ProtectedRoutes from "../routes/ProtectedRoutes";
 import AdminLayout from "../components/layout/AdminLayout/AdminLayout";
-import EmployeeLayout from "../components/layout/employeeLayout/employeeLayout";
+import EmployeeLayout from "../components/layout/EmployeeLayout/EmployeeLayout";
 import AdminDashboard from "../pages/AdminDashBoard";
 import Attendance from "../pages/Attendance";
 import LeaveRequests from "../pages/LeaveManagement";
