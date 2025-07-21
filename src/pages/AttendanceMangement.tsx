@@ -59,7 +59,7 @@ const AttendanceManagement = () => {
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-md text-sm">
-            <thead className="bg-[#113F67] text-white text-left">
+            <thead className="bg-[#113F67] text-white text-left uppercase">
               <tr>
                 <th className="px-4 py-2">Date</th>
                 <th className="px-4 py-2">Check-In</th>
@@ -108,7 +108,7 @@ const AttendanceManagement = () => {
           </h2>
           <div className="overflow-x-auto">
             <table className="min-w-full rounded-md text-sm">
-              <thead className="bg-[#113F67] text-white text-left">
+              <thead className="bg-[#113F67] text-white text-left uppercase">
                 <tr>
                   <th className="px-4 py-2">Name</th>
                   <th className="px-4 py-2">Role</th>
