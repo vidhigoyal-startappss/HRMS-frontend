@@ -26,11 +26,6 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
     readOnly ? "bg-gray-100 cursor-not-allowed" : "bg-white"
   }`;
 
-
-  // const selectClass = `w-full border px-3 py-2 rounded bg-white ${
-  //   readOnly ? "bg-gray-100 cursor-not-allowed text-gray-500" : ""
-  // }`;
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
       {/* Highest Qualification */}
