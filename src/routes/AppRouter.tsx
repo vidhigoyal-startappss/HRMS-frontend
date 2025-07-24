@@ -26,26 +26,10 @@ import { ForgotPasswordForm } from "../components/Form/ForgotPasswordForm/Forgot
 import { ResetPasswordForm } from "../components/Form/ResetPasswordForm/ResetPasswordForm";
 import EmailSentMessge from "../components/Messages/EmailSentMessge";
 import RegisterPage from "../pages/RegisterPage";
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { pushToHistory } from "../feature/navigation/navigationSlice";
-
-const RouteTracker = () => {
-  const location = useLocation();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(pushToHistory(location.pathname));
-  }, [location.pathname]);
-
-  return null;
-};
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
-    <RouteTracker/>
       <Routes>
         {/* Public Routes */}
         <Route path="/signup" element={<SignUpPage />} />
@@ -80,7 +64,7 @@ const AppRouter = () => {
           <Route path="reports" element={<Reports />} />
           <Route path="/admin/employee/:id" element={<Profile />} />
           <Route path="/admin/employee/edit/:id" element={<Profile />} />
-        </Route>
+          </Route>
 
         {/* Employee Routes */}
         <Route
