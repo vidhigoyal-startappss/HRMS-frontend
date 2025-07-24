@@ -19,7 +19,7 @@ export const ResetPasswordForm = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
-  console.log(token)
+  console.log(token);
   // const token = queryParams.get("token");
 
   const {
@@ -44,7 +44,10 @@ export const ResetPasswordForm = () => {
     }
   };
 
-  if (!token) return <p className="text-center mt-20 text-red-600">Invalid or missing token</p>;
+  if (!token)
+    return (
+      <p className="text-center mt-20 text-red-600">Invalid or missing token</p>
+    );
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="bg-[#113F67] flex justify-center items-center w-full min-h-screen">
@@ -56,9 +59,10 @@ export const ResetPasswordForm = () => {
             {...register("password")}
           />
           <div className="h-1 m-1">
-       {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
+            )}
           </div>
-       
 
           <input
             type="password"
@@ -67,10 +71,12 @@ export const ResetPasswordForm = () => {
             {...register("confirmPassword")}
           />
           <div className="h-1 m-1">
-          {errors.confirmPassword && (
-            <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
-          )}
-  </div>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
           <button
             type="submit"
             className="bg-[#226597] text-white p-2 rounded-sm hover:bg-[#113F67]"

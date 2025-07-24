@@ -14,6 +14,10 @@ import userimg from "../assets/userlogo.png";
 import { fetchEmployees } from "../api/auth";
 import AttendanceTracker from "../components/Attendance/AttendanceTracker";
 import { getLeaves } from "../api/leave";
+import Festival from "../components/Celebrations/FestivalCard/FestivalCard";
+import Anniversary from "../components/Celebrations/Anniversary/Anniversary";
+import BirthdayBox from "../components/BirthdayBox/BirthdayBox";
+import Birthday from "../components/Celebrations/Birthday/Birthday";
 
 interface Employee {
   firstName: string;
@@ -110,6 +114,9 @@ const AdminDashboard = () => {
           </div>
         ))}
       </div>
+              <div>
+          {/* <Festival/> */}
+        </div>
 
       {/* Employee List Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -159,6 +166,43 @@ const AdminDashboard = () => {
         <div>
           <AttendanceTracker showTimer={true} showDate={true} />
         </div>
+      
+
+
+
+
+
+
+
+    
+<div className="flex justify-between gap-2 w-full">
+
+  <div className="w-[68%] bg-white shadow rounded-xl p-4 flex flex-col justify-between">
+    <h3 className="text-lg font-bold text-[#113F67]">Festivals</h3>
+    <div className="w-full">
+      <Festival />
+    </div>
+  </div>
+
+
+  <div className="w-[68%] bg-white shadow rounded-xl p-4 flex flex-col justify-between">
+    <h3 className="text-lg font-bold text-[#113F67] ">Anniversaries</h3>
+    <div className="w-[full]">
+      <Anniversary />
+    </div>
+  </div>
+
+
+  <div className="w-[68%] bg-white shadow rounded-xl p-4 flex flex-col justify-between">
+    <h3 className="text-lg font-bold text-[#113F67] ">Birthdays</h3>
+    <div className="w-full">
+      <Birthday />
+    </div>
+  </div>
+</div>
+
+
+
       </div>
     </div>
   );

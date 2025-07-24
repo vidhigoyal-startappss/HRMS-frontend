@@ -39,7 +39,7 @@ export const ForgotPasswordForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="bg-[#113F67] p-4 flex justify-center items-center w-full min-h-screen">
         <div className="flex flex-col bg-white p-6 justify-center gap-4 w-96 rounded-lg">
-           <h1 className="text-2xl text-[#113F67] font-bold text-center">Reset Your Password</h1>
+           <h1 className="text-2xl text-[#113F67] font-bold text-center">Forgot Password</h1>
           <input
             className="bg-gray-50 border border-gray-300 h-10 p-2 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#113F67]"
             placeholder="Enter Your Registered Email"
