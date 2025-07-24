@@ -17,6 +17,7 @@ import profileImage from "../../../assets/user-alt.svg";
 import { getEmployeeById } from "../../../api/auth";
 import BackButton from "../../common/BackButtonComp/BackButton";
 import NotificationModal from "../../Modal/NotificationModal";
+import { fetchNotifications } from "../../../api/notification";
 const EmployeeLayout: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -74,6 +75,19 @@ const EmployeeLayout: React.FC = () => {
   };
   const [showNotification, setShowNotification] = useState(false);
   const [notifications, setNotifications] = useState([])
+  useEffect(()=>{
+    const fetchNotificationData = async ()=>{
+      try{
+          const notificationData = await fetchNotifications(userId)
+          setNotifications(notificationData)
+      }
+      catch (error){
+        console.log("Error in fetching noftication")
+      }
+    }
+    fetchNotificationData()
+  },[])
+
 
   return (
     <div className="flex h-screen bg-[#F3F9FB]">

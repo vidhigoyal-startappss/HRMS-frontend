@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../feature/user/userSlice";
 import { RootState } from "../../../store/store";
 import profileImage from "../../../assets/userlogo.png";
+import { fetchNotifications } from "../../../api/notification";
 
 
 const AdminLayout: React.FC = () => {
@@ -162,6 +163,19 @@ const AdminLayout: React.FC = () => {
   };
   const [showNotification, setShowNotification] = useState(false);
 const [notifications, setNotifications] = useState([])
+useEffect(()=>{
+    const fetchNotificationData = async ()=>{
+      try{
+          const notificationData = await fetchNotifications(userId)
+          setNotifications(notificationData)
+      }
+      catch (error){
+        console.log("Error in fetching noftication")
+      }
+    }
+    fetchNotificationData()
+  },[])
+
   return (
     <div className="flex h-screen bg-[#F3F9FB]">
       <aside className="w-72 bg-[#113F67] text-white flex flex-col p-4 shadow-lg">
