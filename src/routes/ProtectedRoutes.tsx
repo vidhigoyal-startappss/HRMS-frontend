@@ -12,7 +12,7 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({
   allowedRoles,
   children,
 }) => {
-  const user = useSelector((state: RootState) => state.user.user);
+  const   user = useSelector((state: RootState) => state.user.user);
 
   if (!user) {
     return <Navigate to="/login" replace />;

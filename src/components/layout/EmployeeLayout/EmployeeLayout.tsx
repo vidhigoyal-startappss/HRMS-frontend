@@ -8,6 +8,7 @@ import {
   User,
   LogOut,
   Bell,
+  Settings,
   Mail,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +16,7 @@ import { logout } from "../../../feature/user/userSlice";
 import { RootState } from "../../../store/store";
 import profileImage from "../../../assets/user-alt.svg";
 import { getEmployeeById } from "../../../api/auth";
+import { ChangePassword } from "../../ChangePassword/ChangePassword";
 
 const EmployeeLayout: React.FC = () => {
   const dispatch = useDispatch();
@@ -24,6 +26,11 @@ const EmployeeLayout: React.FC = () => {
   const [employeeData, setEmployeeData] = useState<any>(null);
   const [pageTitle, setPageTitle] = useState("Dashboard");
 
+const [showSettings, setShowSettings] = useState(false);
+const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+
+
+  
   const sidebarLinks = [
     { label: "Dashboard", path: "/employee/", icon: LayoutDashboard },
     { label: "Attendance", path: "/employee/attendance", icon: UserCheck },
@@ -35,6 +42,22 @@ const EmployeeLayout: React.FC = () => {
     },
     { label: "Profile", path: "/employee/profile", icon: User },
   ];
+
+useEffect(() => {
+  const handleClickOutside = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (
+      !target.closest("#settings-dropdown") &&
+      !target.closest("#settings-btn")
+    ) {
+      setShowSettings(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
 
   useEffect(() => {
     const fetchEmployee = async () => {
@@ -73,6 +96,7 @@ const EmployeeLayout: React.FC = () => {
   };
 
   return (
+    <>
     <div className="flex h-screen bg-[#F3F9FB]">
       {/* Sidebar */}
       <aside className="w-72 bg-[#113F67] text-white flex flex-col p-4 shadow-lg">
@@ -153,8 +177,35 @@ const EmployeeLayout: React.FC = () => {
             <button className="relative p-2 rounded-full bg-white hover:bg-[#87C0CD] shadow-sm cursor-pointer">
               <Mail size={20} className="text-[#113F67]" />
             </button>
+            
+            <div className="relative">
+                <button
+                  id="settings-btn"
+                  onClick={() => setShowSettings((prev) => !prev)}
+                  className="relative p-2 rounded-full bg-white hover:bg-[#87C0CD] shadow-sm cursor-pointer"
+                >
+                  <Settings size={20} className="text-[#113F67]" />
+                </button>
+
+                {showSettings && (
+                  <div
+                    id="settings-dropdown"
+                    className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50"
+                  >
+                    <button
+                      onClick={() => {
+                        setShowChangePasswordModal(true);
+                        setShowSettings(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-[#f0f4f8] text-[#113F67]"
+                    >
+                      Change Password
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
 
         {/* Outlet Section */}
         <section className="bg-white rounded-xl shadow-md p-4 min-h-[calc(100vh-160px)]">
@@ -167,6 +218,23 @@ const EmployeeLayout: React.FC = () => {
         </section>
       </main>
     </div>
+    {showChangePasswordModal && (
+            <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/50">
+              <div className="relative w-full max-w-md max-h-[600px] mx-5 bg-white rounded-2xl shadow-2xl p-0 animate-fadeIn overflow-hidden">
+                <button
+                  onClick={() => setShowChangePasswordModal(false)}
+                  className="absolute top-3 right-4 text-gray-500 text-2xl hover:text-black focus:outline-none"
+                >
+                  &times;
+                </button>
+    
+                <div className="pt-2 h-full">
+                  <ChangePassword />
+                </div>
+              </div>
+            </div>
+          )}
+        </>
   );
 };
 

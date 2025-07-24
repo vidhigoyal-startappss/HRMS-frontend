@@ -17,7 +17,7 @@ import EmployeeManagement from "../pages/EmployeeManagement";
 import EmployeeDashboard from "../pages/EmployeeDashboard";
 // import Stepper from "../components/Stepper/Stepper";
 import EmployeeForm from "../components/Form/UserCreationForm/EmployeeForm/EmployeeForm";
-import Unauthorized from "../pages/Unauthorised"; // create this page
+import Unauthorized from "../pages/Unauthorised"; 
 import ViewEmployee from "../pages/ViewEmployee";
 import UpdateEmployee from "../pages/UpdateEmployee";
 import AttendanceManagement from "../pages/AttendanceMangement";
@@ -26,6 +26,9 @@ import { ForgotPasswordForm } from "../components/Form/ForgotPasswordForm/Forgot
 import { ResetPasswordForm } from "../components/Form/ResetPasswordForm/ResetPasswordForm";
 import EmailSentMessge from "../components/Messages/EmailSentMessge";
 import RegisterPage from "../pages/RegisterPage";
+import BirthdayCard from "../components/Celebrations/Birthday/Birthday";
+import Anniversary from "../components/Celebrations/Anniversary/Anniversary";
+import Festival from "../components/Celebrations/FestivalCard/FestivalCard";
 
 const AppRouter = () => {
   return (
@@ -37,7 +40,6 @@ const AppRouter = () => {
         <Route path="/" element={<Login />} />
         <Route path="/reset-mail-message" element={<EmailSentMessge/>}/>
         <Route path="/reset-password" element={<ResetPasswordForm/>}/>
-
         {/* Admin Routes */}
         <Route
           path="/admin"
@@ -64,6 +66,9 @@ const AppRouter = () => {
           <Route path="reports" element={<Reports />} />
           <Route path="/admin/employee/:id" element={<Profile />} />
           <Route path="/admin/employee/edit/:id" element={<Profile />} />
+          <Route path="/admin/birthday" element={<BirthdayCard />} />
+          <Route path="/admin/anniversary" element={<Anniversary />} />
+           <Route path="/admin/festival" element={<Festival />} />
         </Route>
 
         {/* Employee Routes */}
