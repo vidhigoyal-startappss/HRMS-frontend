@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import API, { updateEmployee } from "../api/auth";
 import { toast } from "react-toastify";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
-import { Edit, X } from "lucide-react";
+import { Edit, X , Upload } from "lucide-react";
 import { useParams } from "react-router-dom";
 const editableFields = ["firstName", "lastName", "phone"];
 const maskedFields = ["adharNumber", "panNumber", "accountNumber", "ifscCode"];
@@ -42,6 +42,8 @@ const fullEditableFields = [
 const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<any>({});
+  
+  const [selectedFile,setSelectedFile] = useState()
   const { user } = useSelector((state: RootState) => state.user);
   const { id } = useParams();
   const userId = id || user?.userId;
@@ -54,6 +56,7 @@ const canEditAll = ["HR", "Admin", "SuperAdmin"].includes(userRole);
       .catch(() => toast.error("Failed to load profile"));
   }, [userId]);
 
+  const [profileImage,setProfileImage] = useState(profile.profileImage)
   const maskValue = (value: string, type?: string) => {
     if (!value) return "";
     const len = value.length;
@@ -101,6 +104,7 @@ const canEditAll = ["HR", "Admin", "SuperAdmin"].includes(userRole);
         designation: profile.designation,
         department: profile.department,
         employmentType: profile.employmentType,
+        profileImage:profile.profileImage
         // leaves: profile.leaves,
         // leaves: profile.leaves,
       },
@@ -130,6 +134,33 @@ const canEditAll = ["HR", "Admin", "SuperAdmin"].includes(userRole);
     }
   };
 
+  const inputFileRef = useRef(null)
+
+  const handleUploadClick = () =>{
+    inputFileRef.current.click()
+  }
+
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile || !userId) return alert("No file or user ID found");
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    try {
+      await API.post(`/api/users/upload-profile/${userId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Profile image uploaded successfully!");
+      setProfileImage(profileImage)
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const renderField = (
     label: string,
     name: string,
@@ -173,20 +204,30 @@ const canEditAll = ["HR", "Admin", "SuperAdmin"].includes(userRole);
       <div className="flex justify-end items-center pb-2">
         <div className="flex items-center w-full justify-between bg-[#113F67] p-4 rounded-lg shadow-md hover:shadow-lg transition">
 
-          <div className="flex  items-center gap-4">
+          <div className="flex items-center gap-4">
             <img
               src={
-                profile.profileImage
-                  ? profile.profileImage.startsWith("http")
-                    ? profile.profileImage
-                    : `${import.meta.env.VITE_APP_BASE_URL}/${
-                        profile.profileImage
-                      }`
-                  : "/default-avatar.png"
+                profile.profileImage || profileImage
               }
               alt="Profile"
               className="w-24 h-24 rounded-full border-4 border-gray-200"
             />
+            <div className="mr-10">
+            {isEditing ? (<>
+            <div>
+              <button className="bg-[#113F67] flex gap-2 text-white text-sm font-semibold px-6 py-2 rounded-md shadow-md transition hover:bg-[#226597]"
+               onClick={handleUploadClick}>
+                <input type="file" accept="image/*" ref={inputFileRef} onChange={handleFileChange} className="hidden"/>
+                <p>Choose</p>
+                <Upload className="cursor-pointer" color="white" size={18}/> 
+              </button>
+               {selectedFile && (<>
+               <button className="bg-[#113F67] text-white text-sm font-semibold px-6 py-2 rounded-md shadow-md transition hover:bg-[#226597]" onClick={handleUpload}>upload button</button>
+               </>) }
+            </div>
+            </>
+            ):<></>}
+            </div>
             <div className="flex flex-col gap-1 items-start">
               <h3 className="md:text-2xl font-semibold text-white">
                 {profile?.firstName + " " + profile?.lastName}
