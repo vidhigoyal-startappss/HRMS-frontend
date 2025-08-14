@@ -29,6 +29,7 @@ import {
   markNotificationAsRead,
   deleteNotification,
 } from "../../../api/notification";
+import BackButton from "../../common/BackButtonComp/BackButton";
 
 const AdminLayout: React.FC = () => {
   const dispatch = useDispatch();
@@ -52,7 +53,6 @@ const AdminLayout: React.FC = () => {
   };
   const [showSettings, setShowSettings] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -75,6 +75,8 @@ const AdminLayout: React.FC = () => {
       setPageTitle(current.label);
     }
   }, [location.pathname]);
+
+  console.log(user)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -325,7 +327,10 @@ const AdminLayout: React.FC = () => {
           </div>
 
           <section className="bg-white rounded-xl shadow-md p-4 min-h-[calc(100vh-160px)]">
-            <header className="mb-3">
+            <header className={`mb-3 flex ${location.pathname !== "/admin/dashboard" ? 'gap-2':'gap-6'}`}>
+              { location.pathname !== "/admin/dashboard" && (
+                <BackButton/>
+              )}
               <h2 className="text-xl font-semibold text-[#113F67]">
                 {pageTitle}
               </h2>

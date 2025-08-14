@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import LeaveRequestForm from "../components/Form/LeaveForm/LeaveForm";
 import SignUpPage from "../pages/SignUpPage";
@@ -25,10 +25,24 @@ import { ForgotPasswordForm } from "../components/Form/ForgotPasswordForm/Forgot
 import { ResetPasswordForm } from "../components/Form/ResetPasswordForm/ResetPasswordForm";
 import EmailSentMessge from "../components/Messages/EmailSentMessge";
 import RegisterPage from "../pages/RegisterPage";
+import { useLocation } from "react-router-dom";
+import { pushToHistory } from "../feature/navigation/navigationSlice";
+import { useDispatch } from "react-redux";
+
+
+const RouteTracker = () =>{
+  const location = useLocation()
+  const dispatch = useDispatch()
+  useEffect(()=>{
+    dispatch(pushToHistory(location.pathname))
+  },[location.pathname])
+  return null
+}
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
+    <RouteTracker/>
       <Routes>
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
@@ -72,7 +86,7 @@ const AppRouter = () => {
             </ProtectedRoutes>
           }
         >
-          <Route index element={<EmployeeDashboard />} />
+          <Route path="dashboard" element={<EmployeeDashboard />} />
           <Route path="attendance" element={<AttendanceManagement />} />
           <Route path="leaves" element={<EmployeeLeaveDashboard />} />
           <Route path="request-leave" element={<LeaveRequestForm />} />

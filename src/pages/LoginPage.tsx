@@ -45,8 +45,8 @@ const Login: React.FC = () => {
         email: payload.email,
         role: payload.role,
         employeeId: payload.employeeId,
-        
         name: payload.name,
+        profileImage:payload.profileImage
       };
 
       localStorage.setItem("user", JSON.stringify(user));
@@ -57,7 +57,7 @@ const Login: React.FC = () => {
       if (["superadmin", "admin", "manager", "hr"].includes(role)) {
         setTimeout(() => navigate("/admin/dashboard"), 1000);
       } else if (role === "employee") {
-        setTimeout(() => navigate("/employee"), 1000);
+        setTimeout(() => navigate("/employee/dashboard"), 1000);
       } else {
         toast.error("Unknown role. Cannot redirect.");
       }
