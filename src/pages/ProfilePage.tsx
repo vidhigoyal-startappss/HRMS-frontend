@@ -5,52 +5,60 @@ import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { Edit, X } from "lucide-react";
 import { useParams } from "react-router-dom";
-const editableFields = ["firstName", "lastName", "phone"];
+// const editableFields = ["firstName", "lastName", "phone"];
 const maskedFields = ["adharNumber", "panNumber", "accountNumber", "ifscCode"];
-const basicEditableFields = [
-  "firstName",
-  "lastName",
-  "phone",
-  "dob",
-  "gender",
-  "address",
-  "city",
-  "state",
-  "zipCode",
-  "country",
-  "joiningDate",
-  "designation",
-  "department",
-  "employmentType",
-];
+// const basicEditableFields = [
+//   "firstName",
+//   "lastName",
+//   "phone",
+//   "dob",
+//   "gender",
+//   "address",
+//   "city",
+//   "state",
+//   "zipCode",
+//   "country",
+//   "joiningDate",
+//   "designation",
+//   "department",
+//   "employmentType",
+//   "emergencyContactPersonName",
+//   "emergencyContactEmail",
+//   "currentAddress",
+//   "permanentAddress",
+//   "ctc",
+// ];
 
-const fullEditableFields = [
-  ...basicEditableFields,
-  "bankName",
-  "accountNumber",
-  "ifscCode",
-  "branchName",
-  "accountHolderName",
-  "adharNumber",
-  "panNumber",
-  "qualification",
-  "institution",
-  "yearOfPassing",
-  "grade",
-];
+// const fullEditableFields = [
+//   ...basicEditableFields,
+//   "bankName",
+//   "accountNumber",
+//   "ifscCode",
+//   "branchName",
+//   "accountHolderName",
+//   "adharNumber",
+//   "panNumber",
+//   "qualification",
+//   "institution",
+//   "yearOfPassing",
+//   "grade",
+// ];
 
 const Profile: React.FC = () => {
-  const [isEditing, setIsEditing] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<any>({});
   const { user } = useSelector((state: RootState) => state.user);
   const { id } = useParams();
   const userId = id || user?.userId;
   const userRole = user?.role;
-  const canEditAll = ["HR", "Admin", "SuperAdmin"].includes(userRole);
+  // const canEditAll = ["HR", "Admin", "SuperAdmin"].includes(userRole);
 
   useEffect(() => {
+    console.log("not coming", userId);
     API.get(`/api/users/employee/${userId}`)
+
       .then((res) => setProfile(res.data))
+
       .catch(() => toast.error("Failed to load profile"));
   }, [userId]);
 
@@ -84,72 +92,77 @@ const Profile: React.FC = () => {
       toast.error("Phone number must be 10 digits");
       return;
     }
-    const handleProfileUpdate = async (
-      e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
+    //   const handleProfileUpdate = async (
+    //     e: React.ChangeEvent<HTMLInputElement>
+    //   ) => {
+    //     const file = e.target.files?.[0];
+    //     if (!file) return;
 
-      const formData = new FormData();
-      formData.append("profileImage", file);
-      try {
-        await API.post(`/api/users/employee/${userId}/upload`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        setProfile((prev: any) => ({
-          ...prev,
-          profileImage: URL.createObjectURL(file),
-        }));
-        toast.success("Profile image updated successfully");
-      } catch (error) {
-        toast.error("Failed to update profile image");
-      }
-    };
-    const structuredPayload = {
-      basicDetails: {
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        phone: profile.phone,
-        dob: profile.dob,
-        gender: profile.gender,
-        address: profile.address,
-        city: profile.city,
-        state: profile.state,
-        zipCode: profile.zipCode,
-        country: profile.country,
-        joiningDate: profile.joiningDate,
-        designation: profile.designation,
-        department: profile.department,
-        employmentType: profile.employmentType,
-        // leaves: profile.leaves,
-        // leaves: profile.leaves,
-      },
-      bankDetails: {
-        bankName: profile.bankName,
-        accountNumber: profile.accountNumber,
-        ifscCode: profile.ifscCode,
-        branchName: profile.branchName,
-        accountHolderName: profile.accountHolderName,
-        adharNumber: profile.adharNumber,
-        panNumber: profile.panNumber,
-      },
-      educationDetails: {
-        qualification: profile.qualification,
-        institution: profile.institution,
-        yearOfPassing: profile.yearOfPassing,
-        grade: profile.grade,
-      },
-    };
+    //     const formData = new FormData();
+    //     formData.append("profileImage", file);
+    //     try {
+    //       await API.post(`/api/users/employee/${userId}/upload`, formData, {
+    //         headers: {
+    //           "Content-Type": "multipart/form-data",
+    //         },
+    //       });
+    //       setProfile((prev: any) => ({
+    //         ...prev,
+    //         profileImage: URL.createObjectURL(file),
+    //       }));
+    //       toast.success("Profile image updated successfully");
+    //     } catch (error) {
+    //       toast.error("Failed to update profile image");
+    //     }
+    //   };
+    //   const structuredPayload = {
+    //     basicDetails: {
+    //       firstName: profile.firstName,
+    //       lastName: profile.lastName,
+    //       phone: profile.phone,
+    //       dob: profile.dob,
+    //       gender: profile.gender,
+    //       address: profile.address,
+    //       city: profile.city,
+    //       state: profile.state,
+    //       zipCode: profile.zipCode,
+    //       country: profile.country,
+    //       joiningDate: profile.joiningDate,
+    //       designation: profile.designation,
+    //       department: profile.department,
+    //       employmentType: profile.employmentType,
+    //       emergencyContactPersonName: profile.emergencyContactPersonName,
+    //       emergencyContactEmail: profile.emergencyContactEmail,
+    //       currentAddress: profile.currentAddress,
+    //       permanentAddress: profile.permanentAddress,
+    //       ctc: profile.ctc,
+    //       // leaves: profile.leaves,
+    //       // leaves: profile.leaves,
+    //     },
+    //     bankDetails: {
+    //       bankName: profile.bankName,
+    //       accountNumber: profile.accountNumber,
+    //       ifscCode: profile.ifscCode,
+    //       branchName: profile.branchName,
+    //       accountHolderName: profile.accountHolderName,
+    //       adharNumber: profile.adharNumber,
+    //       panNumber: profile.panNumber,
+    //     },
+    //     educationDetails: {
+    //       qualification: profile.qualification,
+    //       institution: profile.institution,
+    //       yearOfPassing: profile.yearOfPassing,
+    //       grade: profile.grade,
+    //     },
+    //   };
 
-    try {
-      await updateEmployee(userId, structuredPayload);
-      toast.success("Profile updated successfully");
-      setIsEditing(false);
-    } catch (error) {
-      toast.error("Failed to update profile");
-    }
+    //   try {
+    //     await updateEmployee(userId, structuredPayload);
+    //     toast.success("Profile updated successfully");
+    //     setIsEditing(false);
+    //   } catch (error) {
+    //     toast.error("Failed to update profile");
+    //   }
   };
 
   const renderField = (
@@ -158,12 +171,6 @@ const Profile: React.FC = () => {
     type: string = "text",
     maskType?: string
   ) => {
-    const isEditable =
-      isEditing &&
-      (canEditAll
-        ? fullEditableFields.includes(name)
-        : basicEditableFields.includes(name));
-
     const isMasked = maskedFields.includes(name);
     const isDateField = type === "date";
     const value = profile[name];
@@ -174,19 +181,10 @@ const Profile: React.FC = () => {
         <label className="block mb-1 text-sm font-semibold text-[#113F67]">
           {label}
         </label>
-        {isEditable ? (
-          <input
-            name={name}
-            type={type}
-            value={formattedValue || ""}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#87C0CD] text-sm"
-          />
-        ) : (
-          <div className="w-full px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-md text-gray-700">
-            {isMasked ? maskValue(value, maskType) : formattedValue || "-"}
-          </div>
-        )}
+
+        <div className="w-full min-h-[40px] px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-md text-gray-700">
+          {isMasked ? maskValue(value, maskType) : formattedValue || "-"}
+        </div>
       </div>
     );
   };
@@ -209,8 +207,8 @@ const Profile: React.FC = () => {
               alt="Profile"
               className="w-16 h-16 sm:w-18 sm:h-15 md:w-22 md:h-22 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full border-4 border-gray-200 object-cover"
             />
-            {isEditing && (
-              <>
+
+            {/* <>
                 <label
                   htmlFor="profileImageInput"
                   className="mt-2 text-xs px-3 py-1 bg[#87C0CD] text-white rounded-full cursor-pointer transition hover:bg-[#113F67]"
@@ -224,8 +222,8 @@ const Profile: React.FC = () => {
                   onChange={handleInputChange}
                   className="hidden"
                 />
-              </>
-            )}
+              </> */}
+
             <div className="flex flex-col items-center md:items-start gap-0 sm:gap-1">
               <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white leading-tight text-center md:text-left">
                 {profile?.firstName + " " + profile?.lastName}
@@ -233,16 +231,11 @@ const Profile: React.FC = () => {
               <p className="text-sm sm:text-base md:text-lg text-gray-300 text-center md:text-left">
                 {profile?.designation}
               </p>
+              {/* <p className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                Employee ID: {profile?.employeeid || "-"}
+              </p> */}
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setIsEditing((prev) => !prev)}
-            className="text-sm flex gap-2 items-center cursor-pointer font-medium text-white px-4 py-2 rounded-md transition hover:text-gray-100 mt-2 md:mt-0"
-          >
-            {isEditing ? <X /> : <Edit />}
-          </button>
         </div>
       </div>
 
@@ -252,6 +245,8 @@ const Profile: React.FC = () => {
             Basic Details
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {renderField("Employee ID", "employeeid")}
+
             {renderField("First Name", "firstName")}
             {renderField("Last Name", "lastName")}
             {renderField("Phone", "phone")}
@@ -266,6 +261,15 @@ const Profile: React.FC = () => {
             {renderField("Designation", "designation")}
             {renderField("Department", "department")}
             {renderField("Employment Type", "employmentType")}
+
+            {renderField(
+              "emergency Contact PersonName",
+              "emergencyContactPersonName"
+            )}
+            {renderField("emergency Contact Email", "emergencyContactEmail")}
+            {renderField("currentAddress", "currentAddress")}
+            {renderField("permanentAddress", "permanentAddress")}
+            {renderField("ctc", "ctc")}
           </div>
         </section>
 
@@ -295,17 +299,6 @@ const Profile: React.FC = () => {
             {renderField("Grade/CGPA", "grade")}
           </div>
         </section>
-
-        {isEditing && (
-          <div className="text-right pt-6">
-            <button
-              type="submit"
-              className="bg-[#113F67] text-white text-sm font-semibold px-6 py-2 rounded-md shadow-md transition hover:bg-[#226597]"
-            >
-              Save Changes
-            </button>
-          </div>
-        )}
       </form>
     </div>
   );

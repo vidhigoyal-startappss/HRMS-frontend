@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { set, useFormContext } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import API from "../../../../api/auth";
@@ -12,6 +12,7 @@ type leaves = {
 
 type FormValues = {
   basicDetails: {
+    employeeid: string;
     firstName: string;
     lastName: string;
     phone: string;
@@ -28,8 +29,17 @@ type FormValues = {
     employmentType?: string;
     profileImage?: string;
     leaves?: leaves;
+    emergencyContactPersonName: string;
+    emergencyContactEmail: string;
+    currentAddress: string;
+    permanentAddress: string;
+    ctc: string;
   };
 };
+
+//  function getRandomNumber(min: number, max: number): number{
+//     return Math.floor(Math.random() * (max - min + 1)) + min;
+//   }
 
 const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
   readOnly = false,
@@ -50,6 +60,9 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { id } = useParams();
   const [uploadSuccess, setuploadSuccess] = useState<boolean>(false);
+  const [randomNumber, setRandomNumber] = useState<number>(0);
+  const [employeeId, setEmployeeId] = useState<string | null>(null);
+  // const [isLoading , setIsLoading] = useState<boolean>(false);
 
   const departmentDesignationMap: Record<string, string[]> = {
     engineering: ["MERN-Stack Developer", "Data Engineer"],
@@ -85,12 +98,12 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
       const imageUrl = response.data.imageUrl;
       setValue("basicDetails.profileImage", imageUrl);
       setPreviewUrl(imageUrl);
-      alert("Profile image uploaded successfully!");
+
       setuploadSuccess(true);
       clearErrors("basicDetails.profileImage");
     } catch (err) {
       console.error(err);
-      alert("Upload failed.");
+
       setuploadSuccess(false);
     } finally {
       setIsLoading(false);
@@ -110,9 +123,43 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
     { label: "Country", name: "country" },
   ];
 
+  // useEffect(() => {
+  //  const newRandomNumber = getRandomNumber(1, 100);
+
+  //  setRandomNumber(newRandomNumber);
+  // }, []);
+
+  useEffect(() => {
+    if (id) {
+      console.log("user id", id);
+
+      setIsLoading(true);
+      API.get(`/api/users/employee/${id}`)
+        .then((response) => {
+          console.log("api data", response.data);
+         console.log("User API response data:", response.data);
+          const { employeeId } = response.data;
+
+          setEmployeeId(employeeId);
+          setValue("basicDetails.employeeid", employeeId);
+        })
+        .catch((error) => {
+          console.error("Error fetching user details", error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [id, setValue]);
+
   return (
     <>
       <h4>Add User Information</h4>
+      <p className="text-lg font-medium text-back-100 mt-5">
+        EmployeeId : {employeeId ?? "Loading..."}
+        
+      </p>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 p-4 bg-white rounded-xl">
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-700 mb-1">
@@ -121,6 +168,10 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
           <input
             {...register("basicDetails.firstName", {
               required: !readOnly ? "First name is required" : false,
+              pattern: {
+                value: /^[a-zA-Z\s'-]+$/,
+                message: "alphabets are required",
+              },
             })}
             disabled={readOnly}
             className={inputClass}
@@ -141,6 +192,10 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
           <input
             {...register("basicDetails.lastName", {
               required: !readOnly ? "Last name is required" : false,
+              pattern: {
+                value: /^[a-zA-Z\s'-]+$/,
+                message: "alphabets are required",
+              },
             })}
             disabled={readOnly}
             className={inputClass}
@@ -354,6 +409,124 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
             {!readOnly && errors.basicDetails?.employmentType?.message && (
               <p className="text-red-500 text-sm">
                 {errors.basicDetails.employmentType.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">
+            Emergency Contact Person Name
+          </label>
+          <input
+            {...register("basicDetails.emergencyContactPersonName", {
+              required: !readOnly
+                ? " emergencyContactPersonName is required"
+                : false,
+              pattern: {
+                value: /^[a-zA-Z\s'-]+$/,
+                message: "alphabets are required",
+              },
+            })}
+            disabled={readOnly}
+            className={inputClass}
+          />
+          <div className="h-5 mt-1">
+            {!readOnly &&
+              errors.basicDetails?.emergencyContactPersonName?.message && (
+                <p className="text-red-500 text-sm">
+                  {errors.basicDetails.emergencyContactPersonName.message}
+                </p>
+              )}
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">
+            Emergency Contact Email ID
+          </label>
+
+          <input
+            {...register("basicDetails.emergencyContactEmail", {
+              required: !readOnly ? "emergencyContactEmail is required" : false,
+              pattern: {
+                value: /^\S+@\S+\.\S+$/,
+                message: "Invalid email format",
+              },
+            })}
+            disabled={readOnly}
+            className={inputClass}
+          />
+          <div className="h-5 mt-1">
+            {!readOnly &&
+              errors.basicDetails?.emergencyContactEmail?.message && (
+                <p className="text-red-500 text-sm">
+                  {errors.basicDetails.emergencyContactEmail.message}
+                </p>
+              )}
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">
+            Current Address
+          </label>
+
+          <input
+            {...register("basicDetails.currentAddress", {
+              required: !readOnly ? "currentAddress is required" : false,
+            })}
+            disabled={readOnly}
+            className={inputClass}
+          />
+          <div className="h-5 mt-1">
+            {!readOnly && errors.basicDetails?.currentAddress?.message && (
+              <p className="text-red-500 text-sm">
+                {errors.basicDetails.currentAddress.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">
+            Permanent Address
+          </label>
+
+          <input
+            {...register("basicDetails.permanentAddress", {
+              required: !readOnly ? "permanentAddress is required" : false,
+            })}
+            disabled={readOnly}
+            className={inputClass}
+          />
+          <div className="h-5 mt-1">
+            {!readOnly && errors.basicDetails?.permanentAddress?.message && (
+              <p className="text-red-500 text-sm">
+                {errors.basicDetails.permanentAddress.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">ctc</label>
+
+          <input
+            {...register("basicDetails.ctc", {
+              required: !readOnly ? "ctc is required" : false,
+              pattern: {
+                value: /^\d+$/,
+                message: "ctc must be a number",
+              },
+            })}
+            disabled={readOnly}
+            className={inputClass}
+          />
+          <div className="h-5 mt-1">
+            {!readOnly && errors.basicDetails?.ctc?.message && (
+              <p className="text-red-500 text-sm">
+                {errors.basicDetails.ctc.message}
               </p>
             )}
           </div>

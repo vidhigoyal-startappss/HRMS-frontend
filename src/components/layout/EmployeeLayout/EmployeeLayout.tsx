@@ -12,6 +12,7 @@ import {
   FileText,
   Repeat,
   Mail,
+  Shield
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../feature/user/userSlice";
@@ -42,10 +43,19 @@ const EmployeeLayout: React.FC = () => {
 
   const role = user?.role || "Employee";
   const id = user?.userId;
-  useEffect(() => {
-    const matched = linksToShow.find((link) =>
-      location.pathname.startsWith(link.path)
-    );
+  // useEffect(() => {
+  //   const matched = linksToShow.find((link) =>
+  //     location.pathname.startsWith(link.path)
+  //   );
+  //   setPageTitle(matched?.label || "Dashboard");
+  // }, [location.pathname]);
+
+
+    useEffect(() => {
+    const matched = [...linksToShow] 
+      .sort((a,b) => b.path.length - a.path.length)
+      .find((link) => location.pathname.startsWith(link.path));
+   
     setPageTitle(matched?.label || "Dashboard");
   }, [location.pathname]);
 
@@ -62,6 +72,7 @@ const EmployeeLayout: React.FC = () => {
         icon: CalendarCheck,
       },
       { label: "Profile", path: "/employee/profile", icon: User },
+       { label: "Company Policies", path: "/employee/company-policy", icon: Shield },
     ],
   };
 
@@ -117,6 +128,21 @@ const EmployeeLayout: React.FC = () => {
       console.error("Mark all as read error:", error);
     }
   };
+
+  useEffect(() => {
+    if (id) {
+      console.log("ishan", id);
+      const fetchemployee = async () => {
+        try {
+          const data = await getEmployeeById(id);
+          setEmployeeData(data);
+        } catch (error) {
+          console.error("Failed to  fetch employee", error);
+        }
+      };
+      fetchemployee();
+    }
+  }, [id]);
 
   return (
     <>
@@ -186,7 +212,7 @@ const EmployeeLayout: React.FC = () => {
         <main className="flex-1 px-6 py-4 overflow-y-auto bg-[#F3F9FB]">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold text-[#113F67]">
-              Welcome, {role.charAt(0).toUpperCase() + role.slice(1)}
+              Welcome, {fullName}
             </h1>
             <div className="flex items-center gap-4">
               <button

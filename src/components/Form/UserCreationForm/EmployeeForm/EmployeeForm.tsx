@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { UserPlus, LayoutDashboard } from "lucide-react";
 import BasicDetailsForm from "../BasicDetails/BasicDetail";
@@ -8,6 +8,7 @@ import Stepper from "../../../Stepper/Stepper";
 import { updateUserDetail } from "../../../../api/auth";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { number } from "yup";
 
 const steps = ["Basic Details", "Educational Details", "Bank Details"];
 
@@ -19,6 +20,8 @@ const stepComponents = [
 
 type FormValues = {
   basicDetails: {
+    // userId?: number;
+    employeeid: string;
     firstName: string;
     lastName: string;
     phone: string;
@@ -33,6 +36,11 @@ type FormValues = {
     designation: string;
     department: string;
     employmentType: string;
+    emergencyContactPersonName: string;
+    emergencyContactEmail: string;
+    currentAddress: string;
+    permanentAddress: string;
+    ctc: string;
   };
   educationDetails: {
     qualification: string;
@@ -52,7 +60,8 @@ type FormValues = {
 };
 
 const EmployeeForm = () => {
-  const userId = useParams<{ userId: string }>();
+  const { id: userId } = useParams<{ id: string }>();
+  // const (id: userId)
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
 
@@ -77,21 +86,25 @@ const EmployeeForm = () => {
   const handleBack = () => {
     if (activeStep > 0) setActiveStep((prev) => prev - 1);
   };
-
+  
   const onSubmit = async (data: FormValues) => {
     const isStepValid = await methods.trigger(stepFields[activeStep]);
     if (!isStepValid) return;
 
     if (activeStep === steps.length - 1) {
       try {
-        const keys = Object.keys(userId);
-        const firstKey = keys[0];
-        const firstValue = userId[firstKey];
+        if (!userId) {
+          toast.error("User ID is missing");
+          return;
+        }
 
-        const res = await updateUserDetail(firstValue, data);
+        const res = await updateUserDetail(userId, data);
         setIsSubmitted(true);
       } catch (error: any) {
-        console.error("Submission Error:", error.response?.data || error.message);
+        console.error(
+          "Submission Error:",
+          error.response?.data || error.message
+        );
         toast.error(error.message);
       }
     } else {
@@ -99,6 +112,12 @@ const EmployeeForm = () => {
     }
   };
 
+  // useEffect(() => {
+  //   if(userId)
+  //   {
+  //     methods.setValue("basicDetails.userId", Number(userId));
+  //   }
+  // })
   return (
     <FormProvider {...methods}>
       {isSubmitted ? (
@@ -112,7 +131,9 @@ const EmployeeForm = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
             <button
-              onClick={() => (window.location.href = "/admin/employee-management")}
+              onClick={() =>
+                (window.location.href = "/admin/employee-management")
+              }
               className="bg-[#226597] text-white flex gap-2 px-6 py-2 rounded-lg cursor-pointer hover:bg-[#87C0CD] transition shadow-sm w-full sm:w-auto"
             >
               <UserPlus size={18} /> <p>Add User</p>

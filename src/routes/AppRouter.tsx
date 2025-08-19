@@ -25,6 +25,7 @@ import { ForgotPasswordForm } from "../components/Form/ForgotPasswordForm/Forgot
 import { ResetPasswordForm } from "../components/Form/ResetPasswordForm/ResetPasswordForm";
 import EmailSentMessge from "../components/Messages/EmailSentMessge";
 import RegisterPage from "../pages/RegisterPage";
+import CompanyPolicypage from "../pages/CompanyPolicypage";
 
 const AppRouter = () => {
   return (
@@ -51,7 +52,7 @@ const AppRouter = () => {
           <Route path="attendance" element={<AttendanceManagement />} />
           <Route path="add-employee" element={<RegisterPage />} />
           <Route
-            path="/admin/add-employee-details/:id"
+            path="add-employee-details/:id"
             element={<EmployeeForm />}
           />
           <Route path="leave-requests" element={<LeaveRequests />} />
@@ -62,6 +63,7 @@ const AppRouter = () => {
           <Route path="reports" element={<Reports />} />
           <Route path="/admin/employee/:id" element={<Profile />} />
           <Route path="/admin/employee/edit/:id" element={<Profile />} />
+            <Route path="company-policy" element={<CompanyPolicypage />} />
         </Route>
 
         <Route
@@ -79,6 +81,7 @@ const AppRouter = () => {
 
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="company-policy" element={<CompanyPolicypage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
