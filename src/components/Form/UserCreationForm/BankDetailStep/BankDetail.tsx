@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 type FormValues = {
@@ -10,31 +10,53 @@ type FormValues = {
     accountHolderName: string;
     adharNumber: string;
     panNumber: string;
+        firstName: string;
+    lastName: string;
   };
 };
+
+
 
 const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
   readOnly = false,
 }) => {
   const {
     register,
+        watch,
+        setValue,
     formState: { errors },
+
   } = useFormContext<FormValues>();
 
   const bankErrors = errors?.bankDetails || {};
   const inputClass = `w-full border border-gray-300 px-3 py-2 rounded-md shadow-sm text-sm focus:outline-none ${
     readOnly ? "bg-gray-100 cursor-not-allowed" : "bg-white"
   }`;
+
+ const firstName = watch("basicDetails.firstName") ?? "";
+ const lastName = watch("basicDetails.lastName") ?? "";
+ const fullName = `${firstName} ${lastName}`.trim();
+
+
+ useEffect(() => {
+  if(firstName || lastName){
+    setValue("bankDetails.accountHolderName", fullName);
+  }
+
+ }, [firstName, lastName, fullName, setValue]);
+
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-     
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          Bank Name
+        </label>
         <input
           {...register("bankDetails.bankName", {
             required: "Bank name is required",
           })}
-           className={inputClass}
+          className={inputClass}
           disabled={readOnly}
         />
         {bankErrors.bankName && (
@@ -42,9 +64,10 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         )}
       </div>
 
-      
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">Account Number</label>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          Account Number
+        </label>
         <input
           {...register("bankDetails.accountNumber", {
             required: "Account number is required",
@@ -64,9 +87,10 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         )}
       </div>
 
-      
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">IFSC Code</label>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          IFSC Code
+        </label>
         <input
           {...register("bankDetails.ifscCode", {
             required: "IFSC code is required",
@@ -75,7 +99,7 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
               message: "Invalid IFSC code format",
             },
           })}
-          className={inputClass+"uppercase"}
+          className={inputClass + "uppercase"}
           maxLength={11}
           onInput={(e) => {
             if (readOnly) return;
@@ -89,9 +113,10 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         )}
       </div>
 
-      
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">Branch Name</label>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          Branch Name
+        </label>
         <input
           {...register("bankDetails.branchName", {
             required: "Branch name is required",
@@ -106,9 +131,10 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         )}
       </div>
 
-     
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">Account Holder Name</label>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          Account Holder Name
+        </label>
         <input
           {...register("bankDetails.accountHolderName", {
             required: "Account holder name is required",
@@ -123,8 +149,10 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         )}
       </div>
 
- <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">Aadhar Number</label>
+      <div>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          Aadhar Number
+        </label>
         <input
           {...register("bankDetails.adharNumber", {
             required: "Aadhar number is required",
@@ -145,9 +173,10 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         )}
       </div>
 
-     
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1">PAN Number</label>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          PAN Number
+        </label>
         <input
           {...register("bankDetails.panNumber", {
             required: "PAN number is required",
@@ -156,7 +185,7 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
               message: "Invalid PAN number format",
             },
           })}
-          className={inputClass+"uppercase"}
+          className={inputClass + "uppercase"}
           maxLength={10}
           onInput={(e) => {
             if (readOnly) return;

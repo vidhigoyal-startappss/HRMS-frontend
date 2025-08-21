@@ -22,7 +22,7 @@ const BirthdayBox: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const data = await getTodayEventsByType("birthday"); 
+      const data = await getTodayEventsByType("birthday");
       setEvents(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error fetching birthdays:", err);
@@ -39,7 +39,7 @@ const BirthdayBox: React.FC = () => {
   return (
     <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-6 border border-blue-100">
       <h2 className="text-3xl font-bold text-center text-[#113F67] mb-6 border-b pb-2 border-blue-200">
-       Today’s Birthdays
+        Today’s Birthdays
       </h2>
 
       {loading ? (
@@ -74,10 +74,12 @@ const BirthdayBox: React.FC = () => {
                 </div>
 
                 <div className="flex-1">
-                  <p className="text-[#0A2540] font-semibold text-lg">{fullName}</p>
+                  <p className="text-[#0A2540] font-semibold text-lg">
+                    {fullName}
+                  </p>
                   <p className="text-sm text-gray-600">{title}</p>
                   <p className="mt-1 text-blue-700 font-medium animate-pulse">
-                     Happy Birthday! Wishing you a fantastic day! 
+                    Happy Birthday! Wishing you a fantastic day!
                   </p>
                 </div>
               </li>
@@ -88,10 +90,5 @@ const BirthdayBox: React.FC = () => {
     </div>
   );
 };
-
-
-
-
-
 
 export default BirthdayBox;

@@ -63,43 +63,44 @@ const AdminDashboard = () => {
   return (
     <div className="p-4 sm:p-6 space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-  {[
-    {
-      label: "Employees",
-      value: employees.length,
-      icon: <Briefcase className="text-white w-6 h-6 sm:w-10 sm:h-10" />, 
-      disabled: false,
-    },
-    {
-      label: "Leaves",
-      value: leaves.length,
-      icon: <CalendarDays className="text-white w-6 h-6 sm:w-10 sm:h-10" />,
-      disabled: false,
-    },
-  ].map((card, idx) => (
-    <div
-      key={idx}
-      className={`rounded-xl p-2 sm:p-4 flex items-center justify-between min-h-[64px] sm:min-h-[100px] ${
-        card.disabled
-          ? "bg-gray-300 cursor-not-allowed opacity-60"
-          : "bg-[#113F67] text-white"
-      }`}
-      title={card.disabled ? "This module is under progress." : ""}
-    >
-      <div>
-        <h2 className="text-sm sm:text-xl font-semibold flex items-center gap-1">
-          {card.label}
-          {card.disabled && <Info size={16} />}
-        </h2>
-        <p className="text-sm sm:text-xl">
-          {card.disabled ? "—" : card.value}
-        </p>
+        {[
+          {
+            label: "Employees",
+            value: employees.length,
+            icon: <Briefcase className="text-white w-6 h-6 sm:w-10 sm:h-10" />,
+            disabled: false,
+          },
+          {
+            label: "Leaves",
+            value: leaves.length,
+            icon: (
+              <CalendarDays className="text-white w-6 h-6 sm:w-10 sm:h-10" />
+            ),
+            disabled: false,
+          },
+        ].map((card, idx) => (
+          <div
+            key={idx}
+            className={`rounded-xl p-2 sm:p-4 flex items-center justify-between min-h-[64px] sm:min-h-[100px] ${
+              card.disabled
+                ? "bg-gray-300 cursor-not-allowed opacity-60"
+                : "bg-[#113F67] text-white"
+            }`}
+            title={card.disabled ? "This module is under progress." : ""}
+          >
+            <div>
+              <h2 className="text-sm sm:text-xl font-semibold flex items-center gap-1">
+                {card.label}
+                {card.disabled && <Info size={16} />}
+              </h2>
+              <p className="text-sm sm:text-xl">
+                {card.disabled ? "—" : card.value}
+              </p>
+            </div>
+            {card.icon}
+          </div>
+        ))}
       </div>
-      {card.icon}
-    </div>
-  ))}
-</div>
-
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white shadow rounded-xl p-2 w-full max-h-full sm:max-h-60 overflow-y-auto">

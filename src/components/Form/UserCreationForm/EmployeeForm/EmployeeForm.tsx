@@ -21,7 +21,7 @@ const stepComponents = [
 type FormValues = {
   basicDetails: {
     // userId?: number;
-    employeeid: string;
+    // employeeid: string;
     firstName: string;
     lastName: string;
     phone: string;
@@ -86,7 +86,31 @@ const EmployeeForm = () => {
   const handleBack = () => {
     if (activeStep > 0) setActiveStep((prev) => prev - 1);
   };
-  
+
+  // const onSubmit = async (data: FormValues) => {
+  //   const isStepValid = await methods.trigger(stepFields[activeStep]);
+  //   if (!isStepValid) return;
+
+  //   if (activeStep === steps.length - 1) {
+  //     try {
+  //       if (!userId) {
+  //         toast.error("User ID is missing");
+  //         return;
+  //       }
+
+  //       const res = await updateUserDetail(userId, data);
+  //       setIsSubmitted(true);
+  //     } catch (error: any) {
+  //       console.error(
+  //         "Submission Error:",
+  //         error.response?.data || error.message
+  //       );
+  //       toast.error(error.message);
+  //     }
+  //   } else {
+  //     setActiveStep((prev) => prev + 1);
+  //   }
+  // };
   const onSubmit = async (data: FormValues) => {
     const isStepValid = await methods.trigger(stepFields[activeStep]);
     if (!isStepValid) return;
@@ -98,7 +122,16 @@ const EmployeeForm = () => {
           return;
         }
 
-        const res = await updateUserDetail(userId, data);
+        const submissionData = {
+          ...data,
+          basicDetails: {
+            ...data.basicDetails,
+          },
+        };
+
+        delete submissionData.basicDetails.employeeid;
+
+        const res = await updateUserDetail(userId, submissionData);
         setIsSubmitted(true);
       } catch (error: any) {
         console.error(

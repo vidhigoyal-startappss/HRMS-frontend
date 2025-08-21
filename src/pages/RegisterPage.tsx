@@ -117,7 +117,7 @@ const RegisterPage: React.FC = () => {
                 {(role === "HR" || role === "SuperAdmin") && (
                   <option value="HR">HR</option>
                 )}
-                <option value="Manager">Manager</option>
+              
                 {(role === "HR" || role === "SuperAdmin") && (
                   <option value="Employee">Employee</option>
                 )}
@@ -140,15 +140,7 @@ const RegisterPage: React.FC = () => {
           </button>
         </form>
 
-        <p className="text-center mt-6 text-gray-600">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-[#226597] font-semibold hover:underline"
-          >
-            Login here
-          </Link>
-        </p>
+        
       </div>
     </div>
   );

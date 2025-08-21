@@ -24,7 +24,7 @@ interface LeaveRecord {
   paidDays: number;
   unpaidDays: number;
   leaveType: string;
-  dayType: string;
+  dayType: "fullday" | "halfday";
   reason: string;
   status: "Pending" | "Approved" | "Rejected";
   userId: userId;
@@ -32,38 +32,135 @@ interface LeaveRecord {
 
 const EmployeeLeaveDashboard: React.FC = () => {
   const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
-  const [userData, setUserData] = useState({});
+  // const [userData, setUserData] = useState({});
   const { user } = useSelector((state: RootState) => state.user);
+  const [userData, setUserData] = useState<userId | null>(null);
   const userId = user?.userId;
+  const [leaveSummary, setLeaveSummary] = useState({
+    paidUsed: 0,
+    unpaidUsed: 0,
+    paidLeft: 0,
+    wfhLeft: 0,
+  });
+
   useEffect(() => {
-    const fetch = async () => {
-      const data = await getLeaves();
-      console.log(data);
-      setLeaves(data);
-      const user = await getEmployeeById(userId);
-      setUserData(user);
-    };
-    fetch();
-  }, []);
+  const fetch = async () => {
+    const data = await getLeaves();
+    setLeaves(data);
+
+    const user = await getEmployeeById(userId);
+    setUserData(user);
+
+    const joinDate = new Date(user?.createdAt || "2024-01-01");
+    const now = new Date();
+
+    let monthsWorked =
+      (now.getFullYear() - joinDate.getFullYear()) * 12 +
+      (now.getMonth() - joinDate.getMonth());
+
+    if (now.getDate() < 15) {
+      monthsWorked--;
+    }
+
+    if (monthsWorked > 12) {
+      monthsWorked = 12;
+    }
+
+    const dynamicPlLeft = monthsWorked * 1.5;
+    const dynamicWfhLeft = monthsWorked * 1;
+
+    console.log("Months Worked:", monthsWorked);
+    console.log("Dynamic PL Left:", dynamicPlLeft);
+    console.log("Dynamic WFH Left:", dynamicWfhLeft);
+
+    const summary = calculateLeaveSummary(
+      data,
+      dynamicPlLeft,
+      dynamicWfhLeft
+    );
+         console.log("leaveSummary:", leaveSummary);
+    setLeaveSummary(summary);
+
+  };
+  fetch();
+}, []);
+
   const navigate = useNavigate();
   const handleNavigateLeaveForm = () => {
     console.log("leave");
     navigate("/employee/request-leave");
   };
-  const calculateLeaveDays = (
-    startDate: string,
-    endDate: string,
-    dayType: string
-  ) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    let dayDiff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-    dayDiff += 1;
-    if (dayType === "halfday") {
-      return 0.5;
+
+const calculateLeaveSummary = (
+  leaves: LeaveRecord[],
+  plLeftInitial: number,
+  wfhLeftInitial: number
+) => {
+  let paidUsedAllTime = 0;
+  let paidUsedThisMonth = 0;
+  let unpaidUsedThisMonth = 0;
+  let wfhUsedAllTime = 0;
+  let wfhUsedThisMonth = 0;
+  let monthlyPlUsed = 0;
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const monthlyPlCap = 1.5; 
+
+  console.log('Initial Paid Leaves (Monthly):', monthlyPlCap);
+
+  for (const leave of leaves) {
+    if (leave.status !== "Approved") continue;
+
+    const leaveDate = new Date(leave.startDate);
+    const leaveMonth = leaveDate.getMonth();
+    const leaveYear = leaveDate.getFullYear();
+    const leaveDays = leave.dayType === "halfday" ? 0.5 : leave.noOfDays;
+
+    console.log(`Leave ${leave.leaveType}: Days = ${leaveDays}, Month = ${leaveMonth}, Year = ${leaveYear}`);
+
+    if (leave.leaveType === "work") {
+      wfhUsedAllTime += leaveDays;
+      if (leaveMonth === currentMonth && leaveYear === currentYear) {
+        wfhUsedThisMonth += leaveDays;
+      }
+    } 
+ 
+    else {
+      paidUsedAllTime += leaveDays;
+
+     
+      if (leaveMonth === currentMonth && leaveYear === currentYear) {
+        const availableThisMonth = monthlyPlCap - paidUsedThisMonth;
+
+        console.log('Available this month:', availableThisMonth);
+
+        if (availableThisMonth >= leaveDays) {
+          paidUsedThisMonth += leaveDays;
+        } else {
+          paidUsedThisMonth += availableThisMonth;
+          unpaidUsedThisMonth += leaveDays - availableThisMonth;
+        }
+      }
     }
-    return dayDiff;
+  }
+
+  
+  const paidLeft = Math.max(plLeftInitial - paidUsedAllTime, 0);  
+
+  console.log('Paid Leaves Used This Month:', paidUsedThisMonth);
+  console.log('Paid Leaves Left:', paidLeft);
+
+  return {
+    paidUsed: parseFloat(paidUsedThisMonth.toFixed(2)),
+    unpaidUsed: parseFloat(unpaidUsedThisMonth.toFixed(2)),
+    paidLeft: parseFloat(paidLeft.toFixed(2)),
+    wfhLeft: Math.max(parseFloat((wfhLeftInitial - wfhUsedAllTime).toFixed(2)), 0),
   };
+};
+
+
+
   const [selectedLeave, setSelectedLeave] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -77,39 +174,39 @@ const EmployeeLeaveDashboard: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  console.log(leaves);
-
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-10 text-[#113F67]">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {[
           {
             label: "Paid Leaves Left (PL)",
-            value: userData?.leaves?.plLeft,
+            value: leaveSummary.paidLeft,
           },
           {
             label: "Unpaid Leaves (Monthly)",
-            value: leaves.reduce((a, c) => a + (c?.unpaidDays || 0), 0),
+            value: leaveSummary.unpaidUsed,
           },
           {
             label: "Paid Leaves (Monthly)",
-            value: leaves.reduce((a, c) => a + (c?.paidDays || 0), 0),
+               value: leaveSummary.paidUsed,
           },
           {
             label: "WFH",
-            value: userData?.leaves?.wfhLeft,
+            value: leaveSummary.wfhLeft,
           },
+          
         ].map(({ label, value }) => (
           <div
             key={label}
             className="bg-[#113F67] p-3 rounded-xl shadow-md text-center text-white"
           >
+            
             <h2 className="text-base sm:text-lg font-medium mb-1">{label}</h2>
             <p className="text-2xl font-bold">{value}</p>
           </div>
         ))}
       </div>
-
+   
       <div className="text-right">
         <button
           onClick={handleNavigateLeaveForm}
@@ -170,13 +267,7 @@ const EmployeeLeaveDashboard: React.FC = () => {
                       ? new Date(leave.endDate).toLocaleDateString("en-IN")
                       : "Not Applicable"}
                   </td>
-                  <td className="px-4 py-3">
-                    {calculateLeaveDays(
-                      leave.startDate,
-                      leave.endDate,
-                      leave.dayType
-                    )}
-                  </td>
+                  <td className="px-4 py-3">{leave.noOfDays}</td>
 
                   <td className="px-4 py-3 capitalize">{leave.leaveType}</td>
                   <td className="px-4 py-3 capitalize">{leave.dayType}</td>

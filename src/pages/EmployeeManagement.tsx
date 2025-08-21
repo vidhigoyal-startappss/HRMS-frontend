@@ -143,7 +143,8 @@ const EmployeeManagement = () => {
           .includes(filters.designation.toLowerCase())) &&
       (!filters.employmentType ||
         emp.employmentType === filters.employmentType) &&
-      (!filters.gender || (emp.gender ?? "") === filters.gender) &&
+      (!filters.gender ||
+        (emp.gender ?? "").toLowerCase() === filters.gender.toLowerCase()) &&
       (!filters.email ||
         (emp.email ?? "")
           .toLowerCase()
@@ -187,7 +188,7 @@ const EmployeeManagement = () => {
   }
 
   return (
-    <div className="relative min-h-[400px] overflow-x-auto rounded-xl p-3 bg-white">
+    <div className="relative min-h-[600px] overflow-x-auto rounded-xl p-3 bg-white">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <Autocomplete<Employee>
           data={employeeData}
@@ -230,8 +231,8 @@ const EmployeeManagement = () => {
               <ListFilter size={20} /> Filters <ChevronDown size={16} />
             </button>
             {isOpen && (
-              <div className="absolute right-0 mt-2 bg-white shadow-lg border rounded w-64 z-50">
-                <div className="p-4 space-y-3">
+              <div className="absolute right-0 mt-2 bg-white shadow-lg border rounded-xl w-64 z-50  overflow-auto max-h-80">
+                <div className="p-4 space-y-3 overflow-auto ">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Designation

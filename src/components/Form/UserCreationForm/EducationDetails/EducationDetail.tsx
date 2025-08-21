@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 type FormValues = {
@@ -7,6 +7,7 @@ type FormValues = {
     institution: string;
     yearOfPassing: string;
     grade: string;
+    z;
   };
 };
 
@@ -19,6 +20,9 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
     register,
     formState: { errors },
   } = useFormContext<FormValues>();
+  const [gradeType, setGradeType] = useState<"Percentage" | "CGPA">(
+    "Percentage"
+  );
 
   const eduErrors = errors.educationDetails || {};
 
@@ -62,6 +66,10 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         <input
           {...register("educationDetails.institution", {
             required: !readOnly ? "University or college is required" : false,
+            pattern: {
+              value: /^[A-Za-z\s]+$/,
+              message: "Only alphabets and spaces are allowed",
+            },
           })}
           disabled={readOnly}
           className={inputClass}
@@ -115,13 +123,45 @@ const EducationDetailsForm: React.FC<{ readOnly?: boolean }> = ({
         <label className="text-sm font-medium text-gray-700 mb-1">
           Grade / Percentage
         </label>
+
+        <select
+          value={gradeType}
+          onChange={(e) =>
+            setGradeType(e.target.value as "Percentage" | "CGPA")
+          }
+          disabled={readOnly}
+          className={`${inputClass} mb-2`}
+        >
+          <option value="Percentage">Percentage</option>
+          <option value="CGPA">CGPA</option>
+        </select>
+
         <input
           {...register("educationDetails.grade", {
             required: !readOnly ? "Grade or percentage is required" : false,
+            validate: (value) => {
+              const num = parseFloat(value);
+              if (isNaN(num)) {
+                return "Must be a valid number";
+              }
+
+              if (gradeType === "CGPA") {
+                if (num >= 0 && num <= 10) return true;
+                return "CGPA must be between 0 and 10";
+              }
+
+              if (gradeType === "Percentage") {
+                if (num >= 0 && num <= 100) return true;
+                return "Percentage must be between 0 and 100";
+              }
+
+              return "Invalid grade format";
+            },
           })}
           disabled={readOnly}
           className={inputClass}
         />
+
         <div className="h-5 mt-1">
           {!readOnly && eduErrors.grade && (
             <p className="text-red-500 text-sm">{eduErrors.grade.message}</p>
