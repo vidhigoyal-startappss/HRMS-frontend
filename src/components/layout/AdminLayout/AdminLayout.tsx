@@ -32,6 +32,7 @@ import {
 } from "../../../api/notification";
 import BackButton from "../../common/BackButtonComp/BackButton";
 import { getProfileImage } from "../../../api/auth";
+import { getEmployeeById } from "../../../api/auth";
 import { Link } from "react-router-dom";
 
 const AdminLayout: React.FC = () => {
@@ -46,6 +47,7 @@ const AdminLayout: React.FC = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [profileImage, setProfileImage] = useState("");
+  const [adminData, setAdminData] = useState<any>(null);
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>(
     {}
   );
@@ -92,6 +94,20 @@ const AdminLayout: React.FC = () => {
       }
     };
     fetchData();
+  }, [id]);
+
+useEffect(() => {
+  if(id){
+    const fetchAdminData  = async () => {
+      try {
+        const data = await getEmployeeById(id);
+        setAdminData(data);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      }
+    };
+    fetchAdminData();
+  }
   }, [id]);
 
   const sidebarConfig: Record<
@@ -181,6 +197,10 @@ const AdminLayout: React.FC = () => {
       { label: "Profile", path: "/profile", icon: User },
     ],
   };
+const fullName =
+  adminData?.firstName && adminData?.lastName
+    ? `${adminData.firstName} ${adminData.lastName}`
+    : "Admin";
 
   const linksToShow = sidebarConfig[role] || [];
 
@@ -312,7 +332,7 @@ const AdminLayout: React.FC = () => {
         <main className="flex-1 px-6 py-4 overflow-y-auto bg-[#F3F9FB]">
           <div className="flex justify-between items-center mb-4">
             <h1 className="lg:text-2xl sm:text-xl font-bold text-[#113F67]">
-              Welcome, {formatRole(role)}
+              Welcome,  {fullName}
             </h1>
 
             <div className="flex items-center gap-4">

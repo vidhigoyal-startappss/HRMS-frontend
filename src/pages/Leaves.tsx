@@ -44,46 +44,41 @@ const EmployeeLeaveDashboard: React.FC = () => {
   });
 
   useEffect(() => {
-  const fetch = async () => {
-    const data = await getLeaves();
-    setLeaves(data);
+    const fetch = async () => {
+      const data = await getLeaves();
+      setLeaves(data);
 
-    const user = await getEmployeeById(userId);
-    setUserData(user);
+      const user = await getEmployeeById(userId);
+      setUserData(user);
 
-    const joinDate = new Date(user?.createdAt || "2024-01-01");
-    const now = new Date();
+      const joinDate = new Date(user?.createdAt || "2024-01-01");
+      const now = new Date();
 
-    let monthsWorked =
-      (now.getFullYear() - joinDate.getFullYear()) * 12 +
-      (now.getMonth() - joinDate.getMonth());
+      let monthsWorked =
+        (now.getFullYear() - joinDate.getFullYear()) * 12 +
+        (now.getMonth() - joinDate.getMonth());
 
-    if (now.getDate() < 15) {
-      monthsWorked--;
-    }
+      if (now.getDate() < 15) {
+        monthsWorked--;
+      }
 
-    if (monthsWorked > 12) {
-      monthsWorked = 12;
-    }
+      if (monthsWorked > 12) {
+        monthsWorked = 12;
+      }
 
-    const dynamicPlLeft = monthsWorked * 1.5;
-    const dynamicWfhLeft = monthsWorked * 1;
+      const dynamicPlLeft = monthsWorked * 1.5;
+      const dynamicWfhLeft = monthsWorked * 1;
 
-    console.log("Months Worked:", monthsWorked);
-    console.log("Dynamic PL Left:", dynamicPlLeft);
-    console.log("Dynamic WFH Left:", dynamicWfhLeft);
+      const summary = calculateLeaveSummary(
+        data,
+        dynamicPlLeft,
+        dynamicWfhLeft
+      );
 
-    const summary = calculateLeaveSummary(
-      data,
-      dynamicPlLeft,
-      dynamicWfhLeft
-    );
-         console.log("leaveSummary:", leaveSummary);
-    setLeaveSummary(summary);
-
-  };
-  fetch();
-}, []);
+      setLeaveSummary(summary);
+    };
+    fetch();
+  }, []);
 
   const navigate = useNavigate();
   const handleNavigateLeaveForm = () => {
@@ -91,75 +86,63 @@ const EmployeeLeaveDashboard: React.FC = () => {
     navigate("/employee/request-leave");
   };
 
-const calculateLeaveSummary = (
-  leaves: LeaveRecord[],
-  plLeftInitial: number,
-  wfhLeftInitial: number
-) => {
-  let paidUsedAllTime = 0;
-  let paidUsedThisMonth = 0;
-  let unpaidUsedThisMonth = 0;
-  let wfhUsedAllTime = 0;
-  let wfhUsedThisMonth = 0;
-  let monthlyPlUsed = 0;
+  const calculateLeaveSummary = (
+    leaves: LeaveRecord[],
+    plLeftInitial: number,
+    wfhLeftInitial: number
+  ) => {
+    let paidUsedAllTime = 0;
+    let paidUsedThisMonth = 0;
+    let unpaidUsedThisMonth = 0;
+    let wfhUsedAllTime = 0;
+    let wfhUsedThisMonth = 0;
+    let monthlyPlUsed = 0;
 
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-  const monthlyPlCap = 1.5; 
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const monthlyPlCap = 1.5;
 
-  console.log('Initial Paid Leaves (Monthly):', monthlyPlCap);
+    for (const leave of leaves) {
+      if (leave.status !== "Approved") continue;
 
-  for (const leave of leaves) {
-    if (leave.status !== "Approved") continue;
+      const leaveDate = new Date(leave.startDate);
+      const leaveMonth = leaveDate.getMonth();
+      const leaveYear = leaveDate.getFullYear();
+      const leaveDays = leave.dayType === "halfday" ? 0.5 : leave.noOfDays;
 
-    const leaveDate = new Date(leave.startDate);
-    const leaveMonth = leaveDate.getMonth();
-    const leaveYear = leaveDate.getFullYear();
-    const leaveDays = leave.dayType === "halfday" ? 0.5 : leave.noOfDays;
+      if (leave.leaveType === "work") {
+        wfhUsedAllTime += leaveDays;
+        if (leaveMonth === currentMonth && leaveYear === currentYear) {
+          wfhUsedThisMonth += leaveDays;
+        }
+      } else {
+        paidUsedAllTime += leaveDays;
 
-    console.log(`Leave ${leave.leaveType}: Days = ${leaveDays}, Month = ${leaveMonth}, Year = ${leaveYear}`);
+        if (leaveMonth === currentMonth && leaveYear === currentYear) {
+          const availableThisMonth = monthlyPlCap - paidUsedThisMonth;
 
-    if (leave.leaveType === "work") {
-      wfhUsedAllTime += leaveDays;
-      if (leaveMonth === currentMonth && leaveYear === currentYear) {
-        wfhUsedThisMonth += leaveDays;
-      }
-    } 
- 
-    else {
-      paidUsedAllTime += leaveDays;
-
-     
-      if (leaveMonth === currentMonth && leaveYear === currentYear) {
-        const availableThisMonth = monthlyPlCap - paidUsedThisMonth;
-
-        console.log('Available this month:', availableThisMonth);
-
-        if (availableThisMonth >= leaveDays) {
-          paidUsedThisMonth += leaveDays;
-        } else {
-          paidUsedThisMonth += availableThisMonth;
-          unpaidUsedThisMonth += leaveDays - availableThisMonth;
+          if (availableThisMonth >= leaveDays) {
+            paidUsedThisMonth += leaveDays;
+          } else {
+            paidUsedThisMonth += availableThisMonth;
+            unpaidUsedThisMonth += leaveDays - availableThisMonth;
+          }
         }
       }
     }
-  }
 
-  
-  const paidLeft = Math.max(plLeftInitial - paidUsedAllTime, 0);  
+    const paidLeft = Math.max(plLeftInitial - paidUsedAllTime, 0);
 
-  console.log('Paid Leaves Used This Month:', paidUsedThisMonth);
-  console.log('Paid Leaves Left:', paidLeft);
-
-  return {
-    paidUsed: parseFloat(paidUsedThisMonth.toFixed(2)),
-    unpaidUsed: parseFloat(unpaidUsedThisMonth.toFixed(2)),
-    paidLeft: parseFloat(paidLeft.toFixed(2)),
-    wfhLeft: Math.max(parseFloat((wfhLeftInitial - wfhUsedAllTime).toFixed(2)), 0),
+    return {
+      paidUsed: parseFloat(paidUsedThisMonth.toFixed(2)),
+      unpaidUsed: parseFloat(unpaidUsedThisMonth.toFixed(2)),
+      paidLeft: parseFloat(paidLeft.toFixed(2)),
+      wfhLeft: Math.max(
+        parseFloat((wfhLeftInitial - wfhUsedAllTime).toFixed(2)),
+        0
+      ),
+    };
   };
-};
-
-
 
   const [selectedLeave, setSelectedLeave] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -188,25 +171,23 @@ const calculateLeaveSummary = (
           },
           {
             label: "Paid Leaves (Monthly)",
-               value: leaveSummary.paidUsed,
+            value: leaveSummary.paidUsed,
           },
           {
             label: "WFH",
             value: leaveSummary.wfhLeft,
           },
-          
         ].map(({ label, value }) => (
           <div
             key={label}
             className="bg-[#113F67] p-3 rounded-xl shadow-md text-center text-white"
           >
-            
             <h2 className="text-base sm:text-lg font-medium mb-1">{label}</h2>
             <p className="text-2xl font-bold">{value}</p>
           </div>
         ))}
       </div>
-   
+
       <div className="text-right">
         <button
           onClick={handleNavigateLeaveForm}

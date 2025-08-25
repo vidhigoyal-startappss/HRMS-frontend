@@ -44,24 +44,83 @@ const maskedFields = ["adharNumber", "panNumber", "accountNumber", "ifscCode"];
 //   "grade",
 // ];
 
+const editableFields  = [
+    "firstName",
+  "lastName",
+  "phone",
+  "dob",
+  "gender",
+  "address",
+  "city",
+  "state",
+  "zipCode",
+  "country",
+  "joiningDate",
+  "designation",
+  "department",
+  "employmentType",
+  "emergencyContactPersonName",
+  "emergencyContactEmail",
+  "currentAddress",
+  "permanentAddress",
+  "ctc",
+ "bankName",
+  "accountNumber",
+  "ifscCode",
+  "branchName",
+  "accountHolderName",
+  "adharNumber",
+  "panNumber",
+"qualification",
+  "institution",
+  "yearOfPassing",
+  "grade",
+];
+
+
 const Profile: React.FC = () => {
-  // const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<any>({});
   const { user } = useSelector((state: RootState) => state.user);
   const { id } = useParams();
   const userId = id || user?.userId;
   const userRole = user?.role;
   // const canEditAll = ["HR", "Admin", "SuperAdmin"].includes(userRole);
+  const isSuperAdmin = userRole === "SuperAdmin";
+  const isOwnProfile = userId === user?.userId;
+  const canEdit = isSuperAdmin;
+  const canEditOwnProfile = isSuperAdmin && isOwnProfile;
 
   useEffect(() => {
     console.log("not coming", userId);
-    API.get(`/api/users/employee/${userId}`)
-
+    API.get(`/api/users/employee/${userId}?archived=true`)
       .then((res) => setProfile(res.data))
 
       .catch(() => toast.error("Failed to load profile"));
   }, [userId]);
+ const handleProfileUpdate = async (
+        e: React.ChangeEvent<HTMLInputElement>
+      ) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
+        const formData = new FormData();
+        formData.append("profileImage", file);
+        try {
+          await API.post(`/api/users/employee/${userId}/upload`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+          setProfile((prev: any) => ({
+            ...prev,
+            profileImage: URL.createObjectURL(file),
+          }));
+          toast.success("Profile image updated successfully");
+        } catch (error) {
+          toast.error("Failed to update profile image");
+        }
+      };
   const maskValue = (value: string, type?: string) => {
     if (!value) return "";
     const len = value.length;
@@ -92,77 +151,52 @@ const Profile: React.FC = () => {
       toast.error("Phone number must be 10 digits");
       return;
     }
-    //   const handleProfileUpdate = async (
-    //     e: React.ChangeEvent<HTMLInputElement>
-    //   ) => {
-    //     const file = e.target.files?.[0];
-    //     if (!file) return;
-
-    //     const formData = new FormData();
-    //     formData.append("profileImage", file);
-    //     try {
-    //       await API.post(`/api/users/employee/${userId}/upload`, formData, {
-    //         headers: {
-    //           "Content-Type": "multipart/form-data",
-    //         },
-    //       });
-    //       setProfile((prev: any) => ({
-    //         ...prev,
-    //         profileImage: URL.createObjectURL(file),
-    //       }));
-    //       toast.success("Profile image updated successfully");
-    //     } catch (error) {
-    //       toast.error("Failed to update profile image");
-    //     }
-    //   };
-    //   const structuredPayload = {
-    //     basicDetails: {
-    //       firstName: profile.firstName,
-    //       lastName: profile.lastName,
-    //       phone: profile.phone,
-    //       dob: profile.dob,
-    //       gender: profile.gender,
-    //       address: profile.address,
-    //       city: profile.city,
-    //       state: profile.state,
-    //       zipCode: profile.zipCode,
-    //       country: profile.country,
-    //       joiningDate: profile.joiningDate,
-    //       designation: profile.designation,
-    //       department: profile.department,
-    //       employmentType: profile.employmentType,
-    //       emergencyContactPersonName: profile.emergencyContactPersonName,
-    //       emergencyContactEmail: profile.emergencyContactEmail,
-    //       currentAddress: profile.currentAddress,
-    //       permanentAddress: profile.permanentAddress,
-    //       ctc: profile.ctc,
-    //       // leaves: profile.leaves,
-    //       // leaves: profile.leaves,
-    //     },
-    //     bankDetails: {
-    //       bankName: profile.bankName,
-    //       accountNumber: profile.accountNumber,
-    //       ifscCode: profile.ifscCode,
-    //       branchName: profile.branchName,
-    //       accountHolderName: profile.accountHolderName,
-    //       adharNumber: profile.adharNumber,
-    //       panNumber: profile.panNumber,
-    //     },
-    //     educationDetails: {
-    //       qualification: profile.qualification,
-    //       institution: profile.institution,
-    //       yearOfPassing: profile.yearOfPassing,
-    //       grade: profile.grade,
-    //     },
-    //   };
-
-    //   try {
-    //     await updateEmployee(userId, structuredPayload);
-    //     toast.success("Profile updated successfully");
-    //     setIsEditing(false);
-    //   } catch (error) {
-    //     toast.error("Failed to update profile");
-    //   }
+     
+     const structuredPayload = {
+  basicDetails: {
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    phone: profile.phone,
+    dob: profile.dob,
+    gender: profile.gender,
+    address: profile.address,
+    city: profile.city,
+    state: profile.state,
+    zipCode: profile.zipCode,
+    country: profile.country,
+    joiningDate: profile.joiningDate,
+    designation: profile.designation,
+    department: profile.department,
+    employmentType: profile.employmentType,
+    emergencyContactPersonName: profile.emergencyContactPersonName,
+    emergencyContactEmail: profile.emergencyContactEmail,
+    currentAddress: profile.currentAddress,
+    permanentAddress: profile.permanentAddress,
+    ctc: profile.ctc,
+  },
+  bankDetails: {
+    bankName: profile.bankName,
+    accountNumber: profile.accountNumber,
+    ifscCode: profile.ifscCode,
+    branchName: profile.branchName,
+    accountHolderName: profile.accountHolderName,
+    adharNumber: profile.adharNumber,
+    panNumber: profile.panNumber,
+  },
+  educationDetails: {
+    qualification: profile.qualification,
+    institution: profile.institution,
+    yearOfPassing: profile.yearOfPassing,
+    grade: profile.grade,
+  },
+};
+      try {
+        await updateEmployee(userId, structuredPayload);
+        toast.success("Profile updated successfully");
+        setIsEditing(false);
+      } catch (error) {
+        toast.error("Failed to update profile");
+      }
   };
 
   const renderField = (
@@ -174,20 +208,31 @@ const Profile: React.FC = () => {
     const isMasked = maskedFields.includes(name);
     const isDateField = type === "date";
     const value = profile[name];
-    const formattedValue = isDateField && value ? formatDate(value) : value;
+   const formattedValue = isDateField && value ? formatDate(value) : value;
 
+  const isEditableField = isEditing && canEdit && editableFields.includes(name);
     return (
-      <div key={name}>
-        <label className="block mb-1 text-sm font-semibold text-[#113F67]">
-          {label}
-        </label>
+    <div key={name}>
+      <label className="block mb-1 text-sm font-semibold text-[#113F67]">
+        {label}
+      </label>
 
+      {isEditableField  ? (
+        <input
+          type={type}
+          name={name}
+          value={formattedValue || ""}
+          onChange={handleInputChange}
+          className="w-full min-h-[40px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#113F67]"
+        />
+      ) : (
         <div className="w-full min-h-[40px] px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-md text-gray-700">
           {isMasked ? maskValue(value, maskType) : formattedValue || "-"}
         </div>
-      </div>
-    );
-  };
+      )}
+    </div>
+  );
+};
 
   return (
     <div className="max-w-8xl mx-auto px-6 py-2 bg-white rounded-2xl">
@@ -219,11 +264,11 @@ const Profile: React.FC = () => {
                   type="file"
                   id="profileImageInput"
                   accept="image/*"
-                  onChange={handleInputChange}
+                  onChange={handleProfileUpdate}
                   className="hidden"
                 />
               </> */}
-
+          
             <div className="flex flex-col items-center md:items-start gap-0 sm:gap-1">
               <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white leading-tight text-center md:text-left">
                 {profile?.firstName + " " + profile?.lastName}
@@ -235,8 +280,20 @@ const Profile: React.FC = () => {
                 Employee ID: {profile?.employeeid || "-"}
               </p> */}
             </div>
+            
           </div>
+            {canEdit && (
+              <button
+                type="button"
+                onClick={() => setIsEditing((prev) => !prev)}
+                className="bg-white text-[#113F67] px-3 py-1 rounded-md text-sm font-semibold hover:bg-gray-100 transition"
+              >
+                {isEditing ? "Cancel" : "Edit Profile"}
+              </button>
+              
+            )}
         </div>
+        
       </div>
 
       <form onSubmit={onSubmit} className="space-y-12">
@@ -299,6 +356,16 @@ const Profile: React.FC = () => {
             {renderField("Grade/CGPA", "grade")}
           </div>
         </section>
+        {isEditing && canEdit && (
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="bg-[#113F67] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#0d2e4f] transition"
+            >
+              Save Changes
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

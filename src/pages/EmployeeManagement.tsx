@@ -473,6 +473,9 @@ const EmployeeManagement = () => {
                   >
                     <Eye size={18} color="#113F67" />
                   </button>
+                  {!showArchived && (
+
+                <>
                   <button
                     onClick={() => handleEditProfile(emp._id)}
                     className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
@@ -494,6 +497,8 @@ const EmployeeManagement = () => {
                       <Trash2 size={18} color="#113F67" />
                     </button>
                   )}
+                  </>
+                    )}
                 </td>
               </tr>
             ))}

@@ -251,7 +251,9 @@ const LeaveManagement: React.FC = () => {
               } hover:bg-[#E6F0F5] transition duration-200`}
             >
               <td className="px-4 py-3 capitalize font-medium">
-                {leave.userId.firstName + " " + leave.userId.lastName}
+              {leave.userId
+  ? `${leave.userId.firstName} ${leave.userId.lastName}`
+  : "Unknown User"}
               </td>
               <td className="px-4 py-3">{leave.noOfDays}</td>
               <td className="px-4 py-3">{formatDate(leave.startDate)}</td>

@@ -44,6 +44,7 @@ const EmployeeLayout: React.FC = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [profileImage, setProfileImage] = useState("");
+const ChangePasswordModalRef = useRef<HTMLDivElement>(null);
 
   const role = user?.role || "Employee";
   const id = user?.userId;
@@ -154,7 +155,7 @@ const EmployeeLayout: React.FC = () => {
 
   useEffect(() => {
     if (id) {
-      console.log("ishan", id);
+
       const fetchemployee = async () => {
         try {
           const data = await getEmployeeById(id);
@@ -168,6 +169,20 @@ const EmployeeLayout: React.FC = () => {
   }, [id]);
 
   const bellButtonRef = useRef();
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        !target.closest("#settings-dropdown") &&
+        !target.closest("#settings-btn")
+      ) {
+        setShowSettings(false);
+      }
+    };
+     document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
 
   return (
     <>
@@ -297,7 +312,9 @@ const EmployeeLayout: React.FC = () => {
 
       {showChangePasswordModal && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/50">
-          <div className="relative w-full max-w-md max-h-[600px] mx-5 bg-white rounded-2xl shadow-2xl p-0 animate-fadeIn overflow-hidden">
+          <div className="relative w-full max-w-md max-h-[600px] mx-5 bg-white rounded-2xl shadow-2xl p-0 animate-fadeIn overflow-hidden"
+          ref={ChangePasswordModalRef} 
+          >
             <button
               onClick={() => setShowChangePasswordModal(false)}
               className="absolute top-3 right-4 text-gray-500 text-2xl hover:text-black focus:outline-none"
