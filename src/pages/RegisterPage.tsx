@@ -63,7 +63,7 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="max-h-screen flex items-center justify-center px-4 py-2">
+    <div className="max-h-screen flex items-center justify-center px-4 py-10">
       <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8 border border-[#87C0CD]">
         <h2 className="text-3xl font-extrabold text-center text-[#113F67] mb-6">
           Create an Account
@@ -105,7 +105,7 @@ const RegisterPage: React.FC = () => {
 
           {!isFirstUser && (
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
+              <label className="block text-gray-700 font-medium mb-1 scroll-visible ">
                 Role
               </label>
               <select

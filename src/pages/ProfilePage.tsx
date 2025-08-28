@@ -7,6 +7,8 @@ import { Edit, X } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { set } from "react-hook-form";
 import { updateProfile } from "../feature/user/userSlice";
+import jsPDF from "jspdf";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 const maskedFields = ["adharNumber", "panNumber", "accountNumber", "ifscCode"];
 
@@ -57,7 +59,7 @@ const Profile: React.FC = () => {
   const isOwnProfile = userId === user?.userId;
   const canEdit = isSuperAdmin;
   const canEditOwnProfile = isSuperAdmin && isOwnProfile;
-
+  const isHR = userRole === "HR";
   useEffect(() => {
     console.log("not coming", userId);
     API.get(`/api/users/employee/${userId}?archived=true`)
@@ -65,6 +67,57 @@ const Profile: React.FC = () => {
 
       .catch(() => toast.error("Failed to load profile"));
   }, [userId]);
+
+ 
+  const handleGenerateReport = async () => {
+    try {
+      const res = await fetch(
+        "/templates/Offer_Letter_Ishan_Shrivastava (3).pdf"
+      );
+      if (!res.ok) throw new Error("Template PDF not found");
+
+      const existingPdfBytes = await res.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+      const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      const form = pdfDoc.getForm();
+
+      form.getFields().forEach((field) => {
+        console.log("Field Name:", field.getName());
+        try {
+          console.log("Field Value:", field.getText());
+        } catch {}
+      });
+
+      const fullName = `${profile.firstName || ""} ${
+        profile.lastName || ""
+      }`.trim();
+      const joiningDate = profile.joiningDate
+        ? new Date(profile.joiningDate).toLocaleDateString()
+        : "-";
+      const designation = profile.designation || "-";
+      const ctc = profile.ctc || "-";
+
+      form.getTextField("Text1").setText(fullName);
+      form.getTextField("Text2").setText(designation);
+      form.getTextField("Text5").setText(joiningDate);
+      form.getTextField("Text6").setText(ctc);
+
+      form.updateFieldAppearances(helveticaFont);
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${fullName}_Appointment_Letter.pdf`;
+      link.click();
+    } catch (error) {
+      console.error("Error generating PDF report:", error);
+      toast.error("Failed to generate PDF");
+    }
+  };
 
   const handleProfileUpdate = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -279,7 +332,7 @@ const Profile: React.FC = () => {
                 {profile?.designation}
               </p>
               {/* <p className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                Employee ID: {profile?.employeeid || "-"}
+                Employee ID: {profile?.employeeId || "-"}
               </p> */}
             </div>
           </div>
@@ -292,6 +345,15 @@ const Profile: React.FC = () => {
               {isEditing ? "Cancel" : "Edit Profile"}
             </button>
           )}
+          {isHR && (
+            <button
+              type="button"
+              onClick={handleGenerateReport}
+              className="bg-green-600 text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-green-700 transition ml-2"
+            >
+              Generate
+            </button>
+          )}
         </div>
       </div>
 
@@ -301,7 +363,7 @@ const Profile: React.FC = () => {
             Basic Details
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {renderField("Employee ID", "employeeid")}
+            {renderField("Employee ID", "employeeId")}
 
             {renderField("First Name", "firstName")}
             {renderField("Last Name", "lastName")}
