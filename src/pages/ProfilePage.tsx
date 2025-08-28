@@ -5,47 +5,13 @@ import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { Edit, X } from "lucide-react";
 import { useParams } from "react-router-dom";
-// const editableFields = ["firstName", "lastName", "phone"];
+import { set } from "react-hook-form";
+import { updateProfile } from "../feature/user/userSlice";
+
 const maskedFields = ["adharNumber", "panNumber", "accountNumber", "ifscCode"];
-// const basicEditableFields = [
-//   "firstName",
-//   "lastName",
-//   "phone",
-//   "dob",
-//   "gender",
-//   "address",
-//   "city",
-//   "state",
-//   "zipCode",
-//   "country",
-//   "joiningDate",
-//   "designation",
-//   "department",
-//   "employmentType",
-//   "emergencyContactPersonName",
-//   "emergencyContactEmail",
-//   "currentAddress",
-//   "permanentAddress",
-//   "ctc",
-// ];
 
-// const fullEditableFields = [
-//   ...basicEditableFields,
-//   "bankName",
-//   "accountNumber",
-//   "ifscCode",
-//   "branchName",
-//   "accountHolderName",
-//   "adharNumber",
-//   "panNumber",
-//   "qualification",
-//   "institution",
-//   "yearOfPassing",
-//   "grade",
-// ];
-
-const editableFields  = [
-    "firstName",
+const editableFields = [
+  "firstName",
   "lastName",
   "phone",
   "dob",
@@ -64,28 +30,29 @@ const editableFields  = [
   "currentAddress",
   "permanentAddress",
   "ctc",
- "bankName",
+  "bankName",
   "accountNumber",
   "ifscCode",
   "branchName",
   "accountHolderName",
   "adharNumber",
   "panNumber",
-"qualification",
+  "qualification",
   "institution",
   "yearOfPassing",
   "grade",
 ];
 
-
 const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
   const [profile, setProfile] = useState<any>({});
   const { user } = useSelector((state: RootState) => state.user);
   const { id } = useParams();
   const userId = id || user?.userId;
   const userRole = user?.role;
-  // const canEditAll = ["HR", "Admin", "SuperAdmin"].includes(userRole);
+
   const isSuperAdmin = userRole === "SuperAdmin";
   const isOwnProfile = userId === user?.userId;
   const canEdit = isSuperAdmin;
@@ -98,29 +65,43 @@ const Profile: React.FC = () => {
 
       .catch(() => toast.error("Failed to load profile"));
   }, [userId]);
- const handleProfileUpdate = async (
-        e: React.ChangeEvent<HTMLInputElement>
-      ) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
 
-        const formData = new FormData();
-        formData.append("profileImage", file);
-        try {
-          await API.post(`/api/users/employee/${userId}/upload`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-          setProfile((prev: any) => ({
-            ...prev,
-            profileImage: URL.createObjectURL(file),
-          }));
-          toast.success("Profile image updated successfully");
-        } catch (error) {
-          toast.error("Failed to update profile image");
-        }
-      };
+  const handleProfileUpdate = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSelectedImage(file);
+
+    setProfile((prev: any) => ({
+      ...prev,
+      profileImage: URL.createObjectURL(file),
+    }));
+  };
+
+  const handleImageSave = async () => {
+    if (!selectedImage) return;
+    const formData = new FormData();
+    formData.append("file", selectedImage);
+    try {
+      await API.post(`/api/users/upload-profile/${userId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      toast.success("Profile image updated successfully");
+      setSelectedImage(null);
+      const updatedProfile = await API.get(
+        `/api/users/employee/${userId}?archived=true`
+      );
+      setProfile(updatedProfile.data);
+    } catch (error) {
+      toast.error("Failed to update profile image");
+    }
+  };
+
   const maskValue = (value: string, type?: string) => {
     if (!value) return "";
     const len = value.length;
@@ -151,52 +132,53 @@ const Profile: React.FC = () => {
       toast.error("Phone number must be 10 digits");
       return;
     }
-     
-     const structuredPayload = {
-  basicDetails: {
-    firstName: profile.firstName,
-    lastName: profile.lastName,
-    phone: profile.phone,
-    dob: profile.dob,
-    gender: profile.gender,
-    address: profile.address,
-    city: profile.city,
-    state: profile.state,
-    zipCode: profile.zipCode,
-    country: profile.country,
-    joiningDate: profile.joiningDate,
-    designation: profile.designation,
-    department: profile.department,
-    employmentType: profile.employmentType,
-    emergencyContactPersonName: profile.emergencyContactPersonName,
-    emergencyContactEmail: profile.emergencyContactEmail,
-    currentAddress: profile.currentAddress,
-    permanentAddress: profile.permanentAddress,
-    ctc: profile.ctc,
-  },
-  bankDetails: {
-    bankName: profile.bankName,
-    accountNumber: profile.accountNumber,
-    ifscCode: profile.ifscCode,
-    branchName: profile.branchName,
-    accountHolderName: profile.accountHolderName,
-    adharNumber: profile.adharNumber,
-    panNumber: profile.panNumber,
-  },
-  educationDetails: {
-    qualification: profile.qualification,
-    institution: profile.institution,
-    yearOfPassing: profile.yearOfPassing,
-    grade: profile.grade,
-  },
-};
-      try {
-        await updateEmployee(userId, structuredPayload);
-        toast.success("Profile updated successfully");
-        setIsEditing(false);
-      } catch (error) {
-        toast.error("Failed to update profile");
-      }
+
+    const structuredPayload = {
+      basicDetails: {
+        firstName: profile.firstName || "",
+        lastName: profile.lastName || "",
+        phone: profile.phone || "",
+        dob: profile.dob || "",
+        gender: profile.gender || "",
+        address: profile.address || "",
+        city: profile.city || "",
+        state: profile.state || "",
+        zipCode: profile.zipCode || "",
+        country: profile.country || "",
+        joiningDate: profile.joiningDate || "",
+        designation: profile.designation || "",
+        department: profile.department || "",
+        employmentType: profile.employmentType || "",
+        emergencyContactPersonName: profile.emergencyContactPersonName || "",
+        emergencyContactEmail: profile.emergencyContactEmail || "",
+        currentAddress: profile.currentAddress || "",
+        permanentAddress: profile.permanentAddress || "",
+        ctc: profile.ctc || "",
+      },
+      bankDetails: {
+        bankName: profile.bankName || "",
+        accountNumber: profile.accountNumber || "",
+        ifscCode: profile.ifscCode || "",
+        branchName: profile.branchName || "",
+        accountHolderName: profile.accountHolderName || "",
+        adharNumber: profile.adharNumber || "",
+        panNumber: profile.panNumber || "",
+      },
+      educationDetails: {
+        qualification: profile.qualification || "",
+        institution: profile.institution || "",
+        yearOfPassing: profile.yearOfPassing || "",
+        grade: profile.grade || "",
+      },
+    };
+    try {
+      await updateEmployee(userId, structuredPayload);
+      console.log("Payload is being:", structuredPayload);
+      toast.success("Profile updated successfully");
+      setIsEditing(false);
+    } catch (error) {
+      toast.error("Failed to update profile");
+    }
   };
 
   const renderField = (
@@ -208,67 +190,87 @@ const Profile: React.FC = () => {
     const isMasked = maskedFields.includes(name);
     const isDateField = type === "date";
     const value = profile[name];
-   const formattedValue = isDateField && value ? formatDate(value) : value;
+    const formattedValue = isDateField && value ? formatDate(value) : value;
 
-  const isEditableField = isEditing && canEdit && editableFields.includes(name);
+    const isEditableField =
+      isEditing && canEdit && editableFields.includes(name);
     return (
-    <div key={name}>
-      <label className="block mb-1 text-sm font-semibold text-[#113F67]">
-        {label}
-      </label>
+      <div key={name}>
+        <label className="block mb-1 text-sm font-semibold text-[#113F67]">
+          {label}
+        </label>
 
-      {isEditableField  ? (
-        <input
-          type={type}
-          name={name}
-          value={formattedValue || ""}
-          onChange={handleInputChange}
-          className="w-full min-h-[40px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#113F67]"
-        />
-      ) : (
-        <div className="w-full min-h-[40px] px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-md text-gray-700">
-          {isMasked ? maskValue(value, maskType) : formattedValue || "-"}
-        </div>
-      )}
-    </div>
-  );
-};
+        {isEditableField ? (
+          <input
+            type={type}
+            name={name}
+            value={formattedValue || ""}
+            onChange={handleInputChange}
+            className="w-full min-h-[40px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#113F67]"
+          />
+        ) : (
+          <div className="w-full min-h-[40px] px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-md text-gray-700">
+            {isMasked ? maskValue(value, maskType) : formattedValue || "-"}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="max-w-8xl mx-auto px-6 py-2 bg-white rounded-2xl">
       <div className="flex justify-end items-center pb-2">
         <div className="flex flex-col sm:flex-row items-center justify-between w-full bg-[#113F67] p-4 sm:p-6 gap-4 sm:gap-0 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
           <div className="flex flex-col sm:flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-            <img
-              src={
-                profile.profileImage
-                  ? profile.profileImage.startsWith("http")
-                    ? profile.profileImage
-                    : `${import.meta.env.VITE_APP_BASE_URL}/${
-                        profile.profileImage
-                      }`
-                  : "/default-avatar.png"
-              }
-              alt="Profile"
-              className="w-16 h-16 sm:w-18 sm:h-15 md:w-22 md:h-22 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full border-4 border-gray-200 object-cover"
-            />
+            <div className="relative items-center">
+              <img
+                src={
+                  selectedImage
+                    ? URL.createObjectURL(selectedImage)
+                    : profile.profileImage
+                    ? profile.profileImage.startsWith("http")
+                      ? profile.profileImage
+                      : `${import.meta.env.VITE_APP_BASE_URL}/${
+                          profile.profileImage
+                        }`
+                    : "/default-avatar.png"
+                }
+                alt="Profile"
+                className="w-16 h-16 sm:w-18 sm:h-15 md:w-22 md:h-22 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full border-4 border-gray-200 object-cover"
+              />
 
-            {/* <>
-                <label
-                  htmlFor="profileImageInput"
-                  className="mt-2 text-xs px-3 py-1 bg[#87C0CD] text-white rounded-full cursor-pointer transition hover:bg-[#113F67]"
-                >
-                  Edit Photo
-                </label>
-                <input
-                  type="file"
-                  id="profileImageInput"
-                  accept="image/*"
-                  onChange={handleProfileUpdate}
-                  className="hidden"
-                />
-              </> */}
-          
+              {canEdit && (
+                <div className="absolute top-26 right-6 flex flex-col item-end ">
+                  <>
+                    {!selectedImage ? (
+                      <>
+                        <label
+                          htmlFor="profileImageInput"
+                          className="text-[10px] px-2 py-1 bg-[#fff] text-[#113F67] rounded-full cursor-pointer transition"
+                        >
+                          Edit Photo
+                        </label>
+                        <input
+                          type="file"
+                          id="profileImageInput"
+                          accept="image/*"
+                          onChange={handleProfileUpdate}
+                          className="hidden"
+                        />
+                      </>
+                    ) : (
+                      <button
+                        onClick={handleImageSave}
+                        className="text-[10px] px-2 py-1 bg-[#008000] text-[#fff] rounded-full cursor-pointer transition"
+                      >
+                        Save Image
+                      </button>
+                    )}
+                  </>
+                </div>
+              )}
+            </div>
+
             <div className="flex flex-col items-center md:items-start gap-0 sm:gap-1">
               <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white leading-tight text-center md:text-left">
                 {profile?.firstName + " " + profile?.lastName}
@@ -280,20 +282,17 @@ const Profile: React.FC = () => {
                 Employee ID: {profile?.employeeid || "-"}
               </p> */}
             </div>
-            
           </div>
-            {canEdit && (
-              <button
-                type="button"
-                onClick={() => setIsEditing((prev) => !prev)}
-                className="bg-white text-[#113F67] px-3 py-1 rounded-md text-sm font-semibold hover:bg-gray-100 transition"
-              >
-                {isEditing ? "Cancel" : "Edit Profile"}
-              </button>
-              
-            )}
+          {canEdit && (
+            <button
+              type="button"
+              onClick={() => setIsEditing((prev) => !prev)}
+              className="bg-white text-[#113F67] px-3 py-1 rounded-md text-sm font-semibold hover:bg-gray-100 transition"
+            >
+              {isEditing ? "Cancel" : "Edit Profile"}
+            </button>
+          )}
         </div>
-        
       </div>
 
       <form onSubmit={onSubmit} className="space-y-12">
