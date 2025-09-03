@@ -474,31 +474,30 @@ const EmployeeManagement = () => {
                     <Eye size={18} color="#113F67" />
                   </button>
                   {!showArchived && (
-
-                <>
-                  <button
-                    onClick={() => handleEditProfile(emp._id)}
-                    className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
-                  >
-                    <Edit size={18} color="#113F67" />
-                  </button>
-                  {role === "SuperAdmin" ? (
-                    <button
-                      onClick={() => openModal(emp._id)}
-                      className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
-                    >
-                      <Trash2 size={18} color="#113F67" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleRequestDelete(emp._id)}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full cursor-pointer"
-                    >
-                      <Trash2 size={18} color="#113F67" />
-                    </button>
+                    <>
+                      <button
+                        onClick={() => handleEditProfile(emp._id)}
+                        className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
+                      >
+                        <Edit size={18} color="#113F67" />
+                      </button>
+                      {role === "SuperAdmin" ? (
+                        <button
+                          onClick={() => openModal(emp._id)}
+                          className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
+                        >
+                          <Trash2 size={18} color="#113F67" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleRequestDelete(emp._id)}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full cursor-pointer"
+                        >
+                          <Trash2 size={18} color="#113F67" />
+                        </button>
+                      )}
+                    </>
                   )}
-                  </>
-                    )}
                 </td>
               </tr>
             ))}

@@ -1,4 +1,3 @@
-// BackButton.tsx
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
@@ -9,14 +8,10 @@ const BackButton = ({ fallbackPath = "/", label = "Go Back" }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const history = useSelector((state: RootState) => state.navigation.history);
-   const handleBack = () => {
-    if (history.length > 1) {
-      const newHistory = [...history];
-      newHistory.pop(); 
-      const previousPath = newHistory[newHistory.length - 1];
+  const handleBack = () => {
+    if (window.history.length > 1) {
 
-      dispatch(popFromHistory());
-      navigate(previousPath);
+      navigate(-1);
     } else {
       navigate(fallbackPath);
     }

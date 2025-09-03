@@ -55,12 +55,22 @@ const ChangePasswordModalRef = useRef<HTMLDivElement>(null);
   //   setPageTitle(matched?.label || "Dashboard");
   // }, [location.pathname]);
 
-  useEffect(() => {
-    const matched = [...linksToShow]
-      .sort((a, b) => b.path.length - a.path.length)
-      .find((link) => location.pathname.startsWith(link.path));
+const routesTitles: Record<string,string> = {
+    "/employee/dashboard": "Dashboard",
+  "/employee/attendance": "Attendance",
+  "/employee/leaves": "Leave Requests",
+  "/employee/request-leave": "Leave Requests",
+  "/employee/profile": "Profile",
+  "/employee/company-policy": "Company Policies",
+}
 
-    setPageTitle(matched?.label || "Dashboard");
+  useEffect(() => {
+    const path = location.pathname;
+    const matched = Object.keys(routesTitles)
+      .sort((a, b) => b.length - a.length)
+      .find((route) => path.startsWith(route));
+
+    setPageTitle(routesTitles[matched as string] || "Dashboard");
   }, [location.pathname]);
 
   const sidebarConfig: Record<
@@ -183,6 +193,17 @@ const ChangePasswordModalRef = useRef<HTMLDivElement>(null);
   return () => document.removeEventListener("mousedown", handleClickOutside);
 }, []);
 
+   const shouldShowBackButton =  (path:string) => {
+  const alwaysShowBackButtonRoutes = [
+    "/employee/request-leave",
+    // "/admin/leave-apply"
+
+  ];
+  return (
+    path.split("/").length > 3 ||
+    alwaysShowBackButtonRoutes.some((route) => path.startsWith(route))
+  );
+};
 
   return (
     <>
@@ -300,7 +321,7 @@ const ChangePasswordModalRef = useRef<HTMLDivElement>(null);
                   : "gap-4"
               }`}
             >
-              {location.pathname.split("/").length > 3 &&  <BackButton />}
+              {(shouldShowBackButton(location.pathname)) && <BackButton />}
               <h2 className="text-xl font-semibold text-[#113F67]">
                 {pageTitle}
               </h2>

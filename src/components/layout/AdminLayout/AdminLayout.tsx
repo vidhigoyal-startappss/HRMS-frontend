@@ -60,6 +60,21 @@ const AdminLayout: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
+ 
+   const shouldShowBackButton =  (path:string) => {
+  const alwaysShowBackButtonRoutes = [
+    "/admin/add-employee",
+    "/admin/leave-apply"
+
+  ];
+  return (
+    path.split("/").length > 3 ||
+    alwaysShowBackButtonRoutes.some((route) => path.startsWith(route))
+  );
+};
+
+
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -73,6 +88,8 @@ const AdminLayout: React.FC = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+
   useEffect(() => {
     const current = linksToShow.find((link) =>
       location.pathname.startsWith(link.path)
@@ -393,7 +410,8 @@ const fullName =
                 location.pathname.split("/").length > 3 ? "gap-2" : "gap-4"
               }`}
             >
-              {location.pathname.split("/").length > 3 && <BackButton />}
+              {(shouldShowBackButton(location.pathname)) && <BackButton />}
+       
               <h2 className="text-xl font-semibold text-[#113F67]">
                 {pageTitle}
               </h2>

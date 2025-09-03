@@ -48,27 +48,25 @@ const editableFields = [
 const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-
   const [profile, setProfile] = useState<any>({});
   const { user } = useSelector((state: RootState) => state.user);
   const { id } = useParams();
   const userId = id || user?.userId;
   const userRole = user?.role;
-
   const isSuperAdmin = userRole === "SuperAdmin";
   const isOwnProfile = userId === user?.userId;
   const canEdit = isSuperAdmin;
   const canEditOwnProfile = isSuperAdmin && isOwnProfile;
   const isHR = userRole === "HR";
+
   useEffect(() => {
-    console.log("not coming", userId);
+    // console.log("not coming", userId);
     API.get(`/api/users/employee/${userId}?archived=true`)
       .then((res) => setProfile(res.data))
 
       .catch(() => toast.error("Failed to load profile"));
   }, [userId]);
 
- 
   const handleGenerateReport = async () => {
     try {
       const res = await fetch(
@@ -345,13 +343,13 @@ const Profile: React.FC = () => {
               {isEditing ? "Cancel" : "Edit Profile"}
             </button>
           )}
-          {isHR && (
+          {isHR && !isOwnProfile && (
             <button
               type="button"
               onClick={handleGenerateReport}
-              className="bg-green-600 text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-green-700 transition ml-2"
+              className="bg-[#fff] text-[#113F67]  px-3 py-1 rounded-md text-sm font-semibold hover:bg-green-700 transition ml-2"
             >
-              Generate
+              Generate Appointment Letter
             </button>
           )}
         </div>
