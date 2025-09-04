@@ -26,6 +26,8 @@ import { ResetPasswordForm } from "../components/Form/ResetPasswordForm/ResetPas
 import EmailSentMessge from "../components/Messages/EmailSentMessge";
 import RegisterPage from "../pages/RegisterPage";
 import CompanyPolicypage from "../pages/CompanyPolicypage";
+import OnboardingForm from "../pages/Onboarding/OnboardingForm";
+import SendOnboardingForm from "../pages/HR/SendOnboardingForm";
 
 const AppRouter = () => {
   return (
@@ -36,7 +38,7 @@ const AppRouter = () => {
         <Route path="/" element={<Login />} />
         <Route path="/reset-mail-message" element={<EmailSentMessge />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
-
+        <Route path="/onboarding/:token" element={<OnboardingForm />} />
         <Route
           path="/admin"
           element={
@@ -61,6 +63,7 @@ const AppRouter = () => {
           <Route path="/admin/employee/:id" element={<Profile />} />
           <Route path="/admin/employee/edit/:id" element={<Profile />} />
           <Route path="company-policy" element={<CompanyPolicypage />} />
+          <Route path="/admin/send-onboarding" element={<SendOnboardingForm />} />
         </Route>
 
         <Route
