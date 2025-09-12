@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import "react-toastify/dist/ReactToastify.css";
-import loginBg from "../assets/loginBg.jpg"; // Ensure this path is correct
+import loginBg from "../assets/loginBg.jpg"; 
 import logo from "../assets/startappssLogo.png";
 
 interface FormData {

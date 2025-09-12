@@ -113,9 +113,9 @@ const AdminDashboard = () => {
           );
         })}
       </div>
-    
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white shadow rounded-xl p-2 w-full max-h-full sm:max-h-60 overflow-y-auto">
+<div className="bg-white shadow rounded-xl p-2 w-full h-[320px] overflow-y-auto">
           <h3 className="text-base sm:text-lg font-bold mb-3 text-[#113F67]">
             Employees
           </h3>

@@ -68,17 +68,25 @@ import { RootState } from "../store/store";
 import { useEmployeeLeaveStats } from "../hooks/useEmployeeLeaveStats";
 // import { useEmployeeLeaveStats } from "../hooks/useEmployeeLeaveStats";
 import EmployeeBasicDashboard from "./EmployeeBasicDashboard";
+import AttendanceManagement from "./AttendanceMangement";
+import AttendanceTracker from "../components/Attendance/AttendanceTracker";
 
-const EmployeeDashboard = () => { 
+const EmployeeDashboard = () => {
   useEmployeeLeaveStats();
   const { leaveSummary } = useSelector((state: RootState) => state.leave);
 
   return (
-    <div className="w-full max-w-[1400px] px-4 py-4">
-      <div className="w-full">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center px-4 py-10 space-y-10">
+      <div className="w-full flex justify-center">
+         <div className="w-[500px]">
+          <AttendanceTracker />
+        </div>
+      </div>
+       <div className="w-full flex justify-center">
         <EmployeeBasicDashboard leaveSummary={leaveSummary} />
       </div>
     </div>
   );
 };
 export default EmployeeDashboard;
+

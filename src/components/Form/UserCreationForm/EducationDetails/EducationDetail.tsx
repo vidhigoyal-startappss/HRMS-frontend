@@ -7,7 +7,6 @@ type FormValues = {
     institution: string;
     yearOfPassing: string;
     grade: string;
-    z;
   };
 };
 

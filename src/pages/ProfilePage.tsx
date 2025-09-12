@@ -9,6 +9,7 @@ import { set } from "react-hook-form";
 import { updateProfile } from "../feature/user/userSlice";
 import jsPDF from "jspdf";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFString } from "pdf-lib";
 
 const maskedFields = ["adharNumber", "panNumber", "accountNumber", "ifscCode"];
 
@@ -58,64 +59,204 @@ const Profile: React.FC = () => {
   const canEdit = isSuperAdmin;
   const canEditOwnProfile = isSuperAdmin && isOwnProfile;
   const isHR = userRole === "HR";
-
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [fullNameForDownload, setFullNameForDownload] = useState<string>("");
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [letterStatus, setLetterStatus] = useState<
+    "idle" | "generated" | "sent"
+  >("idle");
+  const [signedLetterUrl, setSignedLetterUrl] = useState(null);
+  // const [letterStatus, setLetterStatus] = useState("idle");
   useEffect(() => {
-    // console.log("not coming", userId);
     API.get(`/api/users/employee/${userId}?archived=true`)
       .then((res) => setProfile(res.data))
 
       .catch(() => toast.error("Failed to load profile"));
   }, [userId]);
 
+  const fillPdfFields = (form, fieldMap, data) => {
+    for (const [key, fieldNames] of Object.entries(fieldMap)) {
+      const value = data[key] || "";
+      fieldNames.forEach((fieldName) => {
+        const allFields = form.getFields();
+        allFields.forEach((f) => console.log(f.getName()));
+        const matchingFields = allFields.filter(
+          (field) => field.getName() === fieldName
+        );
+
+        if (matchingFields.length === 0) {
+          console.warn(`Field "${fieldName}" not found in PDF form.`);
+        }
+
+        matchingFields.forEach((field) => {
+          try {
+            field.setText(value);
+          } catch (err) {
+            console.warn(`Could not set text for field "${fieldName}":`, err);
+          }
+        });
+      });
+    }
+  };
+
   const handleGenerateReport = async () => {
     try {
       const res = await fetch(
-        "/templates/Offer_Letter_Ishan_Shrivastava (3).pdf"
+        "/templates/Offer_Letter_Ishan_Shrivastava (4).pdf"
       );
       if (!res.ok) throw new Error("Template PDF not found");
 
       const existingPdfBytes = await res.arrayBuffer();
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
-
-      const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
+      const helveticaBoldFont = await pdfDoc.embedFont(
+        StandardFonts.HelveticaBold
+      );
       const form = pdfDoc.getForm();
-
-      form.getFields().forEach((field) => {
-        console.log("Field Name:", field.getName());
-        try {
-          console.log("Field Value:", field.getText());
-        } catch {}
-      });
 
       const fullName = `${profile.firstName || ""} ${
         profile.lastName || ""
       }`.trim();
       const joiningDate = profile.joiningDate
-        ? new Date(profile.joiningDate).toLocaleDateString()
-        : "-";
-      const designation = profile.designation || "-";
-      const ctc = profile.ctc || "-";
+        ? new Date(profile.joiningDate).toLocaleDateString("en-GB")
+        : "";
+      const ctc = profile.ctc || "";
+      const location = `${profile.city || ""}, ${profile.state || ""}, ${
+        profile.country || ""
+      }`;
+      const designation = profile.designation || "";
+      const department = profile.department || "";
+      const phoneNumber = profile.phone || "";
 
-      form.getTextField("Text1").setText(fullName);
-      form.getTextField("Text2").setText(designation);
-      form.getTextField("Text5").setText(joiningDate);
-      form.getTextField("Text6").setText(ctc);
+      const pdfFieldMap = {
+        fullName: [
+          "Text26",
+          "Text46",
+          "Text35",
+          "Text37",
+          "Text40",
+          "Text43",
+          "Text32",
+          "Text34",
+          "Text36",
+        ],
+        joiningDate: ["Text44", "Text31", "Text38"],
+        designation: ["Text30", "Text45"],
+        department: ["Text41"],
+        phoneNumber: ["Text33"],
+        ctc: [
+          "Text29",
+          "Text42",
+          "Text27",
+          "Text39",
+          "Text28",
+          "Text47",
+          "Text48",
+        ],
+      };
 
-      form.updateFieldAppearances(helveticaFont);
+      const data = {
+        fullName,
+        joiningDate,
+        ctc,
+        designation,
+        department,
+        phoneNumber,
+        location,
+      };
+
+      fillPdfFields(form, pdfFieldMap, data);
+      form.updateFieldAppearances(helveticaBoldFont);
+      //  form.flatten();
+      try {
+        form.flatten();
+      } catch (e) {
+        console.error("Error flattening PDF:", e);
+      }
 
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const blobUrl = URL.createObjectURL(blob);
 
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${fullName}_Appointment_Letter.pdf`;
-      link.click();
+      setPdfBlob(blob);
+      setLetterStatus("generated");
+      setFullNameForDownload(fullName);
+      toast.success("PDF Generated Successfully");
     } catch (error) {
       console.error("Error generating PDF report:", error);
       toast.error("Failed to generate PDF");
     }
   };
+
+  const handleSendPdfLink = async () => {
+    if (!pdfBlob) {
+      toast.error("PDF not generated yet.");
+      return;
+    }
+
+    if (!profile?.email) {
+      toast.error("Employee email is missing.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append(
+      "file",
+      pdfBlob,
+      `${fullNameForDownload || "appointment"}.pdf`
+    );
+    formData.append("email", profile.email);
+
+    try {
+      const res = await fetch("http://localhost:3000/api/letters/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        toast.success("Appointment letter sent to employee!");
+        setLetterStatus("sent");
+        console.log("Public link to letter:", result.link);
+      } else {
+        console.error(result);
+        toast.error("Failed to send appointment letter.");
+      }
+    } catch (error) {
+      console.error("Error sending PDF:", error);
+      toast.error("Something went wrong while sending the email.");
+    }
+  };
+
+  const uploadSignedLetter = async (file: File, userId: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("userId", userId);
+
+    const response = await fetch("/api/letters/upload-signed", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+    console.log("Upload response:", data);
+  };
+
+ useEffect(() => {
+  const fetchSignedLetter = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/letters/signed/${userId}`);
+      if (!res.ok) throw new Error("No signed letter found");
+      const result = await res.json();
+      setSignedLetterUrl(result.link);
+    } catch (err) {
+      console.log("Signed letter not found yet", err);
+    }
+  };
+
+  if (userId) fetchSignedLetter();
+}, [userId]);
+
 
   const handleProfileUpdate = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -343,15 +484,83 @@ const Profile: React.FC = () => {
               {isEditing ? "Cancel" : "Edit Profile"}
             </button>
           )}
+
           {isHR && !isOwnProfile && (
-            <button
-              type="button"
-              onClick={handleGenerateReport}
-              className="bg-[#fff] text-[#113F67]  px-3 py-1 rounded-md text-sm font-semibold hover:bg-green-700 transition ml-2"
-            >
-              Generate Appointment Letter
-            </button>
+            <div>
+              {letterStatus === "idle" && (
+                <button
+                  type="button"
+                  onClick={handleGenerateReport}
+                  className="bg-white text-[#113F67] px-3 py-1 rounded-md text-sm font-semibold  transition ml-2"
+                >
+                  Generate Appointment Letter
+                </button>
+              )}
+
+              {letterStatus === "generated" && (
+                <button
+                  type="button"
+                  onClick={handleSendPdfLink}
+                  className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition ml-2"
+                >
+                  Send to Employee
+                </button>
+              )}
+
+              {/* {letterStatus === "sent" && !signedLetterUrl && (
+                <button
+                  type="button"
+                  disabled
+                  className="bg-gray-400 text-white px-3 py-1 rounded-md cursor-not-allowed transition ml-2"
+                >
+                  Sent Successfully
+                </button>
+              )} */}
+
+              {signedLetterUrl ? (
+                <a
+                  href={signedLetterUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition ml-2"
+                >
+                  View Appointment Letter
+                </a>
+              ) : letterStatus === "sent" ? (
+                <button
+                  type="button"
+                  disabled
+                  className="bg-gray-400 text-white px-3 py-1 rounded-md cursor-not-allowed transition ml-2"
+                >
+                  Sent Successfully
+                </button>
+              ) : null}
+            </div>
           )}
+         {/* Signed Letter Section */}
+{signedLetterUrl && (
+  <div className="mt-6 p-4 border border-gray-300 rounded-lg shadow-md bg-gray-50">
+    <h3 className="text-lg font-semibold text-[#113F67] mb-2">
+      Signed Appointment Letter
+    </h3>
+    <div className="flex items-center justify-between">
+      {/* Show truncated link */}
+      <p className="text-sm text-gray-700 truncate max-w-[70%]">
+        {signedLetterUrl}
+      </p>
+      {/* Button to view PDF */}
+      <a
+        href={signedLetterUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+      >
+        View PDF
+      </a>
+    </div>
+  </div>
+)}
+
         </div>
       </div>
 

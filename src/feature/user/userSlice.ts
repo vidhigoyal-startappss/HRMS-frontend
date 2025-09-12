@@ -19,7 +19,7 @@ const initialState: UserSliceState = {
   user: JSON.parse(localStorage.getItem("user") || "null"),
 };
 
-const userSlice = createSlice({
+const userSlice = createSlice({                                               
   name: "user",
   initialState,
   reducers: {

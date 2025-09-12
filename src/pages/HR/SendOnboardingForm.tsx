@@ -15,7 +15,7 @@ const SendOnboardingForm: React.FC = () => {
     }
   };
 
-return (
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="flex flex-col bg-white p-6 justify-center gap-4 w-full max-w-md rounded-lg shadow-md">
         <h1 className="text-2xl text-[#113F67] font-bold text-center">

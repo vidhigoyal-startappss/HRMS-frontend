@@ -34,6 +34,7 @@ import BackButton from "../../common/BackButtonComp/BackButton";
 import { getProfileImage } from "../../../api/auth";
 import { getEmployeeById } from "../../../api/auth";
 import { Link } from "react-router-dom";
+import { matchPath } from "react-router-dom";
 
 const AdminLayout: React.FC = () => {
   const dispatch = useDispatch();
@@ -60,20 +61,16 @@ const AdminLayout: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
- 
-   const shouldShowBackButton =  (path:string) => {
-  const alwaysShowBackButtonRoutes = [
-    "/admin/add-employee",
-    "/admin/leave-apply"
-
-  ];
-  return (
-    path.split("/").length > 3 ||
-    alwaysShowBackButtonRoutes.some((route) => path.startsWith(route))
-  );
-};
-
-
+  const shouldShowBackButton = (path: string) => {
+    const alwaysShowBackButtonRoutes = [
+      "/admin/add-employee",
+      "/admin/leave-apply",
+    ];
+    return (
+      path.split("/").length > 3 ||
+      alwaysShowBackButtonRoutes.some((route) => path.startsWith(route))
+    );
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -88,7 +85,6 @@ const AdminLayout: React.FC = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
 
   useEffect(() => {
     const current = linksToShow.find((link) =>
@@ -113,18 +109,18 @@ const AdminLayout: React.FC = () => {
     fetchData();
   }, [id]);
 
-useEffect(() => {
-  if(id){
-    const fetchAdminData  = async () => {
-      try {
-        const data = await getEmployeeById(id);
-        setAdminData(data);
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error);
-      }
-    };
-    fetchAdminData();
-  }
+  useEffect(() => {
+    if (id) {
+      const fetchAdminData = async () => {
+        try {
+          const data = await getEmployeeById(id);
+          setAdminData(data);
+        } catch (error) {
+          console.error("Failed to fetch notifications:", error);
+        }
+      };
+      fetchAdminData();
+    }
   }, [id]);
 
   const sidebarConfig: Record<
@@ -214,10 +210,10 @@ useEffect(() => {
       { label: "Profile", path: "/profile", icon: User },
     ],
   };
-const fullName =
-  adminData?.firstName && adminData?.lastName
-    ? `${adminData.firstName} ${adminData.lastName}`
-    : "Admin";
+  const fullName =
+    adminData?.firstName && adminData?.lastName
+      ? `${adminData.firstName} ${adminData.lastName}`
+      : "Admin";
 
   const linksToShow = sidebarConfig[role] || [];
 
@@ -349,7 +345,7 @@ const fullName =
         <main className="flex-1 px-6 py-4 overflow-y-auto bg-[#F3F9FB]">
           <div className="flex justify-between items-center mb-4">
             <h1 className="lg:text-2xl sm:text-xl font-bold text-[#113F67]">
-              Welcome,  {fullName}
+              Welcome, {fullName}
             </h1>
 
             <div className="flex items-center gap-4">
@@ -410,11 +406,17 @@ const fullName =
                 location.pathname.split("/").length > 3 ? "gap-2" : "gap-4"
               }`}
             >
-              {(shouldShowBackButton(location.pathname)) && <BackButton />}
-       
+              {shouldShowBackButton(location.pathname) && <BackButton />}
+
               <h2 className="text-xl font-semibold text-[#113F67]">
                 {pageTitle}
               </h2>
+              {/* {matchPath("/admin/employee/:id", location.pathname) &&
+                role === "hr" && (
+                  <button className="ml-auto btn btn-primary">
+                Genrate btn
+                  </button>
+                )} */}
             </header>
             <Outlet />
           </section>

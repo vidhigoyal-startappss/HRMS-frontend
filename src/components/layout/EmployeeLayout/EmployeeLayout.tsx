@@ -44,7 +44,7 @@ const EmployeeLayout: React.FC = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [profileImage, setProfileImage] = useState("");
-const ChangePasswordModalRef = useRef<HTMLDivElement>(null);
+  const ChangePasswordModalRef = useRef<HTMLDivElement>(null);
 
   const role = user?.role || "Employee";
   const id = user?.userId;
@@ -55,14 +55,14 @@ const ChangePasswordModalRef = useRef<HTMLDivElement>(null);
   //   setPageTitle(matched?.label || "Dashboard");
   // }, [location.pathname]);
 
-const routesTitles: Record<string,string> = {
+  const routesTitles: Record<string, string> = {
     "/employee/dashboard": "Dashboard",
-  "/employee/attendance": "Attendance",
-  "/employee/leaves": "Leave Requests",
-  "/employee/request-leave": "Leave Requests",
-  "/employee/profile": "Profile",
-  "/employee/company-policy": "Company Policies",
-}
+    "/employee/attendance": "Attendance",
+    "/employee/leaves": "Leave Requests",
+    "/employee/request-leave": "Leave Requests",
+    "/employee/profile": "Profile",
+    "/employee/company-policy": "Company Policies",
+  };
 
   useEffect(() => {
     const path = location.pathname;
@@ -165,7 +165,6 @@ const routesTitles: Record<string,string> = {
 
   useEffect(() => {
     if (id) {
-
       const fetchemployee = async () => {
         try {
           const data = await getEmployeeById(id);
@@ -189,27 +188,29 @@ const routesTitles: Record<string,string> = {
         setShowSettings(false);
       }
     };
-     document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-   const shouldShowBackButton =  (path:string) => {
-  const alwaysShowBackButtonRoutes = [
-    "/employee/request-leave",
-    // "/admin/leave-apply"
-
-  ];
-  return (
-    path.split("/").length > 3 ||
-    alwaysShowBackButtonRoutes.some((route) => path.startsWith(route))
-  );
-};
+  const shouldShowBackButton = (path: string) => {
+    const alwaysShowBackButtonRoutes = [
+      "/employee/request-leave",
+      // "/admin/leave-apply"
+    ];
+    return (
+      path.split("/").length > 3 ||
+      alwaysShowBackButtonRoutes.some((route) => path.startsWith(route))
+    );
+  };
 
   return (
     <>
       <div className="flex h-screen bg-[#F3F9FB]">
         <aside className="w-16 md:w-72 bg-[#113F67] text-white flex flex-col items-center md:items-stretch p-4 shadow-lg transition-all duration-300">
-         <Link to = "/employee/profile"  className="hidden md:flex items-center gap-4 p-3 bg-[#226597] rounded-xl mb-6">
+          <Link
+            to="/employee/profile"
+            className="hidden md:flex items-center gap-4 p-3 bg-[#226597] rounded-xl mb-6"
+          >
             <img
               src={profileImage || userProfile}
               alt="Profile"
@@ -316,12 +317,10 @@ const routesTitles: Record<string,string> = {
           <section className="bg-white rounded-xl shadow-md p-4 min-h-[calc(100vh-160px)]">
             <header
               className={`flex mb-3 ${
-                location.pathname.split("/").length > 3 
-                  ? "gap-2"
-                  : "gap-4"
+                location.pathname.split("/").length > 3 ? "gap-2" : "gap-4"
               }`}
             >
-              {(shouldShowBackButton(location.pathname)) && <BackButton />}
+              {shouldShowBackButton(location.pathname) && <BackButton />}
               <h2 className="text-xl font-semibold text-[#113F67]">
                 {pageTitle}
               </h2>
@@ -333,8 +332,9 @@ const routesTitles: Record<string,string> = {
 
       {showChangePasswordModal && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/50">
-          <div className="relative w-full max-w-md max-h-[600px] mx-5 bg-white rounded-2xl shadow-2xl p-0 animate-fadeIn overflow-hidden"
-          ref={ChangePasswordModalRef} 
+          <div
+            className="relative w-full max-w-md max-h-[600px] mx-5 bg-white rounded-2xl shadow-2xl p-0 animate-fadeIn overflow-hidden"
+            ref={ChangePasswordModalRef}
           >
             <button
               onClick={() => setShowChangePasswordModal(false)}

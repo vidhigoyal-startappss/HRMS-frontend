@@ -28,6 +28,10 @@ import RegisterPage from "../pages/RegisterPage";
 import CompanyPolicypage from "../pages/CompanyPolicypage";
 import OnboardingForm from "../pages/Onboarding/OnboardingForm";
 import SendOnboardingForm from "../pages/HR/SendOnboardingForm";
+import SubmittedFormsList from "../pages/HR/SubmittedFormsList";
+import OnboardingFormDetails from "../pages/HR/OnboardingFormDetails";
+import FormSuccess from "../pages/Onboarding/FormSuccess";
+import SignLetterPageWrapper from "../pages/SignLetterPageWrapper";
 
 const AppRouter = () => {
   return (
@@ -39,6 +43,9 @@ const AppRouter = () => {
         <Route path="/reset-mail-message" element={<EmailSentMessge />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
         <Route path="/onboarding/:token" element={<OnboardingForm />} />
+         <Route path="/form-success" element={<FormSuccess />} />
+         <Route path="/sign-letter/:filename" element={<SignLetterPageWrapper />} />
+
         <Route
           path="/admin"
           element={
@@ -64,6 +71,8 @@ const AppRouter = () => {
           <Route path="/admin/employee/edit/:id" element={<Profile />} />
           <Route path="company-policy" element={<CompanyPolicypage />} />
           <Route path="/admin/send-onboarding" element={<SendOnboardingForm />} />
+          <Route path="/admin/onboarding" element={<SubmittedFormsList  />} />
+          <Route path="/admin/onboarding/:token" element={<OnboardingFormDetails  />} />
         </Route>
 
         <Route

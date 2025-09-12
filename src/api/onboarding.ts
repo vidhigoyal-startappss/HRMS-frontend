@@ -13,3 +13,4 @@ export const getFormByToken = (token: string) => {
 export const submitOnboardingForm = (token: string, data: any) => {
  return API.post(`/api/onboarding/${token}/submit`, data); 
 };
+  

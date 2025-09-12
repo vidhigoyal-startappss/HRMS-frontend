@@ -122,7 +122,7 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({
   };
 
   return (
-    <div className="bg-white shadow rounded-xl p-4 w-full flex flex-col items-center h-[240px]">
+    <div className="bg-white shadow rounded-xl p-4 w-full flex flex-col items-center h-[350px] sm:h-[240px] md:h-[360px] lg:h-[320px]">
       <img
         src={user?.profileImg || userimg}
         alt="User"
