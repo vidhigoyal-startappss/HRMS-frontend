@@ -50,6 +50,17 @@ export const getTodayAllAttendance = async () => {
     throw err;
   }
 };
+export const getAllAttendance = async () => {
+  try {
+    const res = await API.get("/api/attendance/all");
+    return res.data;
+  } catch (err) {
+    handleError("All Attendance", err);
+    throw err;
+  }
+};
+
+
 
 export const getMyAttendance = async () => {
   try {

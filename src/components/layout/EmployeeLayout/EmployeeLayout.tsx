@@ -13,6 +13,7 @@ import {
   Repeat,
   Mail,
   Shield,
+  HandCoins,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../feature/user/userSlice";
@@ -60,6 +61,7 @@ const EmployeeLayout: React.FC = () => {
     "/employee/attendance": "Attendance",
     "/employee/leaves": "Leave Requests",
     "/employee/request-leave": "Leave Requests",
+       "/employee/EmployeePayroll": "Payroll",
     "/employee/profile": "Profile",
     "/employee/company-policy": "Company Policies",
   };
@@ -88,6 +90,11 @@ const EmployeeLayout: React.FC = () => {
         label: "Leave Requests",
         path: "/employee/leaves",
         icon: CalendarCheck,
+      },
+      {
+        label: "Payroll",
+        path: "/employee/EmployeePayroll",
+        icon: HandCoins,
       },
       { label: "Profile", path: "/employee/profile", icon: User },
       {

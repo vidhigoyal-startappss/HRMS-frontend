@@ -1,6 +1,5 @@
 import API from "./auth";
 
-// Interface for the leave request
 interface LeaveRequest {
   leaveType: string;
   dayType: string;
@@ -38,5 +37,20 @@ export const getLeaves = async () => {
 };
 export const updateStatus = async (id, status: string) => {
   const response = await API.patch(`/api/leaves/status/${id}`, { status });
+  return response.data;
+};
+
+export const deleteLeave = async (id: string) => {
+  const response = await API.delete(`/api/leaves/${id}`);
+  return response.data;
+};
+
+export const getLeaveById = async (id: string) => {
+  const response = await API.get(`/api/leaves/${id}`);
+  return response.data;
+};
+
+export const getEmployeeLeaveHistory = async (userId: string) => {
+  const response = await API.get(`/api/leaves/history/${userId}`);
   return response.data;
 };

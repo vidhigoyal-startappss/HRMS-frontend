@@ -251,9 +251,9 @@ const LeaveManagement: React.FC = () => {
               } hover:bg-[#E6F0F5] transition duration-200`}
             >
               <td className="px-4 py-3 capitalize font-medium">
-              {leave.userId
-  ? `${leave.userId.firstName} ${leave.userId.lastName}`
-  : "Unknown User"}
+                {leave.userId
+                  ? `${leave.userId.firstName} ${leave.userId.lastName}`
+                  : "Unknown User"}
               </td>
               <td className="px-4 py-3">{leave.noOfDays}</td>
               <td className="px-4 py-3">{formatDate(leave.startDate)}</td>
@@ -272,36 +272,38 @@ const LeaveManagement: React.FC = () => {
                 {leave.status}
               </td>
               <td className="px-4 py-3 relative">
-                {leave.status === "Pending" ? (
-                  <div className="flex justify-center items-center">
-                    <button
-                      onClick={() => toggleDropdown(index)}
-                      className="p-1 rounded-full hover:bg-[#87C0CD] transition"
-                    >
-                      <MoreVertical size={20} color="#113F67" />
-                    </button>
-                    {dropdownIndex === index && (
-                      <div className="absolute right-0 mt-2 w-40 bg-[#226597] text-white rounded-md shadow-md z-50">
-                        <ul className="divide-y divide-[#1b4f74] text-sm">
-                          <li
-                            className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
-                            onClick={() => updateStatus(index, "Approved")}
-                          >
-                            Approve
-                          </li>
-                          <li
-                            className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
-                            onClick={() => updateStatus(index, "Rejected")}
-                          >
-                            Reject
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <span className="text-gray-400 flex justify-center">—</span>
-                )}
+                <div className="flex justify-center items-center">
+                  <button
+                    onClick={() => toggleDropdown(index)}
+                    className="p-1 rounded-full hover:bg-[#87C0CD] transition"
+                  >
+                    <MoreVertical size={20} color="#113F67" />
+                  </button>
+                  {dropdownIndex === index && (
+                    <div className="absolute right-0 mt-2 w-40 bg-[#226597] text-white rounded-md shadow-md z-50">
+                      <ul className="divide-y divide-[#1b4f74] text-sm">
+                        <li
+                          className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
+                          onClick={() => updateStatus(index, "Pending")}
+                        >
+                          Set as Pending
+                        </li>
+                        <li
+                          className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
+                          onClick={() => updateStatus(index, "Approved")}
+                        >
+                          Approve
+                        </li>
+                        <li
+                          className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
+                          onClick={() => updateStatus(index, "Rejected")}
+                        >
+                          Reject
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </td>
             </tr>
           ))}

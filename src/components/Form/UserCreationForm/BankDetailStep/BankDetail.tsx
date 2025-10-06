@@ -10,22 +10,19 @@ type FormValues = {
     accountHolderName: string;
     adharNumber: string;
     panNumber: string;
-        firstName: string;
+    firstName: string;
     lastName: string;
   };
 };
-
-
 
 const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
   readOnly = false,
 }) => {
   const {
     register,
-        watch,
-        setValue,
+    watch,
+    setValue,
     formState: { errors },
-
   } = useFormContext<FormValues>();
 
   const bankErrors = errors?.bankDetails || {};
@@ -33,18 +30,15 @@ const BankDetailsForm: React.FC<{ readOnly?: boolean }> = ({
     readOnly ? "bg-gray-100 cursor-not-allowed" : "bg-white"
   }`;
 
- const firstName = watch("basicDetails.firstName") ?? "";
- const lastName = watch("basicDetails.lastName") ?? "";
- const fullName = `${firstName} ${lastName}`.trim();
+  const firstName = watch("basicDetails.firstName") ?? "";
+  const lastName = watch("basicDetails.lastName") ?? "";
+  const fullName = `${firstName} ${lastName}`.trim();
 
-
- useEffect(() => {
-  if(firstName || lastName){
-    setValue("bankDetails.accountHolderName", fullName);
-  }
-
- }, [firstName, lastName, fullName, setValue]);
-
+  useEffect(() => {
+    if (firstName || lastName) {
+      setValue("bankDetails.accountHolderName", fullName);
+    }
+  }, [firstName, lastName, fullName, setValue]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">

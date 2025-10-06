@@ -296,13 +296,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
-import { EyeIcon, EyeClosedIcon } from "lucide-react";
+import { EyeIcon, EyeClosedIcon, TrashIcon } from "lucide-react";
 import { getLeaves } from "../api/leave";
 import LeaveDetailsModal from "../components/Modal/LeaveDetailsModal";
 import { getEmployeeById } from "../api/auth";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
-
+import { deleteLeave } from "../api/leave";
 interface UserLeaves {
   wfhLeft: number;
   plLeft: number;
@@ -539,6 +539,15 @@ const EmployeeLeaveDashboard: React.FC = () => {
     setSelectedLeave(null);
     setIsModalOpen(false);
   };
+  const handleDeleteLeave = async (id: string) => {
+    try {
+      await deleteLeave(id);
+      setLeaves((prevLeaves) => prevLeaves.filter((leave) => leave._id !== id));
+    } catch (error) {
+      console.error("Error deleting leave:", error);
+      alert(error.response?.data?.message || "Failed to delete leave");
+    }
+  };
 
   const cards = [
     // { label: "Paid Leaves Left (PL)", value: leaveSummary.paidLeft },
@@ -600,6 +609,7 @@ const EmployeeLeaveDashboard: React.FC = () => {
                 "Reason",
                 "Status",
                 "Details",
+                "Actions",
               ].map((head) => (
                 <th key={head} className="px-4 py-3 whitespace-nowrap">
                   {head}
@@ -611,7 +621,7 @@ const EmployeeLeaveDashboard: React.FC = () => {
             {leaves.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={9}
                   className="text-center px-4 py-6 text-gray-500 italic"
                 >
                   No leave history found.
@@ -629,12 +639,11 @@ const EmployeeLeaveDashboard: React.FC = () => {
                     {new Date(leave.startDate).toLocaleDateString("en-IN")}
                   </td>
                   <td className="px-4 py-3">
-                    {leave.endDate !== null
+                    {leave.endDate
                       ? new Date(leave.endDate).toLocaleDateString("en-IN")
                       : "Not Applicable"}
                   </td>
                   <td className="px-4 py-3">{leave.noOfDays}</td>
-
                   <td className="px-4 py-3 capitalize">{leave.leaveType}</td>
                   <td className="px-4 py-3 capitalize">{leave.dayType}</td>
                   <td className="px-4 py-3">{leave.reason}</td>
@@ -658,6 +667,19 @@ const EmployeeLeaveDashboard: React.FC = () => {
                     >
                       <EyeIcon size={20} />
                     </button>
+                  </td>
+
+                  <td className="px-4 py-3 text-center">
+                    {leave.status?.toLowerCase() === "pending" ? (
+                      <button
+                        onClick={() => handleDeleteLeave(leave._id)}
+                        className="text-red-500 hover:text-red-700 transition flex items-center space-x-2"
+                      >
+                        <TrashIcon size={20} />
+                      </button>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
                   </td>
                 </tr>
               ))

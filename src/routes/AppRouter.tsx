@@ -32,6 +32,9 @@ import SubmittedFormsList from "../pages/HR/SubmittedFormsList";
 import OnboardingFormDetails from "../pages/HR/OnboardingFormDetails";
 import FormSuccess from "../pages/Onboarding/FormSuccess";
 import SignLetterPageWrapper from "../pages/SignLetterPageWrapper";
+import PayrollManagement from "../pages/PayrollManagement";
+import EmployeePayrollViewer from "../pages/EmployeePayrollViewer";
+import SignedUploadSuccess from "../pages/SignedUploadSuccess";
 
 const AppRouter = () => {
   return (
@@ -43,8 +46,12 @@ const AppRouter = () => {
         <Route path="/reset-mail-message" element={<EmailSentMessge />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
         <Route path="/onboarding/:token" element={<OnboardingForm />} />
-         <Route path="/form-success" element={<FormSuccess />} />
-         <Route path="/sign-letter/:filename" element={<SignLetterPageWrapper />} />
+        <Route path="/form-success" element={<FormSuccess />} />
+        <Route path="/Signed-Sucess" element={<SignedUploadSuccess />} />
+        <Route
+          path="/sign-letter/:userId/:filename"
+          element={<SignLetterPageWrapper />}
+        />
 
         <Route
           path="/admin"
@@ -65,14 +72,20 @@ const AppRouter = () => {
           <Route path="leave-apply" element={<LeaveRequestForm />} />
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="payroll" element={<Payroll />} />
+          <Route path="payroll" element={<PayrollManagement />} />
           <Route path="reports" element={<Reports />} />
           <Route path="/admin/employee/:id" element={<Profile />} />
           <Route path="/admin/employee/edit/:id" element={<Profile />} />
           <Route path="company-policy" element={<CompanyPolicypage />} />
-          <Route path="/admin/send-onboarding" element={<SendOnboardingForm />} />
-          <Route path="/admin/onboarding" element={<SubmittedFormsList  />} />
-          <Route path="/admin/onboarding/:token" element={<OnboardingFormDetails  />} />
+          <Route
+            path="/admin/send-onboarding"
+            element={<SendOnboardingForm />}
+          />
+          <Route path="/admin/onboarding" element={<SubmittedFormsList />} />
+          <Route
+            path="/admin/onboarding/:token"
+            element={<OnboardingFormDetails />}
+          />
         </Route>
 
         <Route
@@ -92,6 +105,7 @@ const AppRouter = () => {
           <Route path="approval-history" element={<ApprovalHistory />} />
           <Route path="profile" element={<Profile />} />
           <Route path="company-policy" element={<CompanyPolicypage />} />
+          <Route path="EmployeePayroll" element={<EmployeePayrollViewer />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

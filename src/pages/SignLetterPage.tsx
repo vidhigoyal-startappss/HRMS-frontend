@@ -1,200 +1,303 @@
-import React, { useRef, useEffect, useState } from "react";
-import SignaturePad from "signature_pad";
-import { PDFDocument } from "pdf-lib";
+// import React, { useState } from "react";
+// import { useParams, useLocation } from "react-router-dom";
+// import toast from "react-hot-toast";
 
-interface SignLetterPageProps {
-  pdfUrl: string;
-}
+// const SignLetterPage: React.FC = () => {
+//   const { filename, userId } = useParams<{
+//     filename: string;
+//     userId: string;
+//   }>();
 
-const SignLetterPage: React.FC<SignLetterPageProps> = ({ pdfUrl, userId }) => {
-  const [pdfBytes, setPdfBytes] = useState<Uint8Array | null>(null);
-  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = useRef<number>(0);
+//   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+//   const [uploading, setUploading] = useState(false);
 
-  const [signaturePosition, setSignaturePosition] = useState<{
-    x: number;
-    y: number;
-  }>({ x: 100, y: 100 });
-  const [dragging, setDragging] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const signaturePadRef = useRef<SignaturePad | null>(null);
-  const pdfContainerRef = useRef<HTMLDivElement>(null);
+//   const handleUploadPdf = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = e.target.files?.[0];
 
-  const signatureZones = [
-    { page: 1, x: 0.2, y: 0.8, width: 0.4, height: 0.1 },
-    { page: 2, x: 0.2, y: 0.8, width: 0.4, height: 0.1 },
-    { page: 3, x: 0.5, y: 0.5, width: 0.4, height: 0.1 },
-    { page: 8, x: 0.2, y: 0.8, width: 0.4, height: 0.1 },
-    { page: 9, x: 0.5, y: 0.5, width: 0.4, height: 0.1 },
-  ];
+//     if (file) {
+//       setSelectedFile(file);
+//     }
+//   };
 
-  useEffect(() => {
-    fetch(pdfUrl)
-      .then((res) => res.arrayBuffer())
-      .then(async (data) => {
-        setPdfBytes(new Uint8Array(data));
-        const pdfDoc = await PDFDocument.load(data);
-        totalPages.current = pdfDoc.getPages().length;
-      });
-  }, [pdfUrl]);
+//   const handleSubmit = async () => {
+//     if (!selectedFile) {
+//       console.log("No file selected - exiting");
+//       toast.error("No file selected");
+//       return;
+//     }
+//     if (!userId) {
+//       console.log("No userId - exiting");
+//       toast.error("User ID missing");
+//       return;
+//     }
 
-  useEffect(() => {
-    if (canvasRef.current) {
-      signaturePadRef.current = new SignaturePad(canvasRef.current);
+//     if (!selectedFile) {
+//       toast.error("No file selected");
+//       return;
+//     }
+
+//     if (!userId) {
+//       toast.error("User ID missing");
+//       return;
+//     }
+
+//     setUploading(true);
+
+//     try {
+//       const formData = new FormData();
+//       formData.append("file", selectedFile);
+//       formData.append("userId", userId);
+
+//       const response = await fetch(
+//         "http://localhost:3000/api/letters/signed-upload",
+//         {
+//           method: "POST",
+//           body: formData,
+//         }
+//       );
+
+//       console.log("Response received");
+
+//       const result = await response.json();
+
+//       if (response.ok) {
+//         toast.success("Signed PDF uploaded!");
+//         console.log("Upload success:", result);
+//       } else {
+//         toast.error("Upload failed");
+//         console.error("Upload failed:", result);
+//       }
+//     } catch (error) {
+//       console.error("Upload error:", error);
+//       toast.error("Error uploading file");
+//     } finally {
+//       setUploading(false);
+//     }
+//   };
+
+//   const viewPdf = () => {
+//     if (!filename) {
+//       toast.error("Filename missing.");
+//       return;
+//     }
+//     const url = `http://localhost:3000/uploads/letters/${filename}`;
+//     window.open(url, "_blank");
+//   };
+
+//   return (
+//     <div className="flex flex-col items-center min-h-screen bg-gray-50 p-6">
+//       <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+//         Sign Your Appointment Letter
+//       </h2>
+
+//       <div className="mb-6 text-center">
+//         <p className="mb-4">
+//           Please review your appointment letter and upload the signed version in
+//           PDF format.
+//         </p>
+//         <input
+//           type="file"
+//           accept="application/pdf"
+//           onChange={handleUploadPdf}
+//           className="mb-4 border border-gray-300 p-2"
+//         />
+//       </div>
+
+//       <div className="flex space-x-4">
+//         <button
+//           onClick={handleSubmit}
+//           disabled={uploading}
+//           className="px-6 py-3 rounded bg-green-600 text-white text-lg font-medium hover:bg-green-700"
+//         >
+//           {uploading ? "Uploading..." : "Submit Signed PDF"}
+//         </button>
+
+//         <button
+//           className="px-6 py-3 rounded bg-blue-600 text-white text-lg font-medium hover:bg-blue-700"
+//           onClick={viewPdf}
+//         >
+//           View Letter PDF
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default SignLetterPage;
+
+
+
+
+
+
+
+
+
+import React, { useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+const SignLetterPage: React.FC = () => {
+  const { filename, userId } = useParams<{
+    filename: string;
+    userId: string;
+  }>();
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleUploadPdf = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setSelectedFile(file);
     }
-  }, []);
-
-  const handleSaveSignature = () => {
-    if (signaturePadRef.current?.isEmpty()) {
-      alert("Please sign before saving");
-      return;
-    }
-    const dataUrl = signaturePadRef.current.toDataURL("image/png");
-    setSignatureDataUrl(dataUrl);
   };
-
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const handleDragStart = () => setDragging(true);
-
-  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
-    if (!dragging || !signatureDataUrl) return;
-    const rect = pdfContainerRef.current?.getBoundingClientRect();
-    if (rect) {
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      setSignaturePosition({ x, y });
-    }
-  };
-
-  const handleDragEnd = () => setDragging(false);
 
   const handleSubmit = async () => {
-    if (!pdfBytes || !signatureDataUrl)
-      return alert("Missing PDF or signature");
-
-    const pdfDoc = await PDFDocument.load(pdfBytes);
-    const pngImage = await pdfDoc.embedPng(signatureDataUrl);
-
-    const signatureZone = signatureZones.find(
-      (zone) => zone.page === currentPage
-    );
-    if (!signatureZone) {
-      return alert(`No signature zone found for page ${currentPage}`);
+    if (!selectedFile) {
+      console.log("No file selected - exiting");
+      toast.error("No file selected");
+      return;
+    }
+    if (!userId) {
+      console.log("No userId - exiting");
+      toast.error("User ID missing");
+      return;
     }
 
-    const page = pdfDoc.getPage(currentPage - 1);
-    const { width: pageWidth, height: pageHeight } = page.getSize();
-
-    const pngDims = pngImage.scale(0.3);
-    const signatureX = Math.min(signaturePosition.x, pageWidth - pngDims.width);
-    const signatureY = Math.min(
-      signaturePosition.y,
-      pageHeight - pngDims.height
-    );
-
-    page.drawImage(pngImage, {
-      x: signatureX,
-      y: signatureY,
-      width: pngDims.width,
-      height: pngDims.height,
-    });
-
-    const signedPdfBytes = await pdfDoc.save();
-    const signedPdfBlob = new Blob([signedPdfBytes], {
-      type: "application/pdf",
-    });
-
-    // const formData = new FormData();
-    // formData.append("file", signedPdfBlob, "signed-appointment.pdf");
-    const formData = new FormData();
-    formData.append("file", signedPdfBlob, "signed-appointment.pdf");
-    formData.append("userId", userId);
-
-    const res = await fetch("http://localhost:3000/api/letters/signed-upload", {
-      method: "POST",
-      body: formData,
-    });
-    const result = await res.json();
-    if (res.ok) {
-      alert("Uploaded!");
-      console.log("Signed PDF link:", result.link);
-      window.open(result.link, "_blank");
-    } else {
-      alert("Upload failed");
+    if (!selectedFile) {
+      toast.error("No file selected");
+      return;
     }
-    if (res.ok) alert("Uploaded!");
-    else alert("Upload failed");
+
+    if (!userId) {
+      toast.error("User ID missing");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("userId", userId);
+
+      const response = await fetch(
+        "http://localhost:3000/api/letters/signed-upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      console.log("Response received");
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success("Signed PDF uploaded!");
+        navigate("/Signed-Sucess");
+        console.log("Upload success:", result);
+      } else {
+        toast.error("Upload failed");
+        console.error("Upload failed:", result);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Error uploading file");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const viewPdf = () => {
+    if (!filename) {
+      toast.error("Filename missing.");
+      return;
+    }
+    const url = `http://localhost:3000/uploads/letters/${filename}`;
+    window.open(url, "_blank");
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-50 p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-blue-50 via-indigo-100 to-purple-100 p-8 max-w-8xl mx-auto shadow-lg rounded-xl">
+      <h2 className="text-4xl font-extrabold text-gray-900 mb-8 text-center drop-shadow-md">
         Sign Your Appointment Letter
       </h2>
 
-      <div
-        ref={pdfContainerRef}
-        className="relative w-[70%] max-w-4xl h-[80vh] border-2 border-gray-300 rounded-lg overflow-hidden bg-white mb-6"
-        onDragOver={(e) => e.preventDefault()}
-        onMouseMove={handleDrag}
-        onMouseUp={handleDragEnd}
-      >
-        <iframe
-          src={pdfUrl}
-          width="100%"
-          height="100%"
-          className="border-none"
-          title="PDF Preview"
-        />
-        {signatureDataUrl && (
-          <img
-            src={signatureDataUrl}
-            alt="Signature"
-            className="absolute w-40 h-auto cursor-grab"
-            style={{
-              left: `${signaturePosition.x}px`,
-              top: `${signaturePosition.y}px`,
-            }}
-            draggable
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          />
-        )}
-      </div>
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-4xl space-y-6">
+        <h3 className="text-2xl font-semibold text-indigo-700 mb-4">
+          How to complete the signing process
+        </h3>
 
-      <div className="flex flex-col items-center mb-6">
-        <canvas
-          ref={canvasRef}
-          width={400}
-          height={150}
-          className="border-2 border-dashed border-gray-400 rounded-md bg-white"
-        />
-        <div className="mt-3 flex gap-3">
-          <button
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-            onClick={handleSaveSignature}
-          >
-            Save Signature
-          </button>
-          <button
-            className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-            onClick={() => signaturePadRef.current?.clear()}
-          >
-            Clear
-          </button>
+        <ol className="list-decimal list-inside space-y-4 text-gray-700 leading-relaxed text-lg">
+          <li>
+            <strong>View Your Letter:</strong> Click the{" "}
+            <span className="italic font-semibold text-indigo-600">
+              View Letter PDF
+            </span>{" "}
+            button below to open your appointment letter in a new tab.
+          </li>
+          <li>
+            <strong>Download or Print:</strong> Save the letter to your device
+            or print a physical copy.
+          </li>
+          <li>
+            <strong>Sign the Letter:</strong> Physically sign the printed letter
+            or digitally sign it using a PDF editor.
+          </li>
+          <li>
+            <strong>Scan or Save Signed Copy:</strong> If you signed physically,
+            scan or take a clear photo of the signed letter and save it as a
+            PDF.
+          </li>
+          <li>
+            <strong>Upload the Signed Letter:</strong> Use the{" "}
+            <span className="italic font-semibold text-green-600">
+              Submit Signed PDF
+            </span>{" "}
+            button below to upload your signed document.
+          </li>
+        </ol>
+
+        <p className="text-sm text-gray-500 italic mt-4">
+          Make sure the uploaded file is clear and fully legible. The accepted
+          format is PDF only.
+        </p>
+
+        <div>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={handleUploadPdf}
+            className="mt-2 border border-gray-300 p-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
         </div>
       </div>
 
-      <button
-        className="px-6 py-3 rounded bg-green-600 text-white text-lg font-medium hover:bg-green-700"
-        onClick={handleSubmit}
-      >
-        Submit Signed PDF
-      </button>
+      <div className="flex space-x-6 mt-8 w-full max-w-xl justify-center">
+        <button
+          onClick={viewPdf}
+          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-bold text-lg rounded-lg shadow-lg hover:from-indigo-700 hover:to-purple-800 transition duration-300 ease-in-out drop-shadow-md"
+        >
+          View Letter PDF
+        </button>
+
+        <button
+          onClick={handleSubmit}
+          disabled={uploading}
+          className={`px-8 py-4 font-bold text-lg rounded-lg shadow-lg text-white transition duration-300 ease-in-out drop-shadow-md ${
+            uploading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800"
+          }`}
+        >
+          {uploading ? "Uploading..." : "Submit Signed PDF"}
+        </button>
+      </div>
     </div>
   );
 };

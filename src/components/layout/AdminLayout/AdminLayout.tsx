@@ -17,6 +17,7 @@ import {
   Repeat,
   BarChart2,
   Shield,
+  UserPlus,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../feature/user/userSlice";
@@ -35,6 +36,7 @@ import { getProfileImage } from "../../../api/auth";
 import { getEmployeeById } from "../../../api/auth";
 import { Link } from "react-router-dom";
 import { matchPath } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const AdminLayout: React.FC = () => {
   const dispatch = useDispatch();
@@ -195,6 +197,16 @@ const AdminLayout: React.FC = () => {
         icon: CalendarCheck,
       },
 
+      {
+        label: "User Onboarding",
+        path: "/admin/onboarding",
+        icon: UserPlus,
+      },
+      {
+        label: "Payroll",
+        path: "/admin/payroll",
+        icon: HandCoins,
+      },
       { label: "Profile", path: "/admin/profile", icon: User },
       {
         label: "Company Policies",
@@ -206,7 +218,11 @@ const AdminLayout: React.FC = () => {
       { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
       { label: "Attendance", path: "/attendance", icon: UserCheck },
       { label: "Leave Requests", path: "/leave-requests", icon: CalendarCheck },
-
+      {
+        label: "Payroll",
+        path: "/EmployeePayroll",
+        icon: HandCoins,
+      },
       { label: "Profile", path: "/profile", icon: User },
     ],
   };
@@ -221,6 +237,7 @@ const AdminLayout: React.FC = () => {
     dispatch(logout());
     navigate("/");
   };
+
   const handleMarkAsRead = async (id: string) => {
     try {
       await markNotificationAsRead(id);
@@ -411,12 +428,6 @@ const AdminLayout: React.FC = () => {
               <h2 className="text-xl font-semibold text-[#113F67]">
                 {pageTitle}
               </h2>
-              {/* {matchPath("/admin/employee/:id", location.pathname) &&
-                role === "hr" && (
-                  <button className="ml-auto btn btn-primary">
-                Genrate btn
-                  </button>
-                )} */}
             </header>
             <Outlet />
           </section>

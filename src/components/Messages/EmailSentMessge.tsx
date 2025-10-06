@@ -8,7 +8,7 @@ const EmailSentMessge = () => {
       <div>
         <h1>Thank You</h1>
         <p>Check Your Mail to Reset the Links</p>
-        <button type="button" onClick={navigate("/")} className="bg-gray-400">
+        <button type="button" onClick={() => navigate("/")} className="bg-gray-400">
           Go To Login
         </button>
       </div>

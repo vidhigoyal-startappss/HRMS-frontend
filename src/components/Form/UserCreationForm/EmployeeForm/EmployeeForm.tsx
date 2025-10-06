@@ -9,13 +9,20 @@ import { updateUserDetail } from "../../../../api/auth";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { number } from "yup";
+import SalaryDetailsForm from "../SalaryDetail/SalaryDetailsForm";
 
-const steps = ["Basic Details", "Educational Details", "Bank Details"];
+const steps = [
+  "Basic Details",
+  "Educational Details",
+  "Bank Details",
+  "Salary Details",
+];
 
 const stepComponents = [
   BasicDetailsForm,
   EducationDetailsForm,
   BankDetailsForm,
+  SalaryDetailsForm,
 ];
 
 type FormValues = {
@@ -57,6 +64,37 @@ type FormValues = {
     adharNumber: string;
     panNumber: string;
   };
+  salaryDetails: {
+    basicFixedMonthly: number;
+    basicFixedYearly: number;
+
+    hraFixedMonthly: number;
+    hraFixedYearly: number;
+
+    conveyanceMonthly: number;
+    conveyanceYearly: number;
+
+    dearnessAllowancesMonthly: number;
+    dearnessAllowancesYearly: number;
+
+    otherAllowancesMonthly: number;
+    otherAllowancesYearly: number;
+
+    annualGrossSalaryMonthly: number;
+    annualGrossSalaryYearly: number;
+
+    employerPFMonthly: number;
+    employerPFYearly: number;
+
+    totalFixedPayMonthly: number;
+    totalFixedPayYearly: number;
+
+    individualVariablePayMonthly: number;
+    individualVariablePayYearly: number;
+
+    totalCTCMonthly: number;
+    totalCTCYearly: number;
+  };
 };
 
 const EmployeeForm = () => {
@@ -71,12 +109,18 @@ const EmployeeForm = () => {
       basicDetails: {},
       educationDetails: {},
       bankDetails: {},
+      salaryDetails: {},
     },
   });
 
   const CurrentStepComponent = stepComponents[activeStep];
 
-  const stepFields = ["basicDetails", "educationDetails", "bankDetails"];
+  const stepFields = [
+    "basicDetails",
+    "educationDetails",
+    "bankDetails",
+    "salaryDetails",
+  ];
 
   const handleNext = async () => {
     const isStepValid = await methods.trigger(stepFields[activeStep]);
@@ -127,6 +171,7 @@ const EmployeeForm = () => {
           basicDetails: {
             ...data.basicDetails,
           },
+          salaryDetails: data.salaryDetails,
         };
 
         delete submissionData.basicDetails.employeeid;
