@@ -3,14 +3,19 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { Provider } from "react-redux";
-import App from "./App.tsx";
 import { store } from "./store/store.ts";
-import "leaflet/dist/leaflet.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ErrorBoundary from "./pages/ErrorBoundary";
+import AppRouter from "./routes/AppRouter";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <ErrorBoundary>
+        <AppRouter />
+      </ErrorBoundary>
+      <ToastContainer autoClose={700} />
     </Provider>
   </StrictMode>
 );

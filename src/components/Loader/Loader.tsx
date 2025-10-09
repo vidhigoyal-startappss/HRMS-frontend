@@ -1,4 +1,3 @@
-// components/common/Loader.tsx
 import React from "react";
 
 interface LoaderProps {

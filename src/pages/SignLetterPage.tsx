@@ -125,14 +125,6 @@
 
 // export default SignLetterPage;
 
-
-
-
-
-
-
-
-
 import React, { useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -158,7 +150,6 @@ const SignLetterPage: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!selectedFile) {
-      console.log("No file selected - exiting");
       toast.error("No file selected");
       return;
     }
@@ -193,14 +184,11 @@ const SignLetterPage: React.FC = () => {
         }
       );
 
-      console.log("Response received");
-
       const result = await response.json();
 
       if (response.ok) {
         toast.success("Signed PDF uploaded!");
         navigate("/Signed-Sucess");
-        console.log("Upload success:", result);
       } else {
         toast.error("Upload failed");
         console.error("Upload failed:", result);

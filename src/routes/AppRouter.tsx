@@ -35,82 +35,88 @@ import SignLetterPageWrapper from "../pages/SignLetterPageWrapper";
 import PayrollManagement from "../pages/PayrollManagement";
 import EmployeePayrollViewer from "../pages/EmployeePayrollViewer";
 import SignedUploadSuccess from "../pages/SignedUploadSuccess";
+import ErrorBoundary from "../pages/ErrorBoundary";
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-        <Route path="/" element={<Login />} />
-        <Route path="/reset-mail-message" element={<EmailSentMessge />} />
-        <Route path="/reset-password" element={<ResetPasswordForm />} />
-        <Route path="/onboarding/:token" element={<OnboardingForm />} />
-        <Route path="/form-success" element={<FormSuccess />} />
-        <Route path="/Signed-Sucess" element={<SignedUploadSuccess />} />
-        <Route
-          path="/sign-letter/:userId/:filename"
-          element={<SignLetterPageWrapper />}
-        />
-
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoutes
-              allowedRoles={["SuperAdmin", "Admin", "HR", "Manager"]}
-            >
-              <AdminLayout />
-            </ProtectedRoutes>
-          }
-        >
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="employee-management" element={<EmployeeManagement />} />
-          <Route path="attendance" element={<AttendanceManagement />} />
-          <Route path="add-employee" element={<RegisterPage />} />
-          <Route path="add-employee-details/:id" element={<EmployeeForm />} />
-          <Route path="leave-requests" element={<LeaveRequests />} />
-          <Route path="leave-apply" element={<LeaveRequestForm />} />
-          <Route path="approval-history" element={<ApprovalHistory />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="payroll" element={<PayrollManagement />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="/admin/employee/:id" element={<Profile />} />
-          <Route path="/admin/employee/edit/:id" element={<Profile />} />
-          <Route path="company-policy" element={<CompanyPolicypage />} />
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/reset-mail-message" element={<EmailSentMessge />} />
+          <Route path="/reset-password" element={<ResetPasswordForm />} />
+          <Route path="/onboarding/:token" element={<OnboardingForm />} />
+          <Route path="/form-success" element={<FormSuccess />} />
+          <Route path="/Signed-Sucess" element={<SignedUploadSuccess />} />
           <Route
-            path="/admin/send-onboarding"
-            element={<SendOnboardingForm />}
+            path="/sign-letter/:userId/:filename"
+            element={<SignLetterPageWrapper />}
           />
-          <Route path="/admin/onboarding" element={<SubmittedFormsList />} />
+
           <Route
-            path="/admin/onboarding/:token"
-            element={<OnboardingFormDetails />}
-          />
-        </Route>
+            path="/admin"
+            element={
+              <ProtectedRoutes
+                allowedRoles={["SuperAdmin", "Admin", "HR", "Manager"]}
+              >
+                <AdminLayout />
+              </ProtectedRoutes>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route
+              path="employee-management"
+              element={<EmployeeManagement />}
+            />
+            <Route path="attendance" element={<AttendanceManagement />} />
+            <Route path="add-employee" element={<RegisterPage />} />
+            <Route path="add-employee-details/:id" element={<EmployeeForm />} />
+            <Route path="leave-requests" element={<LeaveRequests />} />
+            <Route path="leave-apply" element={<LeaveRequestForm />} />
+            <Route path="approval-history" element={<ApprovalHistory />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="payroll" element={<PayrollManagement />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="/admin/employee/:id" element={<Profile />} />
+            <Route path="/admin/employee/edit/:id" element={<Profile />} />
+            <Route path="company-policy" element={<CompanyPolicypage />} />
+            <Route
+              path="/admin/send-onboarding"
+              element={<SendOnboardingForm />}
+            />
+            <Route path="/admin/onboarding" element={<SubmittedFormsList />} />
+            <Route
+              path="/admin/onboarding/:token"
+              element={<OnboardingFormDetails />}
+            />
+          </Route>
 
-        <Route
-          path="/employee"
-          element={
-            <ProtectedRoutes allowedRoles={["Employee"]}>
-              <EmployeeLayout />
-            </ProtectedRoutes>
-          }
-        >
-          <Route index element={<EmployeeDashboard />} />
-          <Route path="dashboard" element={<EmployeeDashboard />} />
-          <Route path="attendance" element={<AttendanceManagement />} />
-          <Route path="leaves" element={<EmployeeLeaveDashboard />} />
-          <Route path="request-leave" element={<LeaveRequestForm />} />
+          <Route
+            path="/employee"
+            element={
+              <ProtectedRoutes allowedRoles={["Employee"]}>
+                <EmployeeLayout />
+              </ProtectedRoutes>
+            }
+          >
+            <Route index element={<EmployeeDashboard />} />
+            <Route path="dashboard" element={<EmployeeDashboard />} />
+            <Route path="attendance" element={<AttendanceManagement />} />
+            <Route path="leaves" element={<EmployeeLeaveDashboard />} />
+            <Route path="request-leave" element={<LeaveRequestForm />} />
 
-          <Route path="approval-history" element={<ApprovalHistory />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="company-policy" element={<CompanyPolicypage />} />
-          <Route path="EmployeePayroll" element={<EmployeePayrollViewer />} />
-        </Route>
+            <Route path="approval-history" element={<ApprovalHistory />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="company-policy" element={<CompanyPolicypage />} />
+            <Route path="EmployeePayroll" element={<EmployeePayrollViewer />} />
+          </Route>
 
-        <Route path="*" element={<Navigate to="/" />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 };

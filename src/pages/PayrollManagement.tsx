@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import API, { fetchEmployees } from "../api/auth";
 
 interface Employee {
-  _id: string;
+  employeeId: string;
   name?: string;
   firstName?: string;
   lastName?: string;
@@ -41,7 +41,7 @@ const PayrollManagement = () => {
           if (!name) {
             const fn = emp.firstName || "";
             const ln = emp.lastName || "";
-            name = `${fn} ${ln}`.trim() || emp._id;
+            name = `${fn} ${ln}`.trim() || emp.employeeId;
           }
           return { ...emp, name };
         });
@@ -100,56 +100,50 @@ const PayrollManagement = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Select Employee
-              </label>
-
-              <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0">
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+              <div className="w-full sm:w-2/3">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Select Employee
+                </label>
                 <select
                   id="employee"
                   value={selectedEmployee || ""}
                   onChange={(e) => setSelectedEmployee(e.target.value)}
-                  className="sm:w-2/3 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">-- Select Employee --</option>
                   {employees
-                    .filter((employee) =>
-                      employee.name
-                        ?.toLowerCase()
-                        .includes(searchTerm.toLowerCase())
-                    )
+                    .filter((employee) => {
+                      const fullName = employee.name?.toLowerCase() || "";
+                      const search = searchTerm.toLowerCase();
+                      return (
+                        fullName.includes(search) ||
+                        employee.firstName?.toLowerCase().includes(search) ||
+                        employee.lastName?.toLowerCase().includes(search)
+                      );
+                    })
                     .map((employee) => (
-                      <option key={employee._id} value={employee._id}>
-                        {employee.name}
+                      <option
+                        key={employee.employeeId}
+                        value={employee.employeeId}
+                      >
+                        {employee.name} ({employee.employeeId})
                       </option>
                     ))}
                 </select>
+              </div>
 
-                <div className="relative sm:w-1/3 w-full">
-                  <input
-                    type="text"
-                    placeholder="Search employee by name"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-2 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <div className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-4.35-4.35M16.65 16.65A7.5 7.5 0 1116.65 2a7.5 7.5 0 010 15z"
-                      />
-                    </svg>
-                  </div>
-                </div>
+              <div className="w-full sm:w-1/3">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Search Employee by Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Search by name"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
               </div>
             </div>
 

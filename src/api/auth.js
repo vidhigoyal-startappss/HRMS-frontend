@@ -4,7 +4,7 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Attach token to every request
+
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -16,7 +16,6 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Get current logged-in user's data
 export const Me = async () => {
   try {
     const res = await API.get("/api/users/me");
@@ -26,7 +25,6 @@ export const Me = async () => {
   }
 };
 
-// Register new user
 export const signup = async (data) => {
   try {
     const response = await API.post("/api/users/register", data);
@@ -37,7 +35,6 @@ export const signup = async (data) => {
   }
 };
 
-// Login
 export const login = async (data) => {
   try {
     const response = await API.post("/api/users/login", data);
@@ -58,7 +55,6 @@ export const login = async (data) => {
   }
 };
 
-// Update User Profile
 export const updateUserDetail = async (userId, data) => {
   try {
     const response = await API.post(`/api/users/complete-profile/${userId}`, data);
@@ -69,7 +65,7 @@ export const updateUserDetail = async (userId, data) => {
   }
 };
 
-// Fetch all employees
+
 export const fetchEmployees = async (showArchived = false) => {
   try {
     const response = await API.get(`/api/users/employees?archived=${showArchived}`);
@@ -80,7 +76,7 @@ export const fetchEmployees = async (showArchived = false) => {
   }
 };
 
-// Get employee by ID
+
 export const getEmployeeById = async (id) => {
   try {
     const res = await API.get(`/api/users/employee/${id}`);
@@ -91,7 +87,7 @@ export const getEmployeeById = async (id) => {
   }
 };
 
-// Update employee details
+
 export const updateEmployee = async (id, data) => {
   try {
     const response = await API.patch(`/api/users/employee/${id}`, data);
@@ -102,7 +98,7 @@ export const updateEmployee = async (id, data) => {
   }
 };
 
-// Get profile image
+
 export const getProfileImage = async (userId) => {
   try {
     const response = await API.get(`/api/users/profile-image/${userId}`);
@@ -114,7 +110,7 @@ export const getProfileImage = async (userId) => {
 };
 
 
-// Delete user
+
 export const deleteUser = async (userId) => {
   try {
     const response = await API.delete(`/api/users/delete/${userId}`);
