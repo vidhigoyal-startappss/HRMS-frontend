@@ -1,6 +1,9 @@
 {
-  "cleanUrls": false,
   "rewrites": [
+    {
+      "source": "/api/company-policy",
+      "destination": "https://hrms-backend-2-t1l2.onrender.com/api/docs/"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
