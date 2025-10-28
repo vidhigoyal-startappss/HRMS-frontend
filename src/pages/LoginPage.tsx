@@ -146,12 +146,12 @@ const Login: React.FC = () => {
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Don’t have an account?{" "}
+            {/* Don’t have an account?{" "} */}
             <span
               onClick={handleSignup}
               className="text-[#113F67] font-semibold cursor-pointer hover:underline"
             >
-              Sign up for free
+              {/* Sign up for free */}
             </span>
           </p>
         </div>

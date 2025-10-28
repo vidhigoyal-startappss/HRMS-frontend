@@ -55,7 +55,7 @@ export const ChangePassword = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col bg-white p-6 justify-center gap-4 w-full max-w-md rounded-lg shadow-md">
-        <h1 className="text-2xl text-[#113F67] font-bold text-center">
+        <h1 className="text-2xl text-[#113F67] font-bold text-center cursor-pointer">
           Change Password
         </h1>
 

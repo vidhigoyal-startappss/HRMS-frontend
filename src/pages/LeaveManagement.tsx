@@ -132,7 +132,7 @@ const LeaveManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={handleNavigateLeaveForm}
-          className="bg-[#226597] hover:bg-[#113F67] cursor-pointer text-white px-6 py-2 rounded-md text-sm font-medium shadow transition"
+          className="bg-[#226597] hover:bg-[#113F67] cursor-pointer text-white px-6 py-2 rounded-md text-sm font-medium shadow transition cursor-pointer"
         >
           + Request Leave
         </button>

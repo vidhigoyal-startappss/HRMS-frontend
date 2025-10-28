@@ -92,7 +92,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       </div>
       <button
         onClick={() => onDelete(n._id)}
-        className="text-gray-400 hover:text-red-500"
+        className="text-gray-400 hover:text-red-500 cursor-pointer"
       >
         <Trash2 size={16} />
       </button>
@@ -109,7 +109,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           {unread.length > 0 && (
             <button
               onClick={onMarkAllAsRead}
-              className="text-xs sm:text-sm text-blue-600 hover:underline whitespace-nowrap"
+              className="text-xs sm:text-sm text-blue-600 hover:underline whitespace-nowrap cursor-pointer"
             >
               Mark all as read
             </button>
@@ -122,7 +122,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
       <div className="max-h-80 sm:max-h-96 overflow-y-auto">
         {notifications.length === 0 ? (
-          <div className="px-4 py-6 text-center text-sm text-gray-500">
+          <div className="px-4 py-6 text-center text-sm text-gray-500 cursor-pointer">
             No notifications yet
           </div>
         ) : (

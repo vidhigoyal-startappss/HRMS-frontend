@@ -93,7 +93,7 @@ const PayrollManagement = () => {
         </h2>
 
         {loadingEmployees ? (
-          <div className="text-center text-gray-600">Loading employees...</div>
+          <div className="text-center text-gray-600 cursor-pointer">Loading employees...</div>
         ) : employeeFetchError ? (
           <div className="text-red-600 text-center mb-4">
             Error loading employees: {employeeFetchError}
@@ -102,14 +102,14 @@ const PayrollManagement = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
               <div className="w-full sm:w-2/3">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2 cursor-pointer">
                   Select Employee
                 </label>
                 <select
                   id="employee"
                   value={selectedEmployee || ""}
                   onChange={(e) => setSelectedEmployee(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                 >
                   <option value="">-- Select Employee --</option>
                   {employees
@@ -134,7 +134,7 @@ const PayrollManagement = () => {
               </div>
 
               <div className="w-full sm:w-1/3">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2 cursor-pointer">
                   Search Employee by Name
                 </label>
                 <input
@@ -142,7 +142,7 @@ const PayrollManagement = () => {
                   placeholder="Search by name"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                 />
               </div>
             </div>
@@ -150,7 +150,7 @@ const PayrollManagement = () => {
             <div>
               <label
                 htmlFor="month"
-                className="block text-sm font-semibold text-gray-700 mb-1"
+                className="block text-sm font-semibold text-gray-700 mb-1 cursor-pointer"
               >
                 Select Month
               </label>

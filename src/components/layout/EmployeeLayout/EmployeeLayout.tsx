@@ -271,9 +271,9 @@ const EmployeeLayout: React.FC = () => {
           <button
             onClick={handleLogout}
             className="mt-6 w-full flex items-center justify-center md:justify-start gap-3 px-0 md:px-4 py-2 
-             bg-[#226597] hover:bg-[#87C0CD] text-white text-base font-medium rounded-md"
+             bg-[#226597] hover:bg-[#87C0CD] text-white text-base font-medium rounded-md cursor-pointer"
           >
-            <LogOut size={20} className="text-white" />
+            <LogOut size={20} className="text-white cursor-pointer" />
             <span className="hidden md:inline">Logout</span>
           </button>
         </aside>

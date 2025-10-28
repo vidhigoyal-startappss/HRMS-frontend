@@ -208,7 +208,7 @@ const AttendanceManagement = () => {
               setStatusFilter("All");
               setLocationFilter("");
             }}
-            className="bg-[#113F67] text-white px-3 py-1 rounded hover:bg-[#226597]"
+            className="bg-[#113F67] text-white px-3 py-1 rounded hover:bg-[#226597] cursor-pointer"
           >
             Clear Filters
           </button>
