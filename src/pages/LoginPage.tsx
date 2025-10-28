@@ -151,7 +151,7 @@ const Login: React.FC = () => {
               onClick={handleSignup}
               className="text-[#113F67] font-semibold cursor-pointer hover:underline"
             >
-              {/* Sign up for free */}
+              Sign up for free
             </span>
           </p>
         </div>
