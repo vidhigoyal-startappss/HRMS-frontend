@@ -102,6 +102,11 @@ const Login: React.FC = () => {
                   value: /^\S+@\S+\.\S+$/,
                   message: "Invalid email format",
                 },
+
+
+
+
+                
                 minLength: {
                   value: 6,
                   message: "Minimum 6 characters required",
