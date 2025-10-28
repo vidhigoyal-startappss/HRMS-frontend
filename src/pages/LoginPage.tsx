@@ -102,11 +102,6 @@ const Login: React.FC = () => {
                   value: /^\S+@\S+\.\S+$/,
                   message: "Invalid email format",
                 },
-
-
-
-
-                
                 minLength: {
                   value: 6,
                   message: "Minimum 6 characters required",
@@ -156,7 +151,7 @@ const Login: React.FC = () => {
               onClick={handleSignup}
               className="text-[#113F67] font-semibold cursor-pointer hover:underline"
             >
-              Sign up for free
+              {/* Sign up for free */}
             </span>
           </p>
         </div>
