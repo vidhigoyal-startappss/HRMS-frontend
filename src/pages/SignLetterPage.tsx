@@ -177,7 +177,7 @@ const SignLetterPage: React.FC = () => {
       formData.append("userId", userId);
 
       const response = await fetch(
-        "http://localhost:3000/api/letters/signed-upload",
+        "https://hrms-backend-2-t1l2.onrender.com/api/letters/signed-upload",
         {
           method: "POST",
           body: formData,
@@ -206,7 +206,7 @@ const SignLetterPage: React.FC = () => {
       toast.error("Filename missing.");
       return;
     }
-    const url = `http://localhost:3000/uploads/letters/${filename}`;
+    const url = `https://hrms-backend-2-t1l2.onrender.com/uploads/letters/${filename}`;
     window.open(url, "_blank");
   };
 

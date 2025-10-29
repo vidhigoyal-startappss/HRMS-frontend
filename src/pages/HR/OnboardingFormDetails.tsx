@@ -6,7 +6,7 @@ const OnboardingFormDetails: React.FC = () => {
   const [form, setForm] = useState<any>(null);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/onboarding/${token}`)
+    fetch(`https://hrms-backend-2-t1l2.onrender.com/api/onboarding/${token}`)
       .then((res) => res.json())
       .then((data) => setForm(data))
       .catch((err) => console.error("Failed to load form:", err));

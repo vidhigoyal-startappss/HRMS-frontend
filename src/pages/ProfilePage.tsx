@@ -91,7 +91,7 @@ const Profile: React.FC = () => {
   }, [userId]);
 
   const handleGenerateLetter = async () => {
-    const res = await fetch("http://localhost:3000/api/letters/generate", {
+    const res = await fetch("https://hrms-backend-2-t1l2.onrender.com/api/letters/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(profile),
@@ -142,7 +142,7 @@ const Profile: React.FC = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/letters/upload", {
+      const res = await fetch("https://hrms-backend-2-t1l2.onrender.com/api/letters/upload", {
         method: "POST",
         body: formData,
       });
@@ -178,7 +178,7 @@ const Profile: React.FC = () => {
     const fetchSignedLetter = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/letters/signed/${userId}`
+          `https://hrms-backend-2-t1l2.onrender.com/api/letters/signed/${userId}`
         );
         if (!res.ok) throw new Error("No signed letter found");
         const result = await res.json();
