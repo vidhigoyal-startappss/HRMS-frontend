@@ -206,7 +206,7 @@ const SignLetterPage: React.FC = () => {
       toast.error("Filename missing.");
       return;
     }
-    const url = `https://hrms-backend-2-t1l2.onrender.com/uploads/letters/${filename}`;
+    const url = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
     window.open(url, "_blank");
   };
 

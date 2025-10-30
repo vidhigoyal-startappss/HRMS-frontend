@@ -7,7 +7,7 @@ const SignLetterPageWrapper = () => {
     userId: string;
   }>();
 
-  const pdfUrl = `https://hrms-backend-2-t1l2.onrender.com/uploads/letters/${filename}`;
+  const pdfUrl = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
 
   return <SignLetterPage pdfUrl={pdfUrl} userId={userId} />;
 };
