@@ -201,14 +201,21 @@ const SignLetterPage: React.FC = () => {
     }
   };
 
-  const viewPdf = () => {
-    if (!filename) {
-      toast.error("Filename missing.");
-      return;
-    }
-    const url = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
-    window.open(url, "_blank");
-  };
+  // const viewPdf = () => {
+  //   if (!filename) {
+  //     toast.error("Filename missing.");
+  //     return;
+  //   }
+  //   const url = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
+  //   window.open(url, "_blank");
+  // };
+const viewPdf = () => {
+  if (!pdfUrl) {
+    toast.error("PDF not ready yet");
+    return;
+  }
+  window.open(pdfUrl, "_blank");
+};
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-blue-50 via-indigo-100 to-purple-100 p-8 max-w-8xl mx-auto shadow-lg rounded-xl">
