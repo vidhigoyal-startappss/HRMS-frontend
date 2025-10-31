@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import API from "../../api/auth";
 import SendOnboardingForm from "../HR/SendOnboardingForm";
@@ -14,14 +12,13 @@ const SubmittedFormsList = () => {
     API.get("/api/onboarding/submitted")
       .then((res) => {
         setForms(res.data);
-        setFilteredForms(res.data); 
+        setFilteredForms(res.data);
       })
       .catch((err) => {
         console.error("Failed to fetch submitted forms:", err);
       });
   }, []);
 
-  
   useEffect(() => {
     if (!searchText.trim()) {
       setFilteredForms(forms);
@@ -81,8 +78,27 @@ const SubmittedFormsList = () => {
         <tbody>
           {filteredForms.length === 0 ? (
             <tr>
-              <td colSpan={4} className="border p-4 text-center text-gray-500">
-                No forms found.
+              <td colSpan={4} className="border p-6">
+                <div className="flex flex-col items-center justify-center py-10 text-gray-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-16 w-16 mb-4 text-gray-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m4-6v6m0 0H5m14 0a2 2 0 002-2v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14z"
+                    />
+                  </svg>
+                  <p className="text-lg font-medium mb-2">No forms found</p>
+                  <p className="text-sm text-gray-400">
+                    Try adjusting your search or check back later.
+                  </p>
+                </div>
               </td>
             </tr>
           ) : (

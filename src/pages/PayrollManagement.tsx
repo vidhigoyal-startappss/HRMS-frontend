@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API, { fetchEmployees } from "../api/auth";
+import ClipLoader from "react-spinners/ClipLoader";
 
 interface Employee {
   _id: string;
@@ -93,10 +94,16 @@ const PayrollManagement = () => {
         </h2>
 
         {loadingEmployees ? (
-          <div className="text-center text-gray-600">Loading employees...</div>
+          <div className="flex flex-col items-center justify-center py-20">
+            <ClipLoader color="#226597" size={60} />
+            <p className="mt-4 text-gray-600 text-lg font-medium">
+              Fetching employees, please wait...
+            </p>
+          </div>
         ) : employeeFetchError ? (
-          <div className="text-red-600 text-center mb-4">
-            Error loading employees: {employeeFetchError}
+          <div className="text-center bg-red-100 text-red-700 p-4 rounded-lg mb-4">
+            <p className="font-semibold">Oops! Something went wrong.</p>
+            <p>{employeeFetchError}</p>
           </div>
         ) : (
           <div className="space-y-6">

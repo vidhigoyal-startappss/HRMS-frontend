@@ -309,11 +309,27 @@ const LeaveManagement: React.FC = () => {
           ))}
           {filteredLeaves.length === 0 && (
             <tr>
-              <td
-                colSpan={leaveHeaders.length}
-                className="text-center py-40 text-gray-500"
-              >
-                No users found matching the filters.
+              <td colSpan={leaveHeaders.length} className="border p-6">
+                <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-16 w-16 mb-4 text-gray-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="text-lg font-medium mb-2">No users found</p>
+                  <p className="text-sm text-gray-400">
+                    Try adjusting your filters or check back later.
+                  </p>
+                </div>
               </td>
             </tr>
           )}

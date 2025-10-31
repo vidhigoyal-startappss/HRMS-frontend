@@ -36,6 +36,7 @@ import PayrollManagement from "../pages/PayrollManagement";
 import EmployeePayrollViewer from "../pages/EmployeePayrollViewer";
 import SignedUploadSuccess from "../pages/SignedUploadSuccess";
 import ErrorBoundary from "../pages/ErrorBoundary";
+import NotFound from "../pages/404page";
 
 const AppRouter = () => {
   return (
@@ -54,7 +55,7 @@ const AppRouter = () => {
             path="/sign-letter/:userId/:filename"
             element={<SignLetterPageWrapper />}
           />
-
+          <Route path="/unauthorized" element={<Unauthorized />} />
           <Route
             path="/admin"
             element={
@@ -113,8 +114,7 @@ const AppRouter = () => {
             <Route path="EmployeePayroll" element={<EmployeePayrollViewer />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </ErrorBoundary>
     </BrowserRouter>

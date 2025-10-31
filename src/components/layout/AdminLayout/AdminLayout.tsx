@@ -233,10 +233,12 @@ const AdminLayout: React.FC = () => {
 
   const linksToShow = sidebarConfig[role] || [];
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
-  };
+ const handleLogout = () => {
+  dispatch(logout());
+  sessionStorage.removeItem("loggedInEmail");
+  navigate("/");
+};
+
 
   const handleMarkAsRead = async (id: string) => {
     try {

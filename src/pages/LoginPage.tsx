@@ -14,7 +14,6 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-
 interface LoginFormInputs {
   email: string;
   password: string;
@@ -35,64 +34,68 @@ const Login: React.FC = () => {
   const onSubmit = async (data: LoginFormInputs) => {
     setErrorMsg("");
     setIsLoading(true);
+
     try {
       const response = await LoginAPI(data);
       const token = response.accessToken;
       if (!token) throw new Error("Token not found in response.");
 
-      localStorage.setItem("token", token);
       const payload = JSON.parse(atob(token.split(".")[1]));
-
       const user = {
         userId: payload.userId,
         email: payload.email,
         role: payload.role,
         employeeId: payload.employeeId,
-
         name: payload.name,
       };
 
+      localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       dispatch(login(user));
+
+      sessionStorage.setItem("loggedInEmail", user.email);
+
       toast.success("Login successful!");
 
       const role = user.role?.toLowerCase();
       if (["superadmin", "admin", "manager", "hr"].includes(role)) {
-        setTimeout(() => navigate("/admin/dashboard"), 1000);
+        setTimeout(() => navigate("/admin/dashboard"), 800);
       } else if (role === "employee") {
-        setTimeout(() => navigate("/employee/dashboard"), 1000);
+        setTimeout(() => navigate("/employee/dashboard"), 800);
       } else {
         toast.error("Unknown role. Cannot redirect.");
       }
     } catch (err: any) {
-  const status = err.response?.status;
-  const msg = err.response?.data?.message || "Invalid credentials or server error.";
+      const status = err.response?.status;
+      const msg =
+        err.response?.data?.message || "Invalid credentials or server error.";
 
-  setErrorMsg(msg);
-  setIsLoading(false);
+      setErrorMsg(msg);
 
-  
-  if (status === 401) {
-    Swal.fire({
-      icon: "warning",
-      title: "Unauthorized",
-      text: "You are already logged in with another role. Please use another browser or incognito window to log in.",
-      confirmButtonText: "Got it!",
-      confirmButtonColor: "#113F67",
-    });
-  } else {
-  
-    Swal.fire({
-      icon: "error",
-      title: "Login Failed",
-      text: msg,
-      confirmButtonText: "OK",
-      confirmButtonColor: "#113F67",
-    });
-  }
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("loggedInEmail");
 
-  toast.error(msg);
- } finally {
+      if (msg.toLowerCase().includes("already logged in")) {
+        Swal.fire({
+          icon: "warning",
+          title: "Unauthorized",
+          text: "You are already logged in with another account in this browser. Please use another browser or incognito mode.",
+          confirmButtonText: "Got it!",
+          confirmButtonColor: "#113F67",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: msg,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#113F67",
+        });
+      }
+
+      toast.error(msg);
+    } finally {
       setIsLoading(false);
     }
   };

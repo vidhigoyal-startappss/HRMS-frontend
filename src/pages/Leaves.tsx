@@ -620,12 +620,34 @@ const EmployeeLeaveDashboard: React.FC = () => {
           <tbody>
             {leaves.length === 0 ? (
               <tr>
-                <td
-                  colSpan={9}
-                  className="text-center px-4 py-6 text-gray-500 italic"
-                >
-                  No leave history found.
-                </td>
+             <td
+  colSpan={9}
+  className="text-center px-4 py-10 text-gray-500 italic"
+>
+  <div className="flex flex-col items-center space-y-3">
+    <svg
+      className="w-14 h-14 text-gray-300"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 17v-2a4 4 0 00-4-4H5a4 4 0 000 8h1a4 4 0 004-4v-2m8 4v-2a4 4 0 00-4-4h-1a4 4 0 000 8h1a4 4 0 004-4v-2"
+      />
+    </svg>
+    <p className="text-gray-700 text-lg font-medium">
+      Nothing to see here yet!
+    </p>
+    <p className="text-gray-500 text-sm">
+      Your leave history will appear here once you have submitted requests.
+    </p>
+  </div>
+</td>
+
               </tr>
             ) : (
               leaves.map((leave, index) => (

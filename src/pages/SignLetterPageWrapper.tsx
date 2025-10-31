@@ -34,13 +34,12 @@ const SignLetterPageWrapper = () => {
   const [pdfUrl, setPdfUrl] = useState<string>("");
 
   useEffect(() => {
-    // Fetch your Cloudinary URL from backend if needed
     const fetchPdf = async () => {
       try {
         const res = await fetch("https://hrms-backend-2-t1l2.onrender.com/api/letters/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filename, userId }), // whatever data your API needs
+          body: JSON.stringify({ filename, userId }), 
         });
         const data = await res.json();
         setPdfUrl(data.link);

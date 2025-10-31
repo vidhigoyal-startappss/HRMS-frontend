@@ -111,10 +111,11 @@ const EmployeeLayout: React.FC = () => {
       ? `${employeeData.firstName} ${employeeData.lastName}`
       : "Employee";
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
-  };
+const handleLogout = () => {
+  dispatch(logout());
+  sessionStorage.removeItem("loggedInEmail");
+  navigate("/");
+};
 
   useEffect(() => {
     const fetchData = async () => {
