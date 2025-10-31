@@ -26,38 +26,30 @@
 
 
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import SignLetterPage from "./SignLetterPage";
+import { useEffect, useState } from "react";
 
 const SignLetterPageWrapper = () => {
   const { filename, userId } = useParams<{ filename: string; userId: string }>();
   const [pdfUrl, setPdfUrl] = useState<string>("");
 
   useEffect(() => {
+    // Fetch your Cloudinary URL from backend if needed
     const fetchPdf = async () => {
       try {
-        const response = await fetch(
-          "https://hrms-backend-2-t1l2.onrender.com/api/letters/generate",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId }), // or whatever data you send
-          }
-        );
-
-        const result = await response.json();
-        if (result?.link) {
-          setPdfUrl(result.link); // ✅ Cloudinary public URL
-        }
+        const res = await fetch("https://hrms-backend-2-t1l2.onrender.com/api/letters/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename, userId }), // whatever data your API needs
+        });
+        const data = await res.json();
+        setPdfUrl(data.link);
       } catch (error) {
         console.error("Error fetching letter PDF:", error);
       }
     };
-
-    if (userId) {
-      fetchPdf();
-    }
-  }, [userId]);
+    fetchPdf();
+  }, [filename, userId]);
 
   return <SignLetterPage pdfUrl={pdfUrl} userId={userId} />;
 };

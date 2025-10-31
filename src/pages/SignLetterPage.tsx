@@ -130,11 +130,9 @@ import { useParams, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const SignLetterPage: React.FC = () => {
-  const { filename, userId } = useParams<{
-    filename: string;
-    userId: string;
-  }>();
+const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({ pdfUrl, userId }) => {
+   const { filename } = useParams<{ filename: string }>();
+
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -209,13 +207,14 @@ const SignLetterPage: React.FC = () => {
   //   const url = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
   //   window.open(url, "_blank");
   // };
-const viewPdf = () => {
-  if (!pdfUrl) {
-    toast.error("PDF not ready yet");
-    return;
-  }
-  window.open(pdfUrl, "_blank");
-};
+  const viewPdf = () => {
+    if (!pdfUrl) {
+      toast.error("PDF not ready yet.");
+      return;
+    }
+    window.open(pdfUrl, "_blank");
+  };
+
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-blue-50 via-indigo-100 to-purple-100 p-8 max-w-8xl mx-auto shadow-lg rounded-xl">

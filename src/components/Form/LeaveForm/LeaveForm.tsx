@@ -6,18 +6,18 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 interface LeaveRequest {
-  leaveType: "sick" | "casual" | "work" ;
+  leaveType: "sick" | "casual" | "work";
   dayType: "fullday" | "halfday" | "compensatory";
   startDate: string;
   endDate?: string;
-  leavingTime?:string;
+  leavingTime?: string;
   reason: string;
 }
 
 const LeaveRequestForm: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.user);
-  const role = user?.role
+  const role = user?.role;
   const {
     register,
     handleSubmit,
@@ -43,13 +43,11 @@ const LeaveRequestForm: React.FC = () => {
       await applyLeave(data);
       toast.success("Leave request submitted successfully!");
       reset();
-      if(role==="HR"||role==="Admin"){
+      if (role === "HR" || role === "Admin") {
         navigate("/admin/leave-requests");
-      }
-      else if (role === "employee"){
+      } else if (role === "employee") {
         navigate("/employee/leaves");
       }
-      
     } catch (error: any) {
       console.error("Leave submission error:", error);
       toast.error(error?.response?.data?.message || "Submission failed");
@@ -65,7 +63,6 @@ const LeaveRequestForm: React.FC = () => {
     >
       <h2 className="text-2xl font-bold text-center">Leave Request Form</h2>
 
-     
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block mb-2 font-semibold">Leave Type</label>
@@ -76,7 +73,7 @@ const LeaveRequestForm: React.FC = () => {
             <option value="">Select Type</option>
             <option value="sick">Sick Leave</option>
             <option value="casual">Casual Leave</option>
-             <option value="work">Work from Home</option>
+            <option value="work">Work from Home</option>
           </select>
           {errors.leaveType && (
             <p className="text-red-500 text-sm mt-1">
@@ -94,7 +91,7 @@ const LeaveRequestForm: React.FC = () => {
             <option value="">Select Day Type</option>
             <option value="fullday">Full Day</option>
             <option value="halfday">Half Day</option>
-            <option value="compensatory">Compensatory Day</option>
+            {/* <option value="compensatory">Compensatory Day</option> */}
           </select>
           {errors.dayType && (
             <p className="text-red-500 text-sm mt-1">
@@ -139,7 +136,7 @@ const LeaveRequestForm: React.FC = () => {
               type="time"
               {...register("leavingTime", {
                 required: "Leaving Time is required",
-                })}
+              })}
               min={today}
               className="w-full border cursor-pointer border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#226597]"
             />
@@ -154,16 +151,13 @@ const LeaveRequestForm: React.FC = () => {
         {dayType === "fullday" && (
           <div>
             <label className="block mb-2 font-semibold">End Date</label>
-            <input 
+            <input
               type="date"
               {...register("endDate", {
                 required: "End date is required",
                 validate: (endDate) => {
                   const startDate = getValues("startDate");
-                  if (
-                    startDate &&
-                    new Date(endDate) < new Date(startDate)
-                  ) {
+                  if (startDate && new Date(endDate) < new Date(startDate)) {
                     return "End date cannot be before start date";
                   }
                   return true;
@@ -181,7 +175,6 @@ const LeaveRequestForm: React.FC = () => {
         )}
       </div>
 
- 
       <div>
         <label className="block mb-2 font-semibold">Reason</label>
         <textarea
@@ -201,7 +194,6 @@ const LeaveRequestForm: React.FC = () => {
         )}
       </div>
 
-      
       <div className="text-right">
         <button
           type="submit"
