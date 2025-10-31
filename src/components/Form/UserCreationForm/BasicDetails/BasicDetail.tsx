@@ -68,6 +68,7 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
     engineering: ["MERN-Stack Developer", "Data Engineer"],
     hr: ["HR Manager", "HR Executive"],
     sales: ["Business Development Executive", "Sales"],
+    Management: ["Project Manager", "Product Manager"],
   };
   const selectedDepartment = watch("basicDetails.department");
   const designationOptions = departmentDesignationMap[selectedDepartment] || [];
@@ -137,7 +138,7 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
       API.get(`/api/users/employee/${id}`)
         .then((response) => {
           console.log("api data", response.data);
-         console.log("User API response data:", response.data);
+          console.log("User API response data:", response.data);
           const { employeeId } = response.data;
 
           setEmployeeId(employeeId);
@@ -157,7 +158,6 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
       <h4>Add User Information</h4>
       <p className="text-lg font-medium text-back-100 mt-5">
         EmployeeId : {employeeId ?? "Loading..."}
-        
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 p-4 bg-white rounded-xl">
@@ -352,6 +352,7 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
             <option value="engineering">Engineering</option>
             <option value="hr">HR</option>
             <option value="sales">Sales</option>
+            <option value="management">Management</option>
           </select>
           <div className="h-5 mt-1">
             {!readOnly && errors.basicDetails?.department?.message && (

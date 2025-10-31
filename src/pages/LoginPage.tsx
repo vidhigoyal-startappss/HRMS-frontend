@@ -11,6 +11,9 @@ import { login as LoginAPI } from "../api/auth";
 import { signup } from "../api/auth";
 import loginBg from "../assets/loginBg.jpg";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
+
 
 interface LoginFormInputs {
   email: string;
@@ -62,11 +65,34 @@ const Login: React.FC = () => {
         toast.error("Unknown role. Cannot redirect.");
       }
     } catch (err: any) {
-      const msg =
-        err.response?.data?.message || "Invalid credentials or server error.";
-      setErrorMsg(msg);
-      toast.error(msg);
-    } finally {
+  const status = err.response?.status;
+  const msg = err.response?.data?.message || "Invalid credentials or server error.";
+
+  setErrorMsg(msg);
+  setIsLoading(false);
+
+  
+  if (status === 401) {
+    Swal.fire({
+      icon: "warning",
+      title: "Unauthorized",
+      text: "You are already logged in with another role. Please use another browser or incognito window to log in.",
+      confirmButtonText: "Got it!",
+      confirmButtonColor: "#113F67",
+    });
+  } else {
+  
+    Swal.fire({
+      icon: "error",
+      title: "Login Failed",
+      text: msg,
+      confirmButtonText: "OK",
+      confirmButtonColor: "#113F67",
+    });
+  }
+
+  toast.error(msg);
+ } finally {
       setIsLoading(false);
     }
   };
