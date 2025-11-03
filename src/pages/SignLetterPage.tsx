@@ -209,20 +209,20 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
   //   const url = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
   //   window.open(url, "_blank");
   // };
-  const viewPdf = () => {
-    console.log("Opening PDF:", pdfUrl);
-    if (!pdfUrl) {
-      toast.error("PDF not ready yet.");
-      return;
-    }
+const viewPdf = () => {
+  if (!pdfUrl) {
+    toast.error("PDF not ready yet.");
+    return;
+  }
 
-    const newTab = window.open("", "_blank");
-    if (newTab) {
-      newTab.location.href = pdfUrl;
-    } else {
-      toast.error("Please allow popups for this site.");
-    }
-  };
+  const newTab = window.open(pdfUrl, "_blank", "noopener,noreferrer");
+  if (!newTab) {
+    toast.error("Please allow popups for this site.");
+  } else {
+    newTab.focus();
+  }
+};
+
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-blue-50 via-indigo-100 to-purple-100 p-8 max-w-8xl mx-auto shadow-lg rounded-xl">
