@@ -303,6 +303,8 @@ import { getEmployeeById } from "../api/auth";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { deleteLeave } from "../api/leave";
+import Swal from "sweetalert2";
+
 interface UserLeaves {
   wfhLeft: number;
   plLeft: number;
@@ -346,43 +348,55 @@ const EmployeeLeaveDashboard: React.FC = () => {
     pendingCount: 0,
     earnedLeavesTillNow: 0,
   });
+  const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
-      const data = await getLeaves();
-      setLeaves(data);
+      try {
+        setLoading(true);
+        setHasError(false);
+        const data = await getLeaves();
+        setLeaves(data);
 
-      const user = await getEmployeeById(userId);
-      setUserData(user);
+        const user = await getEmployeeById(userId);
+        setUserData(user);
 
-      const joinDate = new Date(user?.createdAt || "2024-01-01");
-      const now = new Date();
+        const joinDate = new Date(user?.createdAt || "2024-01-01");
+        const now = new Date();
 
-      let monthsWorked =
-        (now.getFullYear() - joinDate.getFullYear()) * 12 +
-        (now.getMonth() - joinDate.getMonth());
+        let monthsWorked =
+          (now.getFullYear() - joinDate.getFullYear()) * 12 +
+          (now.getMonth() - joinDate.getMonth());
 
-      if (now.getDate() < 15) {
-        monthsWorked--;
+        if (now.getDate() < 15) {
+          monthsWorked--;
+        }
+
+        if (monthsWorked > 12) {
+          monthsWorked = 12;
+        }
+
+        const dynamicPlLeft = monthsWorked * 1.5;
+        const dynamicWfhLeft = monthsWorked * 1;
+
+        const summary = calculateLeaveSummary(
+          data,
+          dynamicPlLeft,
+          dynamicWfhLeft
+        );
+
+        setLeaveSummary(summary);
+      } catch (error) {
+        console.error("Error fetching leave data:", error);
+        setHasError(true);
+      } finally {
+        setLoading(false);
       }
-
-      if (monthsWorked > 12) {
-        monthsWorked = 12;
-      }
-
-      const dynamicPlLeft = monthsWorked * 1.5;
-      const dynamicWfhLeft = monthsWorked * 1;
-
-      const summary = calculateLeaveSummary(
-        data,
-        dynamicPlLeft,
-        dynamicWfhLeft
-      );
-
-      setLeaveSummary(summary);
     };
+
     fetch();
-  }, []);
+  }, [userId]);
 
   const navigate = useNavigate();
   const handleNavigateLeaveForm = () => {
@@ -567,6 +581,55 @@ const EmployeeLeaveDashboard: React.FC = () => {
     // { label: "Paid Leaves Yearly", value: 18 },
     // { label: "WFH Yearly", value: 12 },
   ];
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
+        <svg
+          className="animate-spin h-12 w-12 text-[#226597]"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 018 8h-4l3 3-3 3h4a8 8 0 01-8 8v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+          ></path>
+        </svg>
+        <p className="text-[#226597] font-medium text-lg">
+          Fetching leave records...
+        </p>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops!",
+      text: "Failed to fetch leave data.",
+      confirmButtonColor: "#226597",
+    });
+
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-2">
+        <p className="text-gray-500">
+          Something went wrong while loading your leave data.
+        </p>
+        <p className="text-[#226597]">
+          Please refresh the page or try again later.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-10 text-[#113F67]">
@@ -620,34 +683,34 @@ const EmployeeLeaveDashboard: React.FC = () => {
           <tbody>
             {leaves.length === 0 ? (
               <tr>
-             <td
-  colSpan={9}
-  className="text-center px-4 py-10 text-gray-500 italic"
->
-  <div className="flex flex-col items-center space-y-3">
-    <svg
-      className="w-14 h-14 text-gray-300"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 17v-2a4 4 0 00-4-4H5a4 4 0 000 8h1a4 4 0 004-4v-2m8 4v-2a4 4 0 00-4-4h-1a4 4 0 000 8h1a4 4 0 004-4v-2"
-      />
-    </svg>
-    <p className="text-gray-700 text-lg font-medium">
-      Nothing to see here yet!
-    </p>
-    <p className="text-gray-500 text-sm">
-      Your leave history will appear here once you have submitted requests.
-    </p>
-  </div>
-</td>
-
+                <td
+                  colSpan={9}
+                  className="text-center px-4 py-10 text-gray-500 italic"
+                >
+                  <div className="flex flex-col items-center space-y-3">
+                    <svg
+                      className="w-14 h-14 text-gray-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 17v-2a4 4 0 00-4-4H5a4 4 0 000 8h1a4 4 0 004-4v-2m8 4v-2a4 4 0 00-4-4h-1a4 4 0 000 8h1a4 4 0 004-4v-2"
+                      />
+                    </svg>
+                    <p className="text-gray-700 text-lg font-medium">
+                      Nothing to see here yet!
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      Your leave history will appear here once you have
+                      submitted requests.
+                    </p>
+                  </div>
+                </td>
               </tr>
             ) : (
               leaves.map((leave, index) => (

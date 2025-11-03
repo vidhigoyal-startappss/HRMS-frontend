@@ -6,6 +6,7 @@ import {
   getTodayAllAttendance,
   getAllAttendance,
 } from "../api/attendance";
+import Swal from "sweetalert2";
 
 interface AttendanceRecord {
   checkInTime?: string;
@@ -26,7 +27,7 @@ const AttendanceManagement = () => {
   //   []
   // );
   const [loading, setLoading] = useState(true);
-
+  const [hasError, setHasError] = useState(false);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -42,20 +43,45 @@ const AttendanceManagement = () => {
   useEffect(() => {
     const fetchAttendance = async () => {
       setLoading(true);
-      if (isAdmin) {
-        try {
-          const allAttendance = await getAllAttendance();
-          setAllAttendance(allAttendance || []);
-        } catch (err) {
-          console.error("All Attendance Fetch Error:", err);
-        }
-      }
+      setHasError(false);
 
       try {
+        if (isAdmin) {
+          const all = await getAllAttendance();
+          if (!all || all.length === 0) {
+            Swal.fire({
+              icon: "info",
+              title: "No attendance found",
+              text: "No attendance records available for any employees.",
+              confirmButtonColor: "#226597",
+            });
+            setAllAttendance([]);
+          } else {
+            setAllAttendance(all);
+          }
+        }
+
         const mine = await getMyAttendance();
-        setMyAttendance(mine || []);
+        if (!mine || mine.length === 0) {
+          Swal.fire({
+            icon: "info",
+            title: "No personal attendance records",
+            text: "You don't have any attendance records yet.",
+            confirmButtonColor: "#226597",
+          });
+          setMyAttendance([]);
+        } else {
+          setMyAttendance(mine);
+        }
       } catch (err) {
         console.error("Attendance Fetch Error:", err);
+        setHasError(true);
+        Swal.fire({
+          icon: "error",
+          title: "Oops!",
+          text: "Failed to fetch attendance data.",
+          confirmButtonColor: "#226597",
+        });
       } finally {
         setLoading(false);
       }
@@ -163,6 +189,46 @@ const AttendanceManagement = () => {
 
     return matchesName && matchesRole && matchesStatus;
   });
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
+        <svg
+          className="animate-spin h-12 w-12 text-[#226597]"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 018 8h-4l3 3-3 3h4a8 8 0 01-8 8v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+          ></path>
+        </svg>
+        <p className="text-[#226597] font-medium text-lg">
+          Fetching attendance...
+        </p>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-2">
+        <p className="text-gray-500">
+          We couldn’t load attendance data right now. Please try again later.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 space-y-8">

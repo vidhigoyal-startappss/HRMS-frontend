@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { applyLeave } from "../../../api/leave";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,9 @@ const LeaveRequestForm: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.user);
   const role = user?.role;
+    const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -40,17 +43,23 @@ const LeaveRequestForm: React.FC = () => {
 
   const onSubmit = async (data: LeaveRequest) => {
     try {
+        setLoading(true);
+      setErrorMessage("");
+
       await applyLeave(data);
       toast.success("Leave request submitted successfully!");
       reset();
-      if (role === "HR" || role === "Admin") {
+     if (role === "HR" || role === "Admin") {
         navigate("/admin/leave-requests");
       } else if (role === "employee") {
         navigate("/employee/leaves");
       }
     } catch (error: any) {
       console.error("Leave submission error:", error);
-      toast.error(error?.response?.data?.message || "Submission failed");
+      const msg = error?.response?.data?.message || "Something went wrong. Please try again!";
+      setErrorMessage(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,6 +71,12 @@ const LeaveRequestForm: React.FC = () => {
       className="max-w-3xl mx-auto bg-white p-4 space-y-8 text-[#113F67]"
     >
       <h2 className="text-2xl font-bold text-center">Leave Request Form</h2>
+   {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{errorMessage}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -196,10 +211,35 @@ const LeaveRequestForm: React.FC = () => {
 
       <div className="text-right">
         <button
-          type="submit"
-          className="bg-[#113F67] hover:bg-[#226597] text-white px-6 py-2 rounded-md text-sm font-semibold transition shadow-sm"
+                type="submit"
+          disabled={loading}
+          className={`bg-[#113F67] hover:bg-[#226597] text-white px-6 py-2 rounded-md text-sm font-semibold transition shadow-sm flex items-center justify-center ${
+            loading ? "opacity-70 cursor-not-allowed" : ""
+          }`}
         >
-          Submit Request
+          {loading && (
+            <svg
+              className="animate-spin h-5 w-5 mr-2 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 018 8h-4l3 3-3 3h4a8 8 0 01-8 8v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+              ></path>
+            </svg>
+          )}
+          {loading ? "Submitting..." : "Submit Request"}
         </button>
       </div>
     </form>

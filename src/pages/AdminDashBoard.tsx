@@ -15,6 +15,7 @@ import { fetchEmployees } from "../api/auth";
 import AttendanceTracker from "../components/Attendance/AttendanceTracker";
 import { getLeaves } from "../api/leave";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 interface Employee {
   firstName: string;
@@ -35,15 +36,30 @@ const AdminDashboard = () => {
   const [leaves, setLeaves] = useState([]);
   const [payrolls, setPayrolls] = useState<Payroll[]>([]);
   const [showAllEmployees, setShowAllEmployees] = useState(false);
+const [loading, setLoading] = useState(true);
+const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const empData = await fetchEmployees();
-      const leaveData = await getLeaves();
+ const fetchData = async () => {
+  setLoading(true);
+  setHasError(false);
+
+  try {
+    const empData = await fetchEmployees();
+    const leaveData = await getLeaves();
+
+    if (!empData || empData.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'No employees found',
+        text: 'Currently, there are no employees to display.',
+        confirmButtonColor: '#226597',
+      });
+      setEmployees([]);
+    } else {
       const formatted = empData.map((emp: any) => ({
         firstName: emp.firstName ?? "",
         lastName: emp.lastName ?? "",
@@ -51,15 +67,52 @@ const AdminDashboard = () => {
         profileImg: emp.profileImg || userimg,
       }));
       setEmployees(formatted);
-      setLeaves(leaveData);
-
-      setPayrolls([{ name: "Sonia Patel", salary: "₹50,000", img: userimg }]);
-    } catch (err) {
-      console.error("Dashboard Load Error:", err);
     }
-  };
+
+    if (!leaveData || leaveData.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'No leaves found',
+        text: 'Currently, there are no leave entries to display.',
+        confirmButtonColor: '#226597',
+      });
+      setLeaves([]);
+    } else {
+      setLeaves(leaveData);
+    }
+
+    setPayrolls([{ name: "Sonia Patel", salary: "₹50,000", img: userimg }]);
+  } catch (err) {
+    console.error("Dashboard Load Error:", err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops!',
+      text: 'Failed to load dashboard data.',
+      confirmButtonColor: '#226597',
+    });
+    setHasError(true);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const visibleEmployees = showAllEmployees ? employees : employees.slice(0, 5);
+if (loading) {
+  return (
+    <div className="flex justify-center items-center min-h-[400px]">
+      <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+    </div>
+  );
+}
+
+if (hasError) {
+  return (
+    <div className="flex justify-center items-center min-h-[400px] text-center text-gray-500">
+      <p>Oops! Something went wrong while loading the dashboard.</p>
+    </div>
+  );
+}
 
   return (
     <div className="p-4 sm:p-6 space-y-6">
@@ -115,7 +168,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div className="bg-white shadow rounded-xl p-2 w-full h-[320px] overflow-y-auto">
+        <div className="bg-white shadow rounded-xl p-2 w-full h-[320px] overflow-y-auto">
           <h3 className="text-base sm:text-lg font-bold mb-3 text-[#113F67]">
             Employees
           </h3>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/auth";
+import Swal from "sweetalert2";
 
 interface PayrollEntry {
   month: string;
@@ -11,42 +12,68 @@ const EmployeePayrollViewer = () => {
   const [months, setMonths] = useState<PayrollEntry[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [selectedSlipUrl, setSelectedSlipUrl] = useState<string>("");
+const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
     const storedUser = stored ? JSON.parse(stored) : null;
     const id = storedUser?.userId;
     if (id) {
-      console.log("Found employeeId in localStorage:", id);
       setEmployeeId(id);
     } else {
-      console.warn("No user data found in localStorage");
+      Swal.fire({
+        icon: "info",
+        title: "No User Found",
+        text: "Please log in again to view your payroll records.",
+        confirmButtonColor: "#226597",
+      });
     }
   }, []);
 
   useEffect(() => {
-    if (!employeeId) {
-      console.log("employeeId is empty, skipping fetch");
-      return;
-    }
+    if (!employeeId) return;
 
     const fetchPayrolls = async () => {
+      setLoading(true);
+      setHasError(false);
+
       try {
         const response = await API.get(`/api/payrolls/${employeeId}`);
 
+        let data: PayrollEntry[] = [];
+
         if (response.data) {
           if (Array.isArray(response.data.payrolls)) {
-            console.log("Payrolls array:", response.data.payrolls);
-            setMonths(response.data.payrolls);
+            data = response.data.payrolls;
           } else if (Array.isArray(response.data)) {
-            console.log("Payrolls directly as array:", response.data);
-            setMonths(response.data);
-          } else {
-            console.warn("Payrolls format unexpected:", response.data);
+            data = response.data;
           }
+        }
+
+        if (data.length === 0) {
+          Swal.fire({
+            icon: "info",
+            title: "No Payslips Found",
+            text: "You don’t have any uploaded payslips yet.",
+            confirmButtonColor: "#226597",
+          });
+          setMonths([]);
+        } else {
+          setMonths(data);
         }
       } catch (error) {
         console.error("Error fetching payrolls:", error);
+        setHasError(true);
+        Swal.fire({
+          icon: "error",
+          title: "Oops!",
+          text: "Failed to fetch payroll data. Please try again later.",
+          confirmButtonColor: "#226597",
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -82,11 +109,54 @@ const EmployeePayrollViewer = () => {
 
       a.remove();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+     } catch (error) {
       console.error("Failed to download payslip:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Unable to download payslip. Please try again.",
+        confirmButtonColor: "#226597",
+      });
     }
   };
-
+if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
+        <svg
+          className="animate-spin h-12 w-12 text-[#226597]"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 018 8h-4l3 3-3 3h4a8 8 0 01-8 8v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+          ></path>
+        </svg>
+        <p className="text-[#226597] font-medium text-lg">
+          Fetching payroll records...
+        </p>
+      </div>
+    );
+  }
+if (hasError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-2">
+        <p className="text-gray-500">
+          We couldn’t load payroll data right now. Please try again later.
+        </p>
+      </div>
+    );
+  }
  return (
   <div className="max-w-md mx-auto mt-20 px-10 py-8 bg-white/70 backdrop-blur-md shadow-2xl rounded-3xl border border-blue-200 transition-all duration-300">
     <h2 className="text-2xl font-bold text-center text-[#113F67] mb-6">

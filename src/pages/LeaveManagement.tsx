@@ -4,6 +4,7 @@ import { getLeaves, updateStatus as updateLeaveStatusAPI } from "../api/leave";
 import { LeaveEntry } from "../api/leave";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
 const leaveHeaders: string[] = [
   "Employee Name",
@@ -21,6 +22,8 @@ const LeaveManagement: React.FC = () => {
   const [filteredLeaves, setFilteredLeaves] = useState<LeaveEntry[]>([]);
   const [dropdownIndex, setDropdownIndex] = useState<number | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const [filters, setFilters] = useState({
     leaveType: "",
     status: "",
@@ -36,13 +39,38 @@ const LeaveManagement: React.FC = () => {
   const role = user?.role;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchLeaves = async () => {
+  const fetchLeavesData = async () => {
+    setLoading(true);
+    try {
       const data = await getLeaves();
-      setLeaves(data);
-      setFilteredLeaves(data);
-    };
-    fetchLeaves();
+
+      if (!data || data.length === 0) {
+        Swal.fire({
+          icon: "info",
+          title: "No leaves found",
+          text: "Currently, there are no leave entries to display.",
+          confirmButtonColor: "#226597",
+        });
+        setLeaves([]);
+        setFilteredLeaves([]);
+      } else {
+        setLeaves(data);
+        setFilteredLeaves(data);
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Failed to fetch leave data.",
+        confirmButtonColor: "#226597",
+      });
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchLeavesData();
   }, []);
 
   useEffect(() => {
@@ -307,32 +335,23 @@ const LeaveManagement: React.FC = () => {
               </td>
             </tr>
           ))}
-          {filteredLeaves.length === 0 && (
+          {loading ? (
             <tr>
-              <td colSpan={leaveHeaders.length} className="border p-6">
-                <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-16 w-16 mb-4 text-gray-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <p className="text-lg font-medium mb-2">No users found</p>
-                  <p className="text-sm text-gray-400">
-                    Try adjusting your filters or check back later.
-                  </p>
+              <td colSpan={leaveHeaders.length} className="text-center py-20">
+                <div className="flex justify-center items-center">
+                  <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
                 </div>
               </td>
             </tr>
-          )}
+          ) : filteredLeaves.length === 0 ? (
+            <tr>
+              <td colSpan={leaveHeaders.length} className="text-center py-20">
+                <div className="flex flex-col items-center text-gray-500">
+                  <p className="text-lg font-semibold">No users found.</p>
+                </div>
+              </td>
+            </tr>
+          ) : null}
         </tbody>
       </table>
       {filteredLeaves.length > 0 && (

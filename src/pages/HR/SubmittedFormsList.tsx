@@ -7,8 +7,11 @@ const SubmittedFormsList = () => {
   const [filteredForms, setFilteredForms] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [loading, setLoading] = useState(true); // new loading state
+  const [error, setError] = useState<string | null>(null); // new error state
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     API.get("/api/onboarding/submitted")
       .then((res) => {
         setForms(res.data);
@@ -16,6 +19,10 @@ const SubmittedFormsList = () => {
       })
       .catch((err) => {
         console.error("Failed to fetch submitted forms:", err);
+        setError("Oops! Something went wrong while fetching forms, please try again later.");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -76,29 +83,25 @@ const SubmittedFormsList = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredForms.length === 0 ? (
+          {loading ? (
             <tr>
-              <td colSpan={4} className="border p-6">
-                <div className="flex flex-col items-center justify-center py-10 text-gray-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-16 w-16 mb-4 text-gray-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m4-6v6m0 0H5m14 0a2 2 0 002-2v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14z"
-                    />
-                  </svg>
-                  <p className="text-lg font-medium mb-2">No forms found</p>
-                  <p className="text-sm text-gray-400">
-                    Try adjusting your search or check back later.
-                  </p>
+              <td colSpan={4} className="border p-6 text-center">
+                <div className="flex flex-col items-center justify-center py-10">
+                  <div className="loader mb-2"></div>
+                  <p className="text-gray-500">Loading forms...</p>
                 </div>
+              </td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan={4} className="border p-6 text-center">
+                <p className="text-red-500 font-medium">{error}</p>
+              </td>
+            </tr>
+          ) : filteredForms.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="border p-6 text-center">
+                <p className="text-gray-500 font-medium">No forms found</p>
               </td>
             </tr>
           ) : (
@@ -142,6 +145,21 @@ const SubmittedFormsList = () => {
           </div>
         </div>
       )}
+      <style>{`
+        .loader {
+          border: 4px solid #f3f3f3;
+          border-top: 4px solid #226597;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

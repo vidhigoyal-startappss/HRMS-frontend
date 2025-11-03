@@ -207,13 +207,21 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({ pdfUrl, 
   //   const url = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
   //   window.open(url, "_blank");
   // };
-  const viewPdf = () => {
-    if (!pdfUrl) {
-      toast.error("PDF not ready yet.");
-      return;
-    }
-    window.open(pdfUrl, "_blank");
-  };
+const viewPdf = () => {
+  console.log("Opening PDF:", pdfUrl);
+  if (!pdfUrl) {
+    toast.error("PDF not ready yet.");
+    return;
+  }
+
+  const newTab = window.open("", "_blank");
+  if (newTab) {
+    newTab.location.href = pdfUrl;
+  } else {
+    toast.error("Please allow popups for this site.");
+  }
+};
+
 
 
   return (

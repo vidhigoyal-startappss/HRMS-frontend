@@ -16,6 +16,8 @@ import { Autocomplete } from "../components/common/AutoCompleteComp/AutoComplete
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { RootState } from "../store";
+import Swal from "sweetalert2";
+import { ClipLoader } from "react-spinners"; // or PulseLoader
 
 interface Employee {
   _id: string;
@@ -82,20 +84,38 @@ const EmployeeManagement = () => {
     return capitalizeText ? capitalize(trimmed) : trimmed;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchEmployees(showArchived);
+ useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const data = await fetchEmployees(showArchived);
+
+      if (!data || data.length === 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'No employees found',
+          text: 'Currently, there are no employees to display.',
+          confirmButtonColor: '#226597',
+        });
+        setEmployeeData([]);
+      } else {
         setEmployeeData(data);
-      } catch (err) {
-        setError("Failed to fetch employee data.");
-        console.error(err);
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchData();
-  }, [showArchived]);
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: 'Failed to fetch employee data.',
+        confirmButtonColor: '#226597',
+      });
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [showArchived]);
+
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {

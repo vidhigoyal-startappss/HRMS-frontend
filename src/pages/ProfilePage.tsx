@@ -5,6 +5,7 @@ import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { Edit, X } from "lucide-react";
 import { useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const maskedFields = ["adharNumber", "panNumber", "accountNumber", "ifscCode"];
 
@@ -81,21 +82,35 @@ const Profile: React.FC = () => {
   const [signedLetterUrl, setSignedLetterUrl] = useState(null);
 
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     API.get(`/api/users/employee/${userId}?archived=true`)
       .then((res) => {
         setProfile(res.data);
+        setLoading(false); 
       })
-      .catch(() => toast.error("Failed to load profile"));
+      .catch(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops!",
+          text: "Failed to load profile. Please try again later.",
+          confirmButtonColor: "#226597",
+        });
+        setLoading(false);
+      });
   }, [userId]);
 
   const handleGenerateLetter = async () => {
-    const res = await fetch("https://hrms-backend-2-t1l2.onrender.com/api/letters/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profile),
-    });
+    const res = await fetch(
+      "https://hrms-backend-2-t1l2.onrender.com/api/letters/generate",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profile),
+      }
+    );
 
     const result = await res.json();
 
@@ -142,10 +157,13 @@ const Profile: React.FC = () => {
     }
 
     try {
-      const res = await fetch("https://hrms-backend-2-t1l2.onrender.com/api/letters/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "https://hrms-backend-2-t1l2.onrender.com/api/letters/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const result = await res.json();
 
@@ -420,7 +438,18 @@ const Profile: React.FC = () => {
       </div>
     );
   };
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[70vh]">
+        <div className="text-center">
+          <p className="text-lg font-semibold text-gray-600">
+            Loading profile...
+          </p>
+          <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-blue-500 border-t-transparent mt-4"></div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-8xl mx-auto px-6 py-2 bg-white rounded-2xl">
       <div className="flex justify-end items-center pb-2">
