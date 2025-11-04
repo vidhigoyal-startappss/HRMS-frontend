@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
-  pdfUrl,
-  userId,
-}) => {
-  const { filename } = useParams<{ filename: string }>();
-
+const SignLetterPage: React.FC<{
+  pdfUrl: string;
+  userId: string;
+  loading: boolean;
+}> = ({ pdfUrl, userId, loading }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
@@ -32,16 +30,7 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
       return;
     }
 
-    if (!selectedFile) {
-      toast.error("No file selected");
-      return;
-    }
-
-    if (!userId) {
-      toast.error("User ID missing");
-      return;
-    }
-
+  
     setUploading(true);
 
     try {
@@ -74,22 +63,19 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
     }
   };
 
- const downloadPdf = () => {
-  if (!pdfUrl) {
-    toast.error("PDF not ready yet.");
-    return;
-  }
+  const downloadPdf = () => {
+    if (!pdfUrl) {
+      toast.error("PDF not ready yet.");
+      return;
+    }
 
-  const link = document.createElement("a");
-  link.href = pdfUrl;
-  link.download = `Appointment_Letter.pdf`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-
-
-
+    const link = document.createElement("a");
+    link.href = pdfUrl;
+    link.download = `Appointment_Letter.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-blue-50 via-indigo-100 to-purple-100 p-8 max-w-8xl mx-auto shadow-lg rounded-xl">
@@ -147,15 +133,18 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
         </div>
       </div>
 
-      <div className="flex space-x-6 mt-8 w-full max-w-xl justify-center">
-       <button
-  onClick={downloadPdf}
-  className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-bold text-lg rounded-lg shadow-lg hover:from-indigo-700 hover:to-purple-800 transition duration-300 ease-in-out drop-shadow-md"
->
-  Download PDF
-</button>
-
-
+      <div className="flex justify-center space-x-6 mt-6">
+        <button
+          onClick={downloadPdf}
+          disabled={loading}
+          className={`px-8 py-4 text-white font-bold text-lg rounded-lg shadow-lg transition duration-300 ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800"
+          }`}
+        >
+          {loading ? "Generating..." : "Download Appointment Letter"}
+        </button>
 
         <button
           onClick={handleSubmit}
