@@ -23,9 +23,7 @@ interface AttendanceRecord {
 const AttendanceManagement = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const [myAttendance, setMyAttendance] = useState<AttendanceRecord[]>([]);
-  // const [todayAttendance, setTodayAttendance] = useState<AttendanceRecord[]>(
-  //   []
-  // );
+
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [fromDate, setFromDate] = useState("");
@@ -39,6 +37,9 @@ const AttendanceManagement = () => {
 
   const isAdmin = ["HR", "Admin", "SuperAdmin", "Manager"].includes(user?.role);
   const [allAttendance, setAllAttendance] = useState<AttendanceRecord[]>([]);
+  const itemsPerPage = 5;
+  const [myPage, setMyPage] = useState(1);
+  const [adminPage, setAdminPage] = useState(1);
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -90,63 +91,6 @@ const AttendanceManagement = () => {
     if (user) fetchAttendance();
   }, [user, isAdmin]);
 
-  // useEffect(() => {
-  //   const generateDummyData = () => {
-  //     const dummyData: AttendanceRecord[] = [];
-  //     const today = new Date();
-
-  //     const employees = [
-  //       { name: "John Doe", role: "Employee" },
-  //       { name: "Alice Smith", role: "Manager" },
-  //       { name: "Bob Johnson", role: "Intern" },
-  //       { name: "Emma Wilson", role: "HR" },
-  //     ];
-
-  //     for (let day = 0; day < 15; day++) {
-  //       const date = new Date(today);
-  //       date.setDate(today.getDate() - day);
-
-  //       employees.forEach((emp) => {
-  //         const isPresent = Math.random() > 0.2;
-
-  //         if (isPresent) {
-  //           const checkInTime = new Date(date);
-  //           checkInTime.setHours(9, 0, 0);
-
-  //           const checkOutTime = new Date(date);
-  //           const randomHours = Math.floor(Math.random() * (9 - 4) + 4);
-  //           checkOutTime.setHours(checkInTime.getHours() + randomHours, 0, 0);
-
-  //           dummyData.push({
-  //             checkInTime: checkInTime.toISOString(),
-  //             checkOutTime: checkOutTime.toISOString(),
-  //             location: "Office",
-  //             user: {
-  //               name: emp.name,
-  //               role: emp.role,
-  //             },
-  //             status: "Present",
-  //           });
-  //         } else {
-  //           dummyData.push({
-  //             location: "Office",
-  //             user: {
-  //               name: emp.name,
-  //               role: emp.role,
-  //             },
-  //             status: "Absent",
-  //           });
-  //         }
-  //       });
-  //     }
-
-  //     setTodayAttendance(dummyData);
-  //     setLoading(false);
-  //   };
-
-  //   generateDummyData();
-  // }, []);
-
   const formatDate = (dateStr?: string) =>
     dateStr ? new Date(dateStr).toLocaleDateString() : "--";
   const formatTime = (timeStr?: string) =>
@@ -190,6 +134,27 @@ const AttendanceManagement = () => {
     return matchesName && matchesRole && matchesStatus;
   });
 
+  useEffect(
+    () => setMyPage(1),
+    [fromDate, toDate, statusFilter, locationFilter]
+  );
+  useEffect(() => setAdminPage(1), [searchName, roleFilter, adminStatusFilter]);
+
+  const totalMyPages = Math.ceil(filteredMyAttendance.length / itemsPerPage);
+  const totalAdminPages = Math.ceil(
+    filteredTodayAttendance.length / itemsPerPage
+  );
+
+  const paginatedMyAttendance = filteredMyAttendance.slice(
+    (myPage - 1) * itemsPerPage,
+    myPage * itemsPerPage
+  );
+
+  const paginatedAdminAttendance = filteredTodayAttendance.slice(
+    (adminPage - 1) * itemsPerPage,
+    adminPage * itemsPerPage
+  );
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
@@ -206,12 +171,12 @@ const AttendanceManagement = () => {
             r="10"
             stroke="currentColor"
             strokeWidth="4"
-          ></circle>
+          />
           <path
             className="opacity-75"
             fill="currentColor"
             d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 018 8h-4l3 3-3 3h4a8 8 0 01-8 8v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-          ></path>
+          />
         </svg>
         <p className="text-[#226597] font-medium text-lg">
           Fetching attendance...
@@ -328,7 +293,7 @@ const AttendanceManagement = () => {
                   </td>
                 </tr>
               ) : (
-                filteredMyAttendance.map((emp, i) => (
+                paginatedMyAttendance.map((emp, i) => (
                   <tr key={i} className="hover:bg-blue-50 text-[#226597]">
                     <td className="px-4 py-2">{formatDate(emp.checkInTime)}</td>
                     <td className="px-4 py-2">{formatTime(emp.checkInTime)}</td>
@@ -342,110 +307,37 @@ const AttendanceManagement = () => {
             </tbody>
           </table>
         </div>
+
+        {totalMyPages > 1 && (
+          <div className="flex justify-end mt-2 space-x-2">
+            <button
+              disabled={myPage === 1}
+              onClick={() => setMyPage((prev) => prev - 1)}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="px-3 py-1">
+              {myPage} / {totalMyPages}
+            </span>
+            <button
+              disabled={myPage === totalMyPages}
+              onClick={() => setMyPage((prev) => prev + 1)}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       {isAdmin && (
-        //     <div className="bg-white rounded-xl p-4 shadow">
-        //       <h2 className="text-lg font-semibold mb-4 text-[#113F67]">
-        //         Today's Attendance (All Employees)
-        //       </h2>
-
-        //       <div className="flex flex-wrap gap-4 mb-4">
-        //         <input
-        //           type="text"
-        //           placeholder="Search by name"
-        //           value={searchName}
-        //           onChange={(e) => setSearchName(e.target.value)}
-        //           className="border p-2 rounded"
-        //         />
-        //         <select
-        //           value={roleFilter}
-        //           onChange={(e) => setRoleFilter(e.target.value)}
-        //           className="border p-2 rounded"
-        //         >
-        //           <option>All</option>
-        //           <option>Intern</option>
-        //           <option>Employee</option>
-        //           <option>Manager</option>
-        //           <option>HR</option>
-        //           <option>Admin</option>
-        //           <option>SuperAdmin</option>
-        //         </select>
-        //         <select
-        //           value={adminStatusFilter}
-        //           onChange={(e) => setAdminStatusFilter(e.target.value)}
-        //           className="border p-2 rounded"
-        //         >
-        //           <option>All</option>
-        //           <option>Checked-In Only</option>
-        //           <option>Checked-Out Only</option>
-        //         </select>
-        //         <button
-        //           onClick={() => {
-        //             setSearchName("");
-        //             setRoleFilter("All");
-        //             setAdminStatusFilter("All");
-        //           }}
-        //           className="bg-[#113F67] text-white px-3 py-1 rounded hover:bg-[#226597]"
-        //         >
-        //           Clear Filters
-        //         </button>
-        //       </div>
-
-        //       <div className="overflow-x-auto">
-        //         <table className="min-w-full rounded-md text-sm">
-        //           <thead className="bg-[#113F67] text-white text-left uppercase">
-        //             <tr>
-        //               <th className="px-4 py-2">Name</th>
-        //               <th className="px-4 py-2">Role</th>
-        //               <th className="px-4 py-2">Check-In</th>
-        //               <th className="px-4 py-2">Check-Out</th>
-        //               <th className="px-4 py-2">Location</th>
-        //             </tr>
-        //           </thead>
-        //           <tbody>
-        //             {loading ? (
-        //               <tr>
-        //                 <td colSpan={5} className="text-center py-4 text-[#226597]">
-        //                   Loading
-        //                 </td>
-        //               </tr>
-        //             ) : filteredTodayAttendance.length === 0 ? (
-        //               <tr>
-        //                 <td colSpan={5} className="text-center py-4 text-[#226597]">
-        //                   No records found
-        //                 </td>
-        //               </tr>
-        //             ) : (
-        //               filteredTodayAttendance.map((emp, i) => (
-        //                 <tr key={i} className="hover:bg-blue-50 text-[#226597]">
-        //                   <td className="px-4 py-2">
-        //                     {emp.user?.name || "Unknown"}
-        //                   </td>
-        //                   <td className="px-4 py-2">
-        //                     {emp.user?.role || "Employee"}
-        //                   </td>
-        //                   <td className="px-4 py-2">
-        //                     {formatTime(emp.checkInTime)}
-        //                   </td>
-        //                   <td className="px-4 py-2">
-        //                     {formatTime(emp.checkOutTime)}
-        //                   </td>
-        //                   <td className="px-4 py-2">{emp.location || "N/A"}</td>
-        //                 </tr>
-        //               ))
-        //             )}
-        //           </tbody>
-        //         </table>
-        //       </div>
-        //     </div>
-        //   )}
-        // </div>
         <div className="bg-white rounded-xl p-4 shadow">
           <h2 className="text-lg font-semibold mb-4 text-[#113F67]">
-            Month attendance All Employees
+            Month Attendance – All Employees
           </h2>
 
+          {/* Filters */}
           <div className="flex flex-wrap gap-4 mb-4">
             <input
               type="text"
@@ -488,6 +380,7 @@ const AttendanceManagement = () => {
             </button>
           </div>
 
+          {/* Table */}
           <div className="overflow-x-auto">
             <table className="min-w-full rounded-md text-sm">
               <thead className="bg-[#113F67] text-white text-left uppercase">
@@ -539,7 +432,7 @@ const AttendanceManagement = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredTodayAttendance.map((emp, i) => {
+                  paginatedAdminAttendance.map((emp, i) => {
                     const checkIn = emp.checkInTime
                       ? new Date(emp.checkInTime)
                       : null;
@@ -556,18 +449,24 @@ const AttendanceManagement = () => {
                         60;
                     }
 
-                    const status =
-                      totalTime >= 8
-                        ? "Full Day"
-                        : totalTime >= 4
-                        ? "Half Day"
-                        : "--";
-
+                    let status = "--";
                     let flag = "Absent";
+
                     if (checkIn && !checkOut) {
+                      status = "Working";
                       flag = "Online";
-                    } else if (totalTime >= 4) {
+                    } else if (totalTime >= 8) {
+                      status = "Full Day";
                       flag = "Present";
+                    } else if (totalTime >= 6 && totalTime < 8) {
+                      status = "Partial Day";
+                      flag = "Present";
+                    } else if (totalTime > 0 && totalTime < 6) {
+                      status = "Absent";
+                      flag = "Absent";
+                    } else {
+                      status = "--";
+                      flag = "Absent";
                     }
 
                     return (
@@ -611,6 +510,30 @@ const AttendanceManagement = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          <div className="relative flex items-center mt-2">
+            {adminPage > 1 && (
+              <button
+                onClick={() => setAdminPage((prev) => prev - 1)}
+                className="px-4 py-2 bg-[#226597] text-white rounded-md hover:bg-[#1c4c7a]"
+              >
+                Prev
+              </button>
+            )}
+
+            <span className="absolute left-1/2 transform -translate-x-1/2 px-3 py-1 text-[#113F67] font-semibold">
+              {adminPage} / {totalAdminPages}
+            </span>
+
+            {adminPage < totalAdminPages && (
+              <button
+                onClick={() => setAdminPage((prev) => prev + 1)}
+                className="ml-auto px-4 py-2 bg-[#226597] text-white rounded-md hover:bg-[#1c4c7a]"
+              >
+                Next
+              </button>
+            )}
           </div>
         </div>
       )}

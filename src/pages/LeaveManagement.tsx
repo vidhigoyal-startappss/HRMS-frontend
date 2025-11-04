@@ -86,40 +86,43 @@ const LeaveManagement: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    let filtered = leaves;
+ useEffect(() => {
+  let filtered = leaves;
 
-    if (filters.leaveType) {
-      filtered = filtered.filter((l) =>
-        l.leaveType.toLowerCase().includes(filters.leaveType.toLowerCase())
-      );
-    }
-    if (filters.status) {
-      filtered = filtered.filter((l) => l.status === filters.status);
-    }
-    if (filters.startDate) {
-      filtered = filtered.filter(
-        (l) => new Date(l.startDate) >= new Date(filters.startDate)
-      );
-    }
-    if (filters.endDate) {
-      filtered = filtered.filter(
-        (l) => new Date(l.endDate) <= new Date(filters.endDate)
-      );
-    }
+  if (filters.leaveType) {
+    filtered = filtered.filter((l) =>
+      l.leaveType.toLowerCase().includes(filters.leaveType.toLowerCase())
+    );
+  }
+  if (filters.status) {
+    filtered = filtered.filter((l) => l.status === filters.status);
+  }
+  if (filters.startDate) {
+    filtered = filtered.filter(
+      (l) => new Date(l.startDate) >= new Date(filters.startDate)
+    );
+  }
+  if (filters.endDate) {
+    filtered = filtered.filter(
+      (l) => new Date(l.endDate) <= new Date(filters.endDate)
+    );
+  }
 
-    if (searchQuery.trim() !== "") {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (l) =>
-          `${l.userId.firstName} ${l.userId.lastName}`
-            .toLowerCase()
-            .includes(query) || l.leaveType.toLowerCase().includes(query)
-      );
-    }
+  if (searchQuery.trim() !== "") {
+    const query = searchQuery.toLowerCase();
+    filtered = filtered.filter((l) => {
+      const fullName = l.userId
+        ? `${l.userId.firstName} ${l.userId.lastName}`.toLowerCase()
+        : "";
+      const leaveType = l.leaveType ? l.leaveType.toLowerCase() : "";
+      return fullName.includes(query) || leaveType.includes(query);
+    });
+  }
 
-    setFilteredLeaves(filtered);
-  }, [filters, leaves, searchQuery]);
+  setFilteredLeaves(filtered);
+  setCurrentPage(1); 
+}, [filters, leaves, searchQuery]);
+
 
   const toggleDropdown = (index: number) => {
     setDropdownIndex(dropdownIndex === index ? null : index);

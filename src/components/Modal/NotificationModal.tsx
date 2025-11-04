@@ -84,7 +84,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         {!n.isRead && (
           <button
             onClick={() => onMarkAsRead(n._id)}
-            className="text-xs text-blue-600 hover:underline mt-1"
+            className="text-xs text-blue-600 hover:underline mt-1 cursor-pointer"
           >
             Mark as read
           </button>
@@ -114,7 +114,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               Mark all as read
             </button>
           )}
-          <button onClick={onClose} className="text-[#113F67]">
+          <button onClick={onClose} className="text-[#113F67] cursor-pointer">
             <X size={18} />
           </button>
         </div>

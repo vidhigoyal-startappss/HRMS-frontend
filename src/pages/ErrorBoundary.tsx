@@ -16,154 +16,144 @@ class ErrorBoundary extends Component {
   }
 
   render() {
-    
+    if (!this.state.hasError) return this.props.children;
+
     const containerStyle = {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      background: '#f0f0f0',
-      flexDirection: 'column',
-      textAlign: 'center',
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      background: "radial-gradient(circle at top, #0f2027, #203a43, #2c5364)",
+      color: "#fff",
+      fontFamily: "'Poppins', sans-serif",
+      overflow: "hidden",
+      position: "relative",
     };
 
     const titleStyle = {
-      fontSize: '4rem',
-      fontWeight: 'bold',
-      color: '#333',
+      fontSize: "6rem",
+      fontWeight: "900",
+      marginBottom: "0.5rem",
+      letterSpacing: "5px",
+      color: "#ffffff",
+      textShadow: "0 0 20px rgba(255,255,255,0.3)",
     };
 
     const subtitleStyle = {
-      fontSize: '1.5rem',
-      marginBottom: '20px',
-      color: '#555',
+      fontSize: "1.5rem",
+      marginBottom: "30px",
+      color: "rgba(255,255,255,0.7)",
     };
 
     const buttonStyle = {
-      padding: '10px 20px',
-      fontSize: '1rem',
-      backgroundColor: '#007BFF',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      transition: 'background-color 0.3s',
-    };
-
-    const buttonHoverStyle = {
-      backgroundColor: '#0056b3',
+      padding: "14px 35px",
+      fontSize: "1.1rem",
+      background: "linear-gradient(45deg, #00c6ff, #0072ff)",
+      color: "#fff",
+      border: "none",
+      borderRadius: "50px",
+      cursor: "pointer",
+      boxShadow: "0 5px 20px rgba(0, 114, 255, 0.4)",
+      transition: "all 0.3s ease",
     };
 
     const moonStyle = {
-      width: '150px',
-      height: '150px',
-      background: '#F5E1A4',
-      borderRadius: '50%',
-      margin: '20px auto',
-      position: 'relative',
+      width: "160px",
+      height: "160px",
+      background: "radial-gradient(circle at 30% 30%, #fff8dc, #d4c098)",
+      borderRadius: "50%",
+      position: "absolute",
+      top: "10%",
+      right: "15%",
+      boxShadow: "0 0 60px rgba(255,255,200,0.4)",
+      animation: "float 6s ease-in-out infinite",
     };
 
-    const faceStyle = {
-      position: 'absolute',
-      top: '40%',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      width: '80%',
-      height: '50%',
-      background: '#FF6B6B',
-      borderRadius: '50%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
+    const starsContainer = {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      zIndex: 0,
     };
 
-    const eyesStyle = {
-      display: 'flex',
-      justifyContent: 'space-between',
-      width: '60%',
+    const starStyle = {
+      position: "absolute",
+      width: "2px",
+      height: "2px",
+      background: "white",
+      borderRadius: "50%",
+      opacity: 0.8,
+      animation: "twinkle 2s infinite ease-in-out",
     };
 
-    const eyeStyle = {
-      width: '20px',
-      height: '20px',
-      background: '#333',
-      borderRadius: '50%',
+    const floatingBirdStyle = {
+      width: "60px",
+      height: "60px",
+      background: "linear-gradient(135deg, #00b4db, #0083b0)",
+      borderRadius: "50%",
+      position: "absolute",
+      bottom: "15%",
+      left: "20%",
+      boxShadow: "0 0 25px rgba(0,180,219,0.6)",
+      animation: "fly 8s ease-in-out infinite alternate",
     };
 
-    const birdContainerStyle = {
-      display: 'flex',
-      justifyContent: 'center',
-      flexWrap: 'wrap',
-      gap: '15px',
-      marginTop: '40px',
-    };
+    const globalStyles = `
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+      }
 
-    const birdStyle = {
-      width: '50px',
-      height: '50px',
-      backgroundColor: '#3498db',
-      borderRadius: '50%',
-      position: 'relative',
-    };
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.5); }
+      }
 
-    const wingStyle = {
-      position: 'absolute',
-      top: '50%',
-      width: '10px',
-      height: '20px',
-      backgroundColor: '#fff',
-    };
+      @keyframes fly {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(50px, -50px) rotate(10deg); }
+        100% { transform: translate(-30px, 30px) rotate(-10deg); }
+      }
 
-    const wingLeftStyle = {
-      ...wingStyle,
-      left: '-10px',
-      transform: 'rotate(45deg)',
-    };
+      button:hover {
+        transform: scale(1.08);
+        box-shadow: 0 10px 30px rgba(0, 114, 255, 0.6);
+      }
+    `;
 
-    const wingRightStyle = {
-      ...wingStyle,
-      right: '-10px',
-      transform: 'rotate(-45deg)',
-    };
+    // Generate random stars
+    const stars = Array.from({ length: 30 }).map((_, i) => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 2}s`,
+    }));
 
-    if (this.state.hasError) {
-      return (
-        <div style={containerStyle}>
-          <div style={titleStyle}>
-            <span style={{ fontSize: '5rem' }}>404</span>
-            <span style={subtitleStyle}>Page Not Found</span>
-            <button
-              style={buttonStyle}
-              onClick={() => (window.location.href = "/")}
-              onMouseOver={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
-              onMouseOut={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
-            >
-              Go Home
-            </button>
-          </div>
-
-          <div style={moonStyle}>
-            <div style={faceStyle}>
-              <div style={eyesStyle}>
-                <div style={eyeStyle}></div>
-                <div style={eyeStyle}></div>
-              </div>
-            </div>
-          </div>
-
-          <div style={birdContainerStyle}>
-            {[...Array(6)].map((_, i) => (
-              <div key={i} style={birdStyle}>
-                <div style={wingLeftStyle}></div>
-                <div style={wingRightStyle}></div>
-              </div>
-            ))}
-          </div>
+    return (
+      <div style={containerStyle}>
+        <style>{globalStyles}</style>
+        <div style={starsContainer}>
+          {stars.map((star, i) => (
+            <div key={i} style={{ ...starStyle, ...star }} />
+          ))}
         </div>
-      );
-    }
 
-    return this.props.children;
+        <div style={moonStyle}></div>
+        <div style={floatingBirdStyle}></div>
+
+        <h1 style={titleStyle}>Oops!</h1>
+        <p style={subtitleStyle}>Something went wrong. Let’s get you back on track.</p>
+        <button
+          style={buttonStyle}
+           onClick={() => (window.location.href = "https://hrms1-kappa.vercel.app/")}
+        >
+          Go to the Login Link Again https://hrms1-kappa.vercel.app/
+        </button>
+      </div>
+    );
   }
 }
 

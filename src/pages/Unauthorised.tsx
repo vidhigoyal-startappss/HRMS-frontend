@@ -14,22 +14,18 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({
   const user = useSelector((state: any) => state.user.user);
 
   if (!user) {
-    // Not logged in, redirect to login page
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles && allowedRoles.length > 0) {
-    // Normalize roles to lowercase & trim to avoid mismatch
     const userRole = user.role;
     const allowed = allowedRoles.map((role) => role);
 
     if (!allowed.includes(userRole)) {
-      // User role not authorized for this route
       return <Navigate to="/unauthorized" replace />;
     }
   }
 
-  // Authorized: render child routes
   return children;
 };
 

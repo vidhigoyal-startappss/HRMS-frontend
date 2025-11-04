@@ -49,12 +49,7 @@ const EmployeeLayout: React.FC = () => {
 
   const role = user?.role || "Employee";
   const id = user?.userId;
-  // useEffect(() => {
-  //   const matched = linksToShow.find((link) =>
-  //     location.pathname.startsWith(link.path)
-  //   );
-  //   setPageTitle(matched?.label || "Dashboard");
-  // }, [location.pathname]);
+
 
   const routesTitles: Record<string, string> = {
     "/employee/dashboard": "Dashboard",
@@ -313,7 +308,7 @@ const handleLogout = () => {
                         setShowChangePasswordModal(true);
                         setShowSettings(false);
                       }}
-                      className="w-full z-50 px-4 py-2 text-left text-sm "
+                      className="w-full z-50 px-4 py-2 text-left text-sm  cursor-pointer"
                     >
                       Change Password
                     </button>

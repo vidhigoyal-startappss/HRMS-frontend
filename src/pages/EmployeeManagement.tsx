@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { RootState } from "../store";
 import Swal from "sweetalert2";
-import { ClipLoader } from "react-spinners"; // or PulseLoader
+import { ClipLoader } from "react-spinners"; 
 
 interface Employee {
   _id: string;

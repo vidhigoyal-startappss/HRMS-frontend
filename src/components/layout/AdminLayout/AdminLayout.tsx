@@ -409,7 +409,7 @@ const AdminLayout: React.FC = () => {
                         setShowChangePasswordModal(true);
                         setShowSettings(false);
                       }}
-                      className="w-full z-50 px-4 py-2 text-left text-sm text-[#113F67]"
+                      className="w-full z-50 px-4 py-2 text-left text-sm text-[#113F67] cursor-pointer "
                     >
                       Change Password
                     </button>

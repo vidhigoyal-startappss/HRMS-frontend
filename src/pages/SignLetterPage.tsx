@@ -1,130 +1,3 @@
-// import React, { useState } from "react";
-// import { useParams, useLocation } from "react-router-dom";
-// import toast from "react-hot-toast";
-
-// const SignLetterPage: React.FC = () => {
-//   const { filename, userId } = useParams<{
-//     filename: string;
-//     userId: string;
-//   }>();
-
-//   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-//   const [uploading, setUploading] = useState(false);
-
-//   const handleUploadPdf = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const file = e.target.files?.[0];
-
-//     if (file) {
-//       setSelectedFile(file);
-//     }
-//   };
-
-//   const handleSubmit = async () => {
-//     if (!selectedFile) {
-//       console.log("No file selected - exiting");
-//       toast.error("No file selected");
-//       return;
-//     }
-//     if (!userId) {
-//       console.log("No userId - exiting");
-//       toast.error("User ID missing");
-//       return;
-//     }
-
-//     if (!selectedFile) {
-//       toast.error("No file selected");
-//       return;
-//     }
-
-//     if (!userId) {
-//       toast.error("User ID missing");
-//       return;
-//     }
-
-//     setUploading(true);
-
-//     try {
-//       const formData = new FormData();
-//       formData.append("file", selectedFile);
-//       formData.append("userId", userId);
-
-//       const response = await fetch(
-//         "http://localhost:3000/api/letters/signed-upload",
-//         {
-//           method: "POST",
-//           body: formData,
-//         }
-//       );
-
-//       console.log("Response received");
-
-//       const result = await response.json();
-
-//       if (response.ok) {
-//         toast.success("Signed PDF uploaded!");
-//         console.log("Upload success:", result);
-//       } else {
-//         toast.error("Upload failed");
-//         console.error("Upload failed:", result);
-//       }
-//     } catch (error) {
-//       console.error("Upload error:", error);
-//       toast.error("Error uploading file");
-//     } finally {
-//       setUploading(false);
-//     }
-//   };
-
-//   const viewPdf = () => {
-//     if (!filename) {
-//       toast.error("Filename missing.");
-//       return;
-//     }
-//     const url = `http://localhost:3000/uploads/letters/${filename}`;
-//     window.open(url, "_blank");
-//   };
-
-//   return (
-//     <div className="flex flex-col items-center min-h-screen bg-gray-50 p-6">
-//       <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-//         Sign Your Appointment Letter
-//       </h2>
-
-//       <div className="mb-6 text-center">
-//         <p className="mb-4">
-//           Please review your appointment letter and upload the signed version in
-//           PDF format.
-//         </p>
-//         <input
-//           type="file"
-//           accept="application/pdf"
-//           onChange={handleUploadPdf}
-//           className="mb-4 border border-gray-300 p-2"
-//         />
-//       </div>
-
-//       <div className="flex space-x-4">
-//         <button
-//           onClick={handleSubmit}
-//           disabled={uploading}
-//           className="px-6 py-3 rounded bg-green-600 text-white text-lg font-medium hover:bg-green-700"
-//         >
-//           {uploading ? "Uploading..." : "Submit Signed PDF"}
-//         </button>
-
-//         <button
-//           className="px-6 py-3 rounded bg-blue-600 text-white text-lg font-medium hover:bg-blue-700"
-//           onClick={viewPdf}
-//         >
-//           View Letter PDF
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default SignLetterPage;
-
 import React, { useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -209,20 +82,19 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
   //   const url = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
   //   window.open(url, "_blank");
   // };
-const viewPdf = () => {
-  if (!pdfUrl) {
-    toast.error("PDF not ready yet.");
-    return;
-  }
+  const viewPdf = () => {
+    if (!pdfUrl) {
+      toast.error("PDF not ready yet.");
+      return;
+    }
 
-  const newTab = window.open(pdfUrl, "_blank", "noopener,noreferrer");
-  if (!newTab) {
-    toast.error("Please allow popups for this site.");
-  } else {
-    newTab.focus();
-  }
-};
-
+    const newTab = window.open(pdfUrl, "_blank", "noopener,noreferrer");
+    if (!newTab) {
+      toast.error("Please allow popups for this site.");
+    } else {
+      newTab.focus();
+    }
+  };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-blue-50 via-indigo-100 to-purple-100 p-8 max-w-8xl mx-auto shadow-lg rounded-xl">

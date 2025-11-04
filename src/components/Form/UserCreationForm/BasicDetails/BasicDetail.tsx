@@ -37,9 +37,7 @@ type FormValues = {
   };
 };
 
-//  function getRandomNumber(min: number, max: number): number{
-//     return Math.floor(Math.random() * (max - min + 1)) + min;
-//   }
+
 
 const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
   readOnly = false,
@@ -124,11 +122,7 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
     { label: "Country", name: "country" },
   ];
 
-  // useEffect(() => {
-  //  const newRandomNumber = getRandomNumber(1, 100);
 
-  //  setRandomNumber(newRandomNumber);
-  // }, []);
 
   useEffect(() => {
     if (id) {
