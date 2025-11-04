@@ -82,7 +82,7 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
 
   const link = document.createElement("a");
   link.href = pdfUrl;
-  link.download = `Appointment_Letter.pdf`; // the filename for download
+  link.download = `Appointment_Letter.pdf`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
