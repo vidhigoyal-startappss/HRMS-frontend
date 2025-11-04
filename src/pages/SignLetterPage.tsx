@@ -74,19 +74,31 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
     }
   };
 
- const viewPdf = () => {
+ const viewPdf = async () => {
   if (!pdfUrl) {
     toast.error("PDF not ready yet.");
     return;
   }
 
-  const link = document.createElement("a");
-  link.href = pdfUrl;
-  link.download = `Appointment_Letter.pdf`; 
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  try {
+    const res = await fetch(pdfUrl);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const newWindow = window.open(blobUrl, "_blank");
+    if (!newWindow) {
+      toast.error("Popup blocked. Please allow popups for this site.");
+      return;
+    }
+
+    // Optional: revoke blob URL after a few seconds
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to open PDF.");
+  }
 };
+
 
 
   return (
