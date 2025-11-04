@@ -10,7 +10,11 @@ const schema = yup.object().shape({
   newPassword: yup
     .string()
     .min(6, "New password must be at least 6 characters")
-    .required("New password is required"),
+    .required("New password is required")
+    .notOneOf(
+      [yup.ref("oldPassword")],
+      "New password cannot be the same as the old password"
+    ),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref("newPassword")], "Passwords do not match")

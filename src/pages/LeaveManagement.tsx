@@ -21,6 +21,8 @@ const LeaveManagement: React.FC = () => {
   const [leaves, setLeaves] = useState<LeaveEntry[]>([]);
   const [filteredLeaves, setFilteredLeaves] = useState<LeaveEntry[]>([]);
   const [dropdownIndex, setDropdownIndex] = useState<number | null>(null);
+  const actionDropdownRef = useRef<HTMLDivElement | null>(null);
+  const [updatingIndex, setUpdatingIndex] = useState<number | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -75,54 +77,58 @@ const LeaveManagement: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !(dropdownRef.current as any).contains(e.target)
-      ) {
-        setIsFilterOpen(false);
-      }
+      const filterClickedInside =
+        dropdownRef.current && (dropdownRef.current as any).contains(e.target);
+
+      const actionClickedInside =
+        actionDropdownRef.current &&
+        (actionDropdownRef.current as any).contains(e.target);
+
+      if (!filterClickedInside) setIsFilterOpen(false);
+
+      if (!actionClickedInside) setDropdownIndex(null);
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
- useEffect(() => {
-  let filtered = leaves;
+  useEffect(() => {
+    let filtered = leaves;
 
-  if (filters.leaveType) {
-    filtered = filtered.filter((l) =>
-      l.leaveType.toLowerCase().includes(filters.leaveType.toLowerCase())
-    );
-  }
-  if (filters.status) {
-    filtered = filtered.filter((l) => l.status === filters.status);
-  }
-  if (filters.startDate) {
-    filtered = filtered.filter(
-      (l) => new Date(l.startDate) >= new Date(filters.startDate)
-    );
-  }
-  if (filters.endDate) {
-    filtered = filtered.filter(
-      (l) => new Date(l.endDate) <= new Date(filters.endDate)
-    );
-  }
+    if (filters.leaveType) {
+      filtered = filtered.filter((l) =>
+        l.leaveType.toLowerCase().includes(filters.leaveType.toLowerCase())
+      );
+    }
+    if (filters.status) {
+      filtered = filtered.filter((l) => l.status === filters.status);
+    }
+    if (filters.startDate) {
+      filtered = filtered.filter(
+        (l) => new Date(l.startDate) >= new Date(filters.startDate)
+      );
+    }
+    if (filters.endDate) {
+      filtered = filtered.filter(
+        (l) => new Date(l.endDate) <= new Date(filters.endDate)
+      );
+    }
 
-  if (searchQuery.trim() !== "") {
-    const query = searchQuery.toLowerCase();
-    filtered = filtered.filter((l) => {
-      const fullName = l.userId
-        ? `${l.userId.firstName} ${l.userId.lastName}`.toLowerCase()
-        : "";
-      const leaveType = l.leaveType ? l.leaveType.toLowerCase() : "";
-      return fullName.includes(query) || leaveType.includes(query);
-    });
-  }
+    if (searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((l) => {
+        const fullName = l.userId
+          ? `${l.userId.firstName} ${l.userId.lastName}`.toLowerCase()
+          : "";
+        const leaveType = l.leaveType ? l.leaveType.toLowerCase() : "";
+        return fullName.includes(query) || leaveType.includes(query);
+      });
+    }
 
-  setFilteredLeaves(filtered);
-  setCurrentPage(1); 
-}, [filters, leaves, searchQuery]);
-
+    setFilteredLeaves(filtered);
+    setCurrentPage(1);
+  }, [filters, leaves, searchQuery]);
 
   const toggleDropdown = (index: number) => {
     setDropdownIndex(dropdownIndex === index ? null : index);
@@ -133,6 +139,7 @@ const LeaveManagement: React.FC = () => {
     newStatus: LeaveEntry["status"]
   ) => {
     const leaveId = filteredLeaves[index]?._id;
+    setUpdatingIndex(index);
     try {
       const updatedLeave = await updateLeaveStatusAPI(leaveId, newStatus);
       const updated = [...leaves];
@@ -142,7 +149,14 @@ const LeaveManagement: React.FC = () => {
       setDropdownIndex(null);
     } catch (error) {
       console.error("Failed to update leave status:", error);
-      alert("Failed to update leave status. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: "You cannot update this leave request.",
+        confirmButtonColor: "#226597",
+      });
+    } finally {
+      setUpdatingIndex(null);
     }
   };
 
@@ -311,26 +325,40 @@ const LeaveManagement: React.FC = () => {
                     <MoreVertical size={20} color="#113F67" />
                   </button>
                   {dropdownIndex === index && (
-                    <div className="absolute right-0 mt-2 w-40 bg-[#226597] text-white rounded-md shadow-md z-50">
+                    <div
+                      ref={actionDropdownRef}
+                      className="absolute right-0 mt-2 w-40 bg-[#226597] text-white rounded-md shadow-md z-50"
+                    >
                       <ul className="divide-y divide-[#1b4f74] text-sm">
-                        <li
-                          className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
-                          onClick={() => updateStatus(index, "Pending")}
-                        >
-                          Set as Pending
-                        </li>
-                        <li
-                          className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
-                          onClick={() => updateStatus(index, "Approved")}
-                        >
-                          Approve
-                        </li>
-                        <li
-                          className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
-                          onClick={() => updateStatus(index, "Rejected")}
-                        >
-                          Reject
-                        </li>
+                        {updatingIndex === index ? (
+                          <li className="px-4 py-2 text-center">
+                            <div className="flex justify-center items-center gap-2">
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              <span>Updating...</span>
+                            </div>
+                          </li>
+                        ) : (
+                          <>
+                            <li
+                              className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
+                              onClick={() => updateStatus(index, "Pending")}
+                            >
+                              Set as Pending
+                            </li>
+                            <li
+                              className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
+                              onClick={() => updateStatus(index, "Approved")}
+                            >
+                              Approve
+                            </li>
+                            <li
+                              className="px-4 py-2 hover:bg-[#87C0CD] cursor-pointer"
+                              onClick={() => updateStatus(index, "Rejected")}
+                            >
+                              Reject
+                            </li>
+                          </>
+                        )}
                       </ul>
                     </div>
                   )}

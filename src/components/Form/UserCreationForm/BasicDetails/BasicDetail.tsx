@@ -60,13 +60,13 @@ const BasicDetailsForm: React.FC<{ readOnly?: boolean }> = ({
   const [uploadSuccess, setuploadSuccess] = useState<boolean>(false);
   const [randomNumber, setRandomNumber] = useState<number>(0);
   const [employeeId, setEmployeeId] = useState<string | null>(null);
-  // const [isLoading , setIsLoading] = useState<boolean>(false);
+
 
   const departmentDesignationMap: Record<string, string[]> = {
     engineering: ["MERN-Stack Developer", "Data Engineer"],
     hr: ["HR Manager", "HR Executive"],
     sales: ["Business Development Executive", "Sales"],
-    Management: ["Project Manager", "Product Manager"],
+    management: ["Project Manager", "Product Manager"],
   };
   const selectedDepartment = watch("basicDetails.department");
   const designationOptions = departmentDesignationMap[selectedDepartment] || [];
