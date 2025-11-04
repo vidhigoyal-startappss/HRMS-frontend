@@ -74,34 +74,20 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
     }
   };
 
- const viewPdf = async () => {
+ const downloadPdf = () => {
   if (!pdfUrl) {
     toast.error("PDF not ready yet.");
     return;
   }
 
-  try {
-    // Fetch the PDF as a Blob
-    const response = await fetch(pdfUrl);
-    if (!response.ok) throw new Error("Failed to fetch PDF");
-
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-
-    // Open the Blob URL in a new tab
-    const newWindow = window.open(blobUrl, "_blank");
-    if (!newWindow) {
-      toast.error("Popup blocked. Please allow popups for this site.");
-      return;
-    }
-
-    // Optional: revoke the Blob URL after a short delay
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
-  } catch (error) {
-    console.error("Error opening PDF:", error);
-    toast.error("Failed to open PDF.");
-  }
+  const link = document.createElement("a");
+  link.href = pdfUrl;
+  link.download = `Appointment_Letter.pdf`; // the filename for download
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
+
 
 
 
@@ -163,11 +149,12 @@ const SignLetterPage: React.FC<{ pdfUrl: string; userId: string }> = ({
 
       <div className="flex space-x-6 mt-8 w-full max-w-xl justify-center">
        <button
-  onClick={viewPdf}
+  onClick={downloadPdf}
   className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-bold text-lg rounded-lg shadow-lg hover:from-indigo-700 hover:to-purple-800 transition duration-300 ease-in-out drop-shadow-md"
 >
-  View Letter PDF
+  Download PDF
 </button>
+
 
 
         <button
