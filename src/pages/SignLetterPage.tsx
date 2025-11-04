@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const SignLetterPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { pdfUrl, userId } = location.state as { pdfUrl: string; userId: string };
 
+  // Safe fallback for location.state
+  const state = location.state || {};
+  const pdfUrlFromState = state.pdfUrl || "";
+  const userIdFromState = state.userId || "";
+
+  const [pdfUrl, setPdfUrl] = useState(pdfUrlFromState);
+  const [userId, setUserId] = useState(userIdFromState);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  // Optional: if pdfUrl is passed via query params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (!pdfUrl && params.get("pdfUrl")) setPdfUrl(params.get("pdfUrl")!);
+    if (!userId && params.get("userId")) setUserId(params.get("userId")!);
+  }, [location.search, pdfUrl, userId]);
 
   const handleUploadPdf = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
