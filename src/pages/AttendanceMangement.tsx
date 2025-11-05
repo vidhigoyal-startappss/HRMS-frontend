@@ -461,9 +461,9 @@ const AttendanceManagement = () => {
                     } else if (totalTime >= 6 && totalTime < 8) {
                       status = "Partial Day";
                       flag = "Present";
-                    } else if (totalTime > 0 && totalTime < 6) {
-                      status = "Absent";
-                      flag = "Absent";
+                    } else if (totalTime >= 4 && totalTime < 6) {
+                      status = "Half Day";
+                      flag = "Present";
                     } else {
                       status = "--";
                       flag = "Absent";
