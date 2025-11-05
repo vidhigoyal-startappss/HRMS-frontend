@@ -279,24 +279,31 @@ const EmployeeLeaveDashboard: React.FC = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  const cards = [
-    // { label: "Paid Leaves Left (PL)", value: leaveSummary.paidLeft },
+  const baseCards = [
     { label: "Unpaid Leaves (Monthly)", value: leaveSummary.unpaidUsed },
     { label: "Paid Leaves (Monthly)", value: leaveSummary.paidUsed },
-    // { label: "WFH Left", value: leaveSummary.wfhLeft },
     { label: "Paid Leaves Used (Yearly)", value: leaveSummary.totalPaidYearly },
     { label: "WFH Used (Yearly)", value: leaveSummary.totalWfhYearly },
     { label: "WFH Used (Monthly)", value: leaveSummary.totalWfhMonthly },
     { label: "Leaves Applied This Month", value: leaveSummary.monthlyApplied },
-    // { label: "Approved Leaves", value: leaveSummary.approvedCount },
-    // { label: "Pending Leaves", value: leaveSummary.pendingCount },
     {
       label: "Earned Leaves Till Now",
       value: leaveSummary.earnedLeavesTillNow,
     },
-    // { label: "Paid Leaves Yearly", value: 18 },
-    // { label: "WFH Yearly", value: 12 },
   ];
+
+  const hrCards =
+    role === "HR"
+      ? [
+          { label: "Paid Leaves Yearly", value: 18 },
+          { label: "WFH Yearly", value: 12 },
+          { label: "Approved Leaves", value: leaveSummary.approvedCount },
+          { label: "Pending Leaves", value: leaveSummary.pendingCount },
+        ]
+      : [];
+
+  const cards = [...baseCards, ...hrCards];
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
