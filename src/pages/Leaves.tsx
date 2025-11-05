@@ -54,6 +54,8 @@ const EmployeeLeaveDashboard: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetch = async () => {
@@ -101,12 +103,17 @@ const EmployeeLeaveDashboard: React.FC = () => {
 
     fetch();
   }, [userId]);
+  const role = user?.role;
 
   const navigate = useNavigate();
   const handleNavigateLeaveForm = () => {
-    // console.log("leave");
-    navigate("/employee/request-leave");
+    if (role === "Employee") {
+      navigate("/employee/request-leave");
+    } else {
+      navigate("/admin/leave-apply");
+    }
   };
+
   type LeaveRecord = {
     startDate: string;
     endDate: string | null;
@@ -266,7 +273,12 @@ const EmployeeLeaveDashboard: React.FC = () => {
       alert(error.response?.data?.message || "Failed to delete leave");
     }
   };
+  const totalPages = Math.ceil(leaves.length / itemsPerPage) || 1;
 
+  const paginatedLeaves = leaves.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
   const cards = [
     // { label: "Paid Leaves Left (PL)", value: leaveSummary.paidLeft },
     { label: "Unpaid Leaves (Monthly)", value: leaveSummary.unpaidUsed },
@@ -417,7 +429,7 @@ const EmployeeLeaveDashboard: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              leaves.map((leave, index) => (
+              paginatedLeaves.map((leave, index) => (
                 <tr
                   key={index}
                   className={`${
@@ -475,6 +487,29 @@ const EmployeeLeaveDashboard: React.FC = () => {
             )}
           </tbody>
         </table>
+        <div className="flex items-center justify-between mt-4 px-2">
+          <button
+            className="px-4 py-2 rounded-md bg-[#226597] text-white font-medium hover:bg-[#113F67] disabled:bg-gray-300 disabled:text-gray-500 transition"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+
+          <span className="text-gray-700 font-medium">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <button
+            className="px-4 py-2 rounded-md bg-[#226597] text-white font-medium hover:bg-[#113F67] disabled:bg-gray-300 disabled:text-gray-500 transition"
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       <LeaveDetailsModal

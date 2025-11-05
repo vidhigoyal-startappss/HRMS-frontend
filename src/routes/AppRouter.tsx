@@ -37,6 +37,8 @@ import EmployeePayrollViewer from "../pages/EmployeePayrollViewer";
 import SignedUploadSuccess from "../pages/SignedUploadSuccess";
 import ErrorBoundary from "../pages/ErrorBoundary";
 import NotFound from "../pages/404page";
+import { Navigation } from "lucide-react";
+import NavigationPage from "../pages/NavigationPage";
 
 const AppRouter = () => {
   return (
@@ -83,6 +85,9 @@ const AppRouter = () => {
             <Route path="/admin/employee/:id" element={<Profile />} />
             <Route path="/admin/employee/edit/:id" element={<Profile />} />
             <Route path="company-policy" element={<CompanyPolicypage />} />
+            <Route path="leave-management" element={<NavigationPage />} />
+             <Route path="leaves" element={<EmployeeLeaveDashboard />} />
+           
             <Route
               path="/admin/send-onboarding"
               element={<SendOnboardingForm />}

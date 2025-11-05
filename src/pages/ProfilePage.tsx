@@ -83,13 +83,15 @@ const Profile: React.FC = () => {
 
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isGeneratingLetter, setIsGeneratingLetter] = useState(false);
+  const [isSendingLetter, setIsSendingLetter] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     API.get(`/api/users/employee/${userId}?archived=true`)
       .then((res) => {
         setProfile(res.data);
-        setLoading(false); 
+        setLoading(false);
       })
       .catch(() => {
         Swal.fire({
@@ -103,30 +105,37 @@ const Profile: React.FC = () => {
   }, [userId]);
 
   const handleGenerateLetter = async () => {
-    const res = await fetch(
-      "https://hrms-backend-2-t1l2.onrender.com/api/letters/generate",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
+    setIsGeneratingLetter(true);
+    try {
+      const res = await fetch(
+        "https://hrms-backend-2-t1l2.onrender.com/api/letters/generate",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(profile),
+        }
+      );
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setGeneratedPdfUrl(result.link);
+
+        const pdfRes = await fetch(result.link);
+        const blob = await pdfRes.blob();
+        setPdfBlob(blob);
+
+        setFullNameForDownload(`${profile.firstName}_${profile.lastName}`);
+        setLetterStatus("generated");
+
+        toast.success("Letter generated successfully!");
+      } else {
+        toast.error("Letter generation failed.");
       }
-    );
-
-    const result = await res.json();
-
-    if (res.ok) {
-      setGeneratedPdfUrl(result.link);
-
-      const pdfRes = await fetch(result.link);
-      const blob = await pdfRes.blob();
-      setPdfBlob(blob);
-
-      setFullNameForDownload(`${profile.firstName}_${profile.lastName}`);
-      setLetterStatus("generated");
-
-      toast.success("Letter generated successfully!");
-    } else {
-      toast.error("Letter generation failed.");
+    } catch (error) {
+      toast.error("Something went wrong while generating letter.");
+    } finally {
+      setIsGeneratingLetter(false);
     }
   };
 
@@ -141,6 +150,7 @@ const Profile: React.FC = () => {
 
       return;
     }
+    setIsSendingLetter(true);
 
     const formData = new FormData();
     formData.append(
@@ -522,9 +532,21 @@ const Profile: React.FC = () => {
                       <button
                         type="button"
                         onClick={handleGenerateLetter}
-                        className="bg-white text-[#113F67] px-3 py-1 rounded-md text-sm font-semibold transition mb-13"
+                        disabled={isGeneratingLetter}
+                        className={`flex items-center justify-center bg-white text-[#113F67] px-3 py-1 rounded-md text-sm font-semibold transition mb-13 ${
+                          isGeneratingLetter
+                            ? "opacity-70 cursor-not-allowed"
+                            : "hover:bg-gray-100"
+                        }`}
                       >
-                        Generate Appointment Letter
+                        {isGeneratingLetter ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-t-transparent border-[#113F67] rounded-full animate-spin mr-2"></div>
+                            Generating...
+                          </>
+                        ) : (
+                          "Generate Appointment Letter"
+                        )}
                       </button>
                     )}
 
@@ -532,9 +554,21 @@ const Profile: React.FC = () => {
                       <button
                         type="button"
                         onClick={handleSendPdfLink}
-                        className="bg-white text-[#113F67] px-3 py-1 rounded-md text-sm font-semibold transition mb-13"
+                        disabled={isSendingLetter}
+                        className={`flex items-center justify-center bg-white text-[#113F67] px-3 py-1 rounded-md text-sm font-semibold transition mb-13 ${
+                          isSendingLetter
+                            ? "opacity-70 cursor-not-allowed"
+                            : "hover:bg-gray-100"
+                        }`}
                       >
-                        Send to Employee
+                        {isSendingLetter ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-t-transparent border-[#113F67] rounded-full animate-spin mr-2"></div>
+                            Sending...
+                          </>
+                        ) : (
+                          "Send to Employee"
+                        )}
                       </button>
                     )}
                   </>

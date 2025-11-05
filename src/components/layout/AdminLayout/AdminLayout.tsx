@@ -67,6 +67,8 @@ const AdminLayout: React.FC = () => {
     const alwaysShowBackButtonRoutes = [
       "/admin/add-employee",
       "/admin/leave-apply",
+      "/admin/leaves",
+      "/admin/leave-requests",
     ];
     return (
       path.split("/").length > 3 ||
@@ -193,7 +195,7 @@ const AdminLayout: React.FC = () => {
       },
       {
         label: "Leave Management",
-        path: "/admin/leave-requests",
+        path: "/admin/leave-management",
         icon: CalendarCheck,
       },
 
@@ -234,8 +236,13 @@ const AdminLayout: React.FC = () => {
   const linksToShow = sidebarConfig[role] || [];
 
  const handleLogout = () => {
+  if (!user) return;
+
+  const loggedInUsers: string[] = JSON.parse(sessionStorage.getItem("loggedInUsers") || "[]");
+  const filteredUsers = loggedInUsers.filter(email => email !== user.email);
+  sessionStorage.setItem("loggedInUsers", JSON.stringify(filteredUsers));
+
   dispatch(logout());
-  sessionStorage.removeItem("loggedInEmail");
   navigate("/");
 };
 

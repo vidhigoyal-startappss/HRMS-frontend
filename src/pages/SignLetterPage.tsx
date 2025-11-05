@@ -143,7 +143,7 @@ const SignLetterPage: React.FC<{
               : "bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800"
           }`}
         >
-          {loading ? "Generating..." : "Download Appointment Letter"}
+          {loading ? "Generating..." : "View or Download Appointment Letter"}
         </button>
 
         <button

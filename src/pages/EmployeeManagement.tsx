@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { RootState } from "../store";
 import Swal from "sweetalert2";
-import { ClipLoader } from "react-spinners"; 
+import { ClipLoader } from "react-spinners";
 
 interface Employee {
   _id: string;
@@ -84,38 +84,37 @@ const EmployeeManagement = () => {
     return capitalizeText ? capitalize(trimmed) : trimmed;
   };
 
- useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const data = await fetchEmployees(showArchived);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchEmployees(showArchived);
 
-      if (!data || data.length === 0) {
+        if (!data || data.length === 0) {
+          Swal.fire({
+            icon: "info",
+            title: "No employees found",
+            text: "Currently, there are no employees to display.",
+            confirmButtonColor: "#226597",
+          });
+          setEmployeeData([]);
+        } else {
+          setEmployeeData(data);
+        }
+      } catch (err) {
         Swal.fire({
-          icon: 'info',
-          title: 'No employees found',
-          text: 'Currently, there are no employees to display.',
-          confirmButtonColor: '#226597',
+          icon: "error",
+          title: "Oops!",
+          text: "Failed to fetch employee data.",
+          confirmButtonColor: "#226597",
         });
-        setEmployeeData([]);
-      } else {
-        setEmployeeData(data);
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops!',
-        text: 'Failed to fetch employee data.',
-        confirmButtonColor: '#226597',
-      });
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchData();
-}, [showArchived]);
-
+    fetchData();
+  }, [showArchived]);
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {
@@ -202,14 +201,35 @@ const EmployeeManagement = () => {
     currentPage * itemsPerPage
   );
 
-  if (loading) {
+    if (loading) {
     return (
-      <div className="p-4 text-center text-gray-500">
-        <Loader />
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
+        <svg
+          className="animate-spin h-12 w-12 text-[#226597]"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 018 8h-4l3 3-3 3h4a8 8 0 01-8 8v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+          />
+        </svg>
+        <p className="text-[#226597] font-medium text-lg">
+          Fetching EmployeeManagement...
+        </p>
       </div>
     );
   }
-
   if (error) {
     return <div className="p-4 text-center text-red-500">{error}</div>;
   }

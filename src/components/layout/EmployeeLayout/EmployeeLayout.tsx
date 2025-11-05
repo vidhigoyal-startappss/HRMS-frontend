@@ -50,13 +50,12 @@ const EmployeeLayout: React.FC = () => {
   const role = user?.role || "Employee";
   const id = user?.userId;
 
-
   const routesTitles: Record<string, string> = {
     "/employee/dashboard": "Dashboard",
     "/employee/attendance": "Attendance",
     "/employee/leaves": "Leave Requests",
     "/employee/request-leave": "Leave Requests",
-       "/employee/EmployeePayroll": "Payroll",
+    "/employee/EmployeePayroll": "Payroll",
     "/employee/profile": "Profile",
     "/employee/company-policy": "Company Policies",
   };
@@ -105,12 +104,17 @@ const EmployeeLayout: React.FC = () => {
     employeeData?.firstName && employeeData?.lastName
       ? `${employeeData.firstName} ${employeeData.lastName}`
       : "Employee";
+ const handleLogout = () => {
+  if (!user) return;
 
-const handleLogout = () => {
+  const loggedInUsers: string[] = JSON.parse(sessionStorage.getItem("loggedInUsers") || "[]");
+  const filteredUsers = loggedInUsers.filter(email => email !== user.email);
+  sessionStorage.setItem("loggedInUsers", JSON.stringify(filteredUsers));
+
   dispatch(logout());
-  sessionStorage.removeItem("loggedInEmail");
   navigate("/");
 };
+
 
   useEffect(() => {
     const fetchData = async () => {
